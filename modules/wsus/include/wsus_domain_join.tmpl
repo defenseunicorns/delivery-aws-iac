@@ -1,0 +1,33 @@
+
+function ConnectToDomain() {
+	$domain = (Get-WmiObject -Class Win32_ComputerSystem).Domain
+	$newDomain = "${ad_domain_name}"
+	$ad_user = "${ad_domain_user}"
+	$newDomainPassword = '${ad_domain_user_password}' # single quotes because password can contain dollar sign
+	if ( ([string]::Compare($newDomain, $domain, $True) -ne 0) ) {
+	  $connect = (Get-WmiObject -Class Win32_ComputerSystem).JoinDomainOrWorkGroup($newDomain,$newDomainPassword,"$ad_user@$newDomain",$null,3).ReturnValue
+	  if ($connect -eq 0 ) {
+			Restart-Computer
+			Start-Sleep -s 30
+	  }
+	}
+}
+
+net user administrator ${local_password}
+$newName = "wsus"
+if ( ([string]::Compare($newName, $env:computerName, $True) -ne 0) ) {
+	$rename = (Get-WmiObject -Class Win32_ComputerSystem).Rename($newName,"${local_password}",'Administrator').ReturnValue
+  if ($rename -eq 0) {
+    Restart-Computer
+    Start-Sleep -s 30
+  }
+
+	} else {
+
+	Set-DefaultAWSRegion -Region "${region}"
+  start-sleep -s 30
+	Import-Module NetAdapter
+	$alias = (Get-NetAdapter).Name
+	Set-DnsClientServerAddress -InterfaceAlias $alias -ServerAddress "${dns_servers}"
+	ConnectToDomain
+}

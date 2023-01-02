@@ -1,0 +1,11 @@
+
+if(-not (Test-Path d:\)){
+set-disk -number 1 -IsOffline $false
+
+Initialize-Disk -Number 1
+
+New-Partition -DiskNumber 1  -UseMaximumSize -DriveLetter D
+
+Format-Volume -DriveLetter D -FileSystem NTFS -Confirm:$false
+
+}
