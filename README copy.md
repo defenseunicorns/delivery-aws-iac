@@ -1,2 +1,0 @@
-# IaC
-Terraform Goodness
