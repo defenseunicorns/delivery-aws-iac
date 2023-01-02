@@ -2,10 +2,10 @@
 
 # Docs & Examples
 *.md @brianrexrode @ntwkninja @RothAndrew @jeff-mccoy
-
-# Terraform Modules & Examples 
-/modules/ @brianrexrode @ntwkninja @RothAndrew @UncleGedd
 /examples/ @brianrexrode @ntwkninja @RothAndrew @UncleGedd
+
+# Terraform Modules
+/modules/ @brianrexrode @ntwkninja @RothAndrew @UncleGedd
 
 # Privileged Files
 /CODEOWNERS @brianrexrode @ntwkninja @RothAndrew @UncleGedd
