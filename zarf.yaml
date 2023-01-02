@@ -1,0 +1,64 @@
+kind: ZarfPackageConfig
+metadata:
+  name: "terraform"
+  description: "Run terraform/terragrunt code"
+
+components:
+  - name: download-dependencies
+    required: true
+    scripts:
+      after:
+        - "rm -f terraform"
+        - "./zarf tools archiver decompress tmp/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip ."
+        # - "./zarf tools archiver decompress tmp/awscliv2.zip ."
+        # - "rm -rf tmp/"
+    files:
+      # terraform binary
+      - source: https://releases.hashicorp.com/terraform/###ZARF_PKG_VAR_TF_VERSION###/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip
+        target: tmp/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip
+      # aws cli binary
+      # - source: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+      #   target: tmp/awscliv2.zip
+
+  - name: terraform-init
+    required: true
+    scripts:
+      showOutput: true
+      prepare:
+        - "cd ###ZARF_PKG_VAR_TF_ENV_DIR### && terraform init -backend=false"
+        - "cd ###ZARF_PKG_VAR_TF_ENV_STATE_DIR### && terraform init -backend=false"
+    files:
+      - source: "###ZARF_PKG_VAR_TF_ENV_DIR###"
+        target: "tmp/###ZARF_PKG_VAR_TF_ENV###"
+      - source: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###"
+        target: "tmp/###ZARF_PKG_VAR_TF_ENV_STATE###"
+      - source: "###ZARF_PKG_VAR_TF_MODULES_DIR###"
+        target: "tmp/modules"
+  
+  - name: terraform-s3-bucket
+    scripts:
+      showOutput: true
+      before:
+        - "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && terraform apply -auto-approve"
+        - "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)` && echo $BUCKET_ID && mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' backend.tf"
+        - "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && terraform init -migrate-state -force-copy"
+
+  - name: terraform-apply-bootstrap
+    required: false
+    scripts:
+      showOutput: true
+      before:
+        - "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)` && echo $BUCKET_ID && mv ../###ZARF_PKG_VAR_TF_ENV###/backend.example ../###ZARF_PKG_VAR_TF_ENV###/backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' ../###ZARF_PKG_VAR_TF_ENV###/backend.tf && aws s3 cp ../###ZARF_PKG_VAR_TF_ENV###/backend.tf s3://$BUCKET_ID/backend.tf"
+        - "cd tmp/###ZARF_PKG_VAR_TF_ENV### && terraform init -migrate-state -force-copy && terraform apply -auto-approve"
+
+  - name: terraform-apply-day2
+    scripts:
+      showOutput: true
+      before:
+        - "cd tmp/###ZARF_PKG_VAR_TF_ENV### && aws s3 cp s3://my-tfstate-backend20221221075202171300000001/backend.tf backend.tf && terraform init && terraform apply -target=module.vpc -auto-approve"
+
+  - name: terraform-destroy
+    scripts:
+      showOutput: true
+      before:
+        - "cd tmp/###ZARF_PKG_VAR_TF_ENV### && aws s3 cp s3://my-tfstate-backend20221221075202171300000001/backend.tf backend.tf && terraform init && terraform apply -destroy -auto-approve"
