@@ -28,6 +28,7 @@ jobs:
 
       - name: Run tfsec
         uses: aquasecurity/tfsec-sarif-action@9a83b5c3524f825c020e356335855741fd02745f
+        working_directory: ./examples/complete-example
         with:
           sarif_file: tfsec.sarif
 

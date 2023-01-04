@@ -17,15 +17,20 @@ jobs:
   tfsec:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install tfsec
-    - name: Run tfsec
-      run: |
-        tfsec ./examples/complete-example
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-sarif-action@9a83b5c3524f825c020e356335855741fd02745f
+        with:
+          working_directory: ./examples/complete-example
+
+    # - uses: actions/checkout@v2
+    # - name: Set up Python 3.8
+    #   uses: actions/setup-python@v2
+    #   with:
+    #     python-version: 3.8
+    # - name: Install dependencies
+    #   run: |
+    #     python -m pip install --upgrade pip
+    #     pip install tfsec
+    # - name: Run tfsec
+    #   run: |
+    #     tfsec ./examples/complete-example
