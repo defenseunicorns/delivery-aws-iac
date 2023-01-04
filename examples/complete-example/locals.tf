@@ -65,7 +65,7 @@ locals {
 ###########################################################
 ############## Big Bang Dependencies ######################
 
-  keycloak_enabled = false
+  keycloak_enabled = true
   # other_addon_enabled = true
 
 
