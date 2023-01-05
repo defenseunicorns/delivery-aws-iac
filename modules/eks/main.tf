@@ -21,6 +21,8 @@ module "eks_blueprints" {
 
   vpc_id             = var.vpc_id
   private_subnet_ids = var.private_subnet_ids
+  cluster_endpoint_public_access = false
+  cluster_endpoint_private_access = true
 
   #----------------------------------------------------------------------------------------------------------#
   # Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
