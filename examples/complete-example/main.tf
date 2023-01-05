@@ -75,10 +75,11 @@ module "flux_sops" {
 module "bastion" {
   source = "../../modules/ec2-bastion"
 
-  ami_id                  = local.bastion_ami_id
+  ami                     = local.bastion_ami_id
   vpc_id                  = module.vpc.vpc_id
-  private_subnet_ids      = module.vpc.private_subnets[0]
-  aws_region              = local.region
+  private_subnet_ids      = module.vpc.private_subnets
+  region                  = local.region
+  availability_zones      = local.azs 
   cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
 }
 

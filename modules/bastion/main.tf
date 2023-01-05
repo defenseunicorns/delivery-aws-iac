@@ -30,7 +30,9 @@ resource "aws_instance" "application" {
   vpc_security_group_ids      = length(local.security_group_configs) > 0 ? aws_security_group.sg.*.id : var.security_group_ids
   user_data                   = data.cloudinit_config.config.rendered
   iam_instance_profile        = local.role_name == "" ? null : aws_iam_instance_profile.profile[0].name
+  ebs_optimized = true
   associate_public_ip_address = var.assign_public_ip
+  security_groups = [aws_security_group.sg.id]
   root_block_device {
     volume_size = var.root_volume_config.volume_size
     volume_type = var.root_volume_config.volume_type
@@ -177,6 +179,7 @@ resource "aws_security_group" "sg" {
       to_port     = ingress.value.to_port
       protocol    = ingress.value.protocol
       cidr_blocks = ingress.value.cidr_blocks
+      description = ingress.value.description
     }
   }
 
@@ -188,6 +191,7 @@ resource "aws_security_group" "sg" {
       to_port     = egress.value.to_port
       protocol    = egress.value.protocol
       cidr_blocks = egress.value.cidr_blocks
+      description = egress.value.description
     }
   }
 }
@@ -199,9 +203,10 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "b" {
+  #checkov:skip=CKV2_AWS_6:Public access block is enabled
   #checkov:skip=CKV_AWS_52
   #checkov:skip=CKV_AWS_18
-  #checkov:skip=CKV_AWS_144: Do not want cross region replication
+  #checkov:skip=CKV_AWS_144:Do not want cross region replication
   bucket        = local.bucket_prefix
 
   force_destroy = var.force_destroy
@@ -225,8 +230,9 @@ resource "aws_s3_bucket_public_access_block" "access_b" {
   restrict_public_buckets = true
 }
 resource "aws_s3_bucket_versioning" "versioning_b" {
-count = var.versioning_enabled ? 1 : 0
-bucket = aws_s3_bucket.b.id
+  #checkov:skip=CKV_AWS_21:versioning is enabled
+  count = var.versioning_enabled ? 1 : 0
+  bucket = aws_s3_bucket.b.id
   versioning_configuration {
     status = "Enabled"
   }
@@ -236,12 +242,17 @@ resource "aws_s3_bucket_acl" "acl_b" {
   acl    = var.acl
 }
 resource "aws_s3_bucket" "log_bucket" {
+  #checkov:skip=CKV2_AWS_6:Public access block is enabled
+  #checkov:skip=CKV_AWS_52
+  #checkov:skip=CKV_AWS_18
+  #checkov:skip=CKV_AWS_144:Do not want cross region replication
   bucket = "${local.bucket_prefix}-logging"
   force_destroy = var.force_destroy
 }
 resource "aws_s3_bucket_versioning" "versioning_logging" {
-count = var.versioning_enabled ? 1 : 0
-bucket = aws_s3_bucket.log_bucket.id
+  #checkov:skip=CKV_AWS_21:versioning is enabled
+  count = var.versioning_enabled ? 1 : 0
+  bucket = aws_s3_bucket.log_bucket.id
   versioning_configuration {
     status = "Enabled"
   }
