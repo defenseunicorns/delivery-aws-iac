@@ -3,15 +3,26 @@ resource "aws_kms_key" "objects" {
   description             = "KMS key is used to encrypt bucket objects"
   deletion_window_in_days = 7
 }
+resource "aws_kms_key" "dynamo" {
+  enable_key_rotation     = true
+  description             = "KMS key is used to encrypt dynamodb table"
+  deletion_window_in_days = 7
+}
 
 resource "aws_dynamodb_table" "dynamodb_terraform_state_lock" {
   name         = var.dynamodb_table_name
   hash_key     = "LockID"
   billing_mode = "PAY_PER_REQUEST"
-
+  point_in_time_recovery {
+    enabled = true
+  }
   attribute {
     name = "LockID"
     type = "S"
+  }
+  server_side_encryption {
+    enabled = true
+    kms_key_arn= aws_kms_key.dynamo.arn
   }
 }
 

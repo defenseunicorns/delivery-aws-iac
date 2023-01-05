@@ -7,11 +7,10 @@ module "aws_key_pair" {
 }
 
 module "ec2_bastion" {
-  source = "git::https://github.com/cloudposse/terraform-aws-ec2-bastion-server.git?ref=tags/0.27.0"
+  source = "git::https://github.com/cloudposse/terraform-aws-ec2-bastion-server.git?ref=0.30.1"
 
   ami                         = var.ami
   instance_type               = var.instance_type
-  security_group_enabled      = false
   subnets                     = var.private_subnet_ids
   key_name                    = module.aws_key_pair.key_name
   user_data                   = var.user_data
@@ -21,6 +20,6 @@ module "ec2_bastion" {
 
 resource "aws_iam_role_policy_attachment" "sops" {
   count      = var.add_sops_policy ? 1 : 0
-  role       = aws_iam_role.default[0].name
+  role       = module.ec2_bastion.role[0]
   policy_arn = var.cluster_sops_policy_arn
 }

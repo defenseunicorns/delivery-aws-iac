@@ -15,6 +15,7 @@ locals {
       to_port     = 22
       protocol    = "tcp"
       cidr_blocks = var.allowed_public_ips # admin IPs or private IP (internal) of Software Defined Perimter
+      description = "SSH access"
       },
     ]
     egress_rules = [{
@@ -22,6 +23,7 @@ locals {
       to_port     = 0
       protocol    = "-1"
       cidr_blocks = ["0.0.0.0/0"]
+      description = "Allow all outbound traffic"
     }]
   }]
 
