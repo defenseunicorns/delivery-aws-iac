@@ -127,8 +127,8 @@ resource "aws_iam_policy" "s3_readonly_policy" {
         {
             "Effect": "Allow",
             "Action": [
-                "s3:List*",
-                "s3:Get*"
+                "s3:ListObject",
+                "s3:GetObject"
             ],
             "Resource": [
               "${aws_s3_bucket.b.arn}/*",
@@ -148,8 +148,8 @@ resource "aws_iam_policy" "s3_logging_policy" {
         {
             "Effect": "Allow",
             "Action": [
-              "s3:List*",
-              "s3:Get*",
+              "s3:ListObject",
+              "s3:GetObject",
               "s3:PutObject"
             ],
             "Resource": [
@@ -297,8 +297,8 @@ resource "aws_s3_bucket_policy" "b" {
         "AWS": "*"
       },
       "Action": [
-				"s3:List*",
-				"s3:Get*"
+				"s3:ListObject",
+				"s3:GetObject"
       ],
       "Resource": [
         "${aws_s3_bucket.b.arn}/*",
@@ -327,8 +327,8 @@ resource "aws_s3_bucket_policy" "log_bucket" {
         "AWS": "*"
       },
       "Action": [
-				"s3:List*",
-				"s3:Get*",
+				"s3:ListObject",
+				"s3:GetObject",
         "s3:PutObject"
       ],
       "Resource": [
