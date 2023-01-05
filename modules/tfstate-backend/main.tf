@@ -56,8 +56,8 @@ resource "aws_s3_bucket_policy" "backend_bucket" {
         "AWS": ${var.cluster_key_admin_arns == [] ? "[]" : jsonencode(var.cluster_key_admin_arns)}
       },
       "Action": [
-				"s3:List*",
-				"s3:Get*",
+				"s3:ListObject",
+				"s3:GetObject",
         "s3:PutObject"
       ],
       "Resource": [
