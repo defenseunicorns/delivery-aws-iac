@@ -57,21 +57,30 @@ module "flux_sops" {
 ###########################################################
 ##################### Bastion #############################
 
+# module "bastion" {
+#   source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=v0.0.0-alpha.0"
+
+#   ami_id                  = local.bastion_ami_id
+#   name                    = local.bastion_name
+#   vpc_id                  = module.vpc.vpc_id
+#   subnet_id               = module.vpc.public_subnets[0]
+#   aws_region              = local.region
+#   ssh_public_key_names    = local.ssh_public_key_names
+#   allowed_public_ips      = local.allowed_public_ips
+#   ssh_user                = local.ssh_user
+#   assign_public_ip        = local.assign_public_ip
+#   cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
+# }
+
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=v0.0.0-alpha.0"
+  source = "../../modules/ec2-bastion"
 
   ami_id                  = local.bastion_ami_id
-  name                    = local.bastion_name
   vpc_id                  = module.vpc.vpc_id
-  subnet_id               = module.vpc.public_subnets[0]
+  private_subnet_ids      = module.vpc.private_subnets[0]
   aws_region              = local.region
-  ssh_public_key_names    = local.ssh_public_key_names
-  allowed_public_ips      = local.allowed_public_ips
-  ssh_user                = local.ssh_user
-  assign_public_ip        = local.assign_public_ip
   cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
 }
-
 
 ###########################################################
 ############## Big Bang Core Dependencies #################
