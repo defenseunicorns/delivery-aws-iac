@@ -4,11 +4,11 @@
 module "vpc" {
   source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v0.0.0-alpha.0"
 
-  region              = local.region
-  name                = local.vpc_name
-  vpc_cidr            = local.vpc_cidr
-  azs                 = local.azs
-  
+  region   = local.region
+  name     = local.vpc_name
+  vpc_cidr = local.vpc_cidr
+  azs      = local.azs
+
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = 1
@@ -42,16 +42,16 @@ module "eks" {
 module "flux_sops" {
   source = "git::https://github.com/defenseunicorns/iac.git//modules/sops?ref=v0.0.0-alpha.0"
 
-  region                      = local.region
-  cluster_name                = module.eks.eks_cluster_id
-  vpc_id                      = module.vpc.vpc_id
-  policy_name_prefix          = "${module.eks.eks_cluster_id}-flux-sops"
-  kms_key_alias               = "${module.eks.eks_cluster_id}-flux-sops"
-  kubernetes_service_account  = "flux-system-sops-sa"
-  kubernetes_namespace        = "flux-system"
-  irsa_sops_iam_role_name     = "${module.eks.eks_cluster_id}-flux-system-sa-role"
-  eks_oidc_provider_arn       = module.eks.eks_oidc_provider_arn
-  tags                        = local.tags
+  region                     = local.region
+  cluster_name               = module.eks.eks_cluster_id
+  vpc_id                     = module.vpc.vpc_id
+  policy_name_prefix         = "${module.eks.eks_cluster_id}-flux-sops"
+  kms_key_alias              = "${module.eks.eks_cluster_id}-flux-sops"
+  kubernetes_service_account = "flux-system-sops-sa"
+  kubernetes_namespace       = "flux-system"
+  irsa_sops_iam_role_name    = "${module.eks.eks_cluster_id}-flux-system-sa-role"
+  eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn
+  tags                       = local.tags
 }
 
 ###########################################################
@@ -59,7 +59,7 @@ module "flux_sops" {
 
 module "bastion" {
   source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=v0.0.0-alpha.0"
-  
+
   ami_id                  = local.bastion_ami_id
   name                    = local.bastion_name
   vpc_id                  = module.vpc.vpc_id

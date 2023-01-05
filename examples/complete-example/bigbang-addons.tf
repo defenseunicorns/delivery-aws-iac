@@ -6,12 +6,12 @@
 module "rds_postgres_keycloak" {
   source = "git::https://github.com/defenseunicorns/iac.git//modules/rds?ref=v0.0.0-alpha.0"
 
-# provider alias is needed for every parent module supporting RDS backup replication is a separate region
+  # provider alias is needed for every parent module supporting RDS backup replication is a separate region
   providers = {
     aws.region2 = aws.region2
   }
 
-  count                      = local.keycloak_enabled ? 1 : 0
+  count = local.keycloak_enabled ? 1 : 0
 
   vpc_id                     = module.vpc.vpc_id
   vpc_cidr                   = module.vpc.vpc_cidr_block
