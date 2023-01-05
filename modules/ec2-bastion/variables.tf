@@ -88,6 +88,7 @@ variable "associate_public_ip_address" {
 variable "ami" {
   type        = string
   description = "AMI ID to use for the bastion host"
+  default     = null
 }
 
 variable "vpc_id" {
@@ -104,7 +105,7 @@ variable "cluster_sops_policy_arn" {
 variable "add_sops_policy" {
   description = "value of the policy arn for the cluster sops policy"
   type = bool
-  default = "true"
+  default = true
 }
 
 variable "security_group_enabled" {
