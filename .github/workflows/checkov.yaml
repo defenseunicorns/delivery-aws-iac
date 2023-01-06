@@ -1,0 +1,30 @@
+
+name: checkov
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '26 21 * * 5'
+
+jobs:
+  checkov-job:
+    runs-on: ubuntu-latest
+    name: checkov-action
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+
+      - name: Run Checkov action complete-example
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: examples/complete-example
+
+      - name: Run Checkov action modules
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: modules/
