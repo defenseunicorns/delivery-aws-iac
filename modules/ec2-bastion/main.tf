@@ -4,6 +4,8 @@ module "aws_key_pair" {
   attributes          = ["ssh", "key"]
   ssh_public_key_path = var.ssh_key_path
   generate_ssh_key    = var.generate_ssh_key
+
+  context = module.this.context
 }
 
 module "ec2_bastion" {
@@ -16,10 +18,12 @@ module "ec2_bastion" {
   user_data                   = var.user_data
   vpc_id                      = var.vpc_id
   associate_public_ip_address = var.associate_public_ip_address
+
+  context = module.this.context
 }
 
 resource "aws_iam_role_policy_attachment" "sops" {
   count      = var.add_sops_policy ? 1 : 0
-  role       = module.ec2_bastion.role[0]
+  role       = module.ec2_bastion.role
   policy_arn = var.cluster_sops_policy_arn
 }
