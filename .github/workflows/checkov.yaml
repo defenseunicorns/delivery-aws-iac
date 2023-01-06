@@ -18,13 +18,13 @@ jobs:
         uses: actions/checkout@master
 
       - name: Run Checkov action complete-example
-        id: checkov
+        id: checkov-complete-example
         uses: bridgecrewio/checkov-action@master
         with:
           directory: examples/complete-example
 
       - name: Run Checkov action modules
-        id: checkov
+        id: checkov-modules
         uses: bridgecrewio/checkov-action@master
         with:
           directory: modules/
