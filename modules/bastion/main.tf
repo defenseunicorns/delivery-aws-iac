@@ -203,10 +203,8 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "b" {
-  #checkov:skip=CKV2_AWS_6:Public access block is enabled
-  #checkov:skip=CKV_AWS_52
-  #checkov:skip=CKV_AWS_18
   #checkov:skip=CKV_AWS_144:Do not want cross region replication
+  #checkov:skip=CKV_AWS_145:Server side encryption is enabled
   bucket        = local.bucket_prefix
 
   force_destroy = var.force_destroy
@@ -230,7 +228,6 @@ resource "aws_s3_bucket_public_access_block" "access_b" {
   restrict_public_buckets = true
 }
 resource "aws_s3_bucket_versioning" "versioning_b" {
-  #checkov:skip=CKV_AWS_21:versioning is enabled
   count = var.versioning_enabled ? 1 : 0
   bucket = aws_s3_bucket.b.id
   versioning_configuration {
@@ -242,15 +239,12 @@ resource "aws_s3_bucket_acl" "acl_b" {
   acl    = var.acl
 }
 resource "aws_s3_bucket" "log_bucket" {
-  #checkov:skip=CKV2_AWS_6:Public access block is enabled
-  #checkov:skip=CKV_AWS_52
-  #checkov:skip=CKV_AWS_18
   #checkov:skip=CKV_AWS_144:Do not want cross region replication
+  #checkov:skip=CKV_AWS_145:Server side encryption is enabled
   bucket = "${local.bucket_prefix}-logging"
   force_destroy = var.force_destroy
 }
 resource "aws_s3_bucket_versioning" "versioning_logging" {
-  #checkov:skip=CKV_AWS_21:versioning is enabled
   count = var.versioning_enabled ? 1 : 0
   bucket = aws_s3_bucket.log_bucket.id
   versioning_configuration {
