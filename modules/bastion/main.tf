@@ -24,7 +24,6 @@ data "aws_subnet" "subnet_by_name" {
 
 resource "aws_instance" "application" {
   #checkov:skip=CKV2_AWS_41: IAM role is created in the module
-  #checkov:skip=CKV_AWS_126: Not using aws detailed monitoring at this time
   ami                         = var.ami_id != "" ? var.ami_id : data.aws_ami.from_filter[0].id
   instance_type               = local.instance_type
   key_name                    = var.ec2_key_name
@@ -34,6 +33,7 @@ resource "aws_instance" "application" {
   ebs_optimized = true
   associate_public_ip_address = var.assign_public_ip
   security_groups = [aws_security_group.sg.id]
+  monitoring = true
   root_block_device {
     volume_size = var.root_volume_config.volume_size
     volume_type = var.root_volume_config.volume_type
