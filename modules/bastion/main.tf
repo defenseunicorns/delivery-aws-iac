@@ -23,6 +23,7 @@ data "aws_subnet" "subnet_by_name" {
 }
 
 resource "aws_instance" "application" {
+  #checkov:skip=CKV2_AWS_41: IAM role is created in the module
   #checkov:skip=CKV_AWS_126: Not using aws detailed monitoring at this time
   ami                         = var.ami_id != "" ? var.ami_id : data.aws_ami.from_filter[0].id
   instance_type               = local.instance_type

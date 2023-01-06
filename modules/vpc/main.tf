@@ -156,7 +156,7 @@ module "vpc_endpoints" {
       service             = "kms"
       private_dns_enabled = true
       subnet_ids          = module.vpc.private_subnets
-      security_group_ids  = [aws_security_group.vpc_tls.id]
+      security_group_ids  = [data.aws_security_group.vpc_tls.id]
     }#,
 #     codedeploy = {
 #       service             = "codedeploy"
@@ -231,7 +231,7 @@ data "aws_iam_policy_document" "generic_endpoint_policy" {
   }
 }
 
-resource "aws_security_group" "vpc_tls" {
+data "aws_security_group" "vpc_tls" {
   name_prefix = "${var.name}-vpc_tls"
   description = "Allow TLS inbound traffic"
   vpc_id      = module.vpc.vpc_id
