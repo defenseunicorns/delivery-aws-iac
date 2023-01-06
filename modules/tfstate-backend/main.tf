@@ -54,6 +54,13 @@ bucket = module.s3_bucket.s3_bucket_id
   }
 }
 
+resource "aws_s3_bucket_logging" "logging" {
+  bucket = module.s3_bucket.s3_bucket_id
+
+  target_bucket = module.s3_bucket.s3_bucket_id
+  target_prefix = "log/"
+}
+
 resource "aws_s3_bucket_policy" "backend_bucket" {
   bucket = module.s3_bucket.s3_bucket_id
 
@@ -67,7 +74,7 @@ resource "aws_s3_bucket_policy" "backend_bucket" {
         "AWS": ${var.cluster_key_admin_arns == [] ? "[]" : jsonencode(var.cluster_key_admin_arns)}
       },
       "Action": [
-				"s3:ListObject",
+				"s3:ListBucket",
 				"s3:GetObject",
         "s3:PutObject"
       ],
