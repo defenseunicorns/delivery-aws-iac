@@ -2,7 +2,7 @@
 ####################### VPC ###############################
 
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v0.0.0-alpha.0"
+  source = "../../modules/vpc"
 
   region   = local.region
   name     = local.vpc_name
@@ -18,6 +18,20 @@ module "vpc" {
   create_database_subnet_group       = local.create_database_subnet_group
   create_database_subnet_route_table = local.create_database_subnet_route_table
 
+}
+
+module "ssm" {
+  source                    = "bridgecrewio/session-manager/aws"
+  version                   = "0.4.2"
+  bucket_name               = "my-session-logs"
+  access_log_bucket_name    = "my-session-access-logs"
+  vpc_id                    = module.vpc.vpc_id
+  tags                      = {
+                                Function = "ssm"
+                              }
+  enable_log_to_s3          = true
+  enable_log_to_cloudwatch  = true
+  # vpc_endpoints_enabled     = true # enabled in vpc module
 }
 
 ###########################################################
