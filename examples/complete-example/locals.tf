@@ -70,7 +70,7 @@ locals {
 
 
   #################### Keycloak ###########################
-
+  #checkov:skip=CKV_SECRET_6: Example password only
   keycloak_db_password        = "my-password"
   kc_db_engine_version        = "14.1"
   kc_db_family                = "postgres14" # DB parameter group
