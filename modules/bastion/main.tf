@@ -99,6 +99,7 @@ resource "aws_iam_role_policy_attachment" "custom" {
   role       = aws_iam_role.role[0].name
   policy_arn = aws_iam_policy.custom[0].arn
 }
+
 resource "aws_iam_role_policy_attachment" "sops" {
   count      = var.add_sops_policy ? 1 : 0
   role       = aws_iam_role.role[0].name
@@ -509,3 +510,66 @@ resource "aws_iam_role_policy_attachment" "SSM2-role-policy-attach" {
   role       = aws_iam_role.role[0].name
   policy_arn = aws_iam_policy.ssm_ec2_access.arn
 }
+
+# data "aws_iam_policy_document" "ssm_s3_cwl_access" {
+#   # checkov:skip=CKV_AWS_111: ADD REASON
+#   # A custom policy for S3 bucket access
+#   # https://docs.aws.amazon.com/en_us/systems-manager/latest/userguide/setup-instance-profile.html#instance-profile-custom-s3-policy
+#   statement {
+#     sid = "S3BucketAccessForSessionManager"
+#     actions = [
+#       "s3:PutObject",
+#       "s3:PutObjectAcl",
+#       "s3:PutObjectVersionAcl",
+#     ]
+#     resources = [
+#       aws_s3_bucket.session_logs_bucket.arn,
+#       "${aws_s3_bucket.session_logs_bucket.arn}/*",
+#     ]
+#   }
+
+#   statement {
+#     sid = "S3EncryptionForSessionManager"
+#     actions = [
+#       "s3:GetEncryptionConfiguration",
+#     ]
+#     resources = [
+#       aws_s3_bucket.session_logs_bucket.arn
+#     ]
+#   }
+
+#   # A custom policy for CloudWatch Logs access
+#   # https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/permissions-reference-cwl.html
+#   statement {
+#     sid = "CloudWatchLogsAccessForSessionManager"
+#     actions = [
+#       "logs:PutLogEvents",
+#       "logs:CreateLogStream",
+#       "logs:DescribeLogGroups",
+#       "logs:DescribeLogStreams",
+#     ]
+#     resources = ["*"]
+#   }
+
+#   statement {
+#     sid = "KMSEncryptionForSessionManager"
+#     actions = [
+#       "kms:DescribeKey",
+#       "kms:GenerateDataKey",
+#       "kms:Decrypt",
+#       "kms:Encrypt",
+#     ]
+#     resources = [var.ssmkey_arn]
+#   }
+# }
+
+# resource "aws_iam_policy" "ssm_s3_cwl_access" {
+#   name   = "ssm_s3_cwl_access-${local.region}"
+#   path   = "/"
+#   policy = data.aws_iam_policy_document.ssm_s3_cwl_access.json
+# }
+
+# resource "aws_iam_role_policy_attachment" "SSM-s3-cwl-policy-attach" {
+#   role       = aws_iam_role.role[0].name
+#   policy_arn = aws_iam_policy.ssm_s3_cwl_access.arn
+# }

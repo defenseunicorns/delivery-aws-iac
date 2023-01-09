@@ -29,8 +29,8 @@ module "ssm" {
   tags                      = {
                                 Function = "ssm"
                               }
-  enable_log_to_s3          = true
-  enable_log_to_cloudwatch  = true
+  enable_log_to_s3          = false
+  enable_log_to_cloudwatch  = false
 }
 
 ###########################################################
@@ -76,12 +76,12 @@ module "bastion" {
   ami_id                  = local.bastion_ami_id
   name                    = local.bastion_name
   vpc_id                  = module.vpc.vpc_id
-  subnet_id               = module.vpc.public_subnets[0]
+  subnet_id               = module.vpc.private_subnets[0]
   aws_region              = local.region
   ssh_public_key_names    = local.ssh_public_key_names
   allowed_public_ips      = local.allowed_public_ips
   ssh_user                = local.ssh_user
-  assign_public_ip        = local.assign_public_ip
+  assign_public_ip        = false # local.assign_public_ip
   # cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
   ssmkey_arn              = module.ssm.kms_key_arn
 }
