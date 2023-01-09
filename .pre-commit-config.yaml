@@ -1,0 +1,9 @@
+repos:
+- repo: https://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.77.0
+  hooks:
+    - id: terraform_fmt
+      args:
+        - --args=-recursive
+        - --args=-check
+    - id: terraform_tflint
