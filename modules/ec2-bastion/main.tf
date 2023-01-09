@@ -30,28 +30,28 @@ resource "aws_iam_role_policy_attachment" "sops" {
   policy_arn = var.cluster_sops_policy_arn
 }
 
-data "aws_iam_policy_document" "bastion_ssh_access_via_ssm" {
-  statement {
+# data "aws_iam_policy_document" "bastion_ssh_access_via_ssm" {
+#   statement {
 
-    actions = ["ssm:StartSession"]
+#     actions = ["ssm:StartSession"]
 
-    resources = [
-      "arn:aws:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/${module.ec2_bastion.instance_id}",
-      "arn:aws:ssm:*:*:document/AWS-StartSSHSession"
-    ]
-  }
-}
+#     resources = [
+#       "arn:aws:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/${module.ec2_bastion.instance_id}",
+#       "arn:aws:ssm:*:*:document/AWS-StartSSHSession"
+#     ]
+#   }
+# }
 
-resource "aws_iam_policy" "bastion_ssh_access_via_ssm" {
-  name        = "ssh-policy"
+# resource "aws_iam_policy" "bastion_ssh_access_via_ssm" {
+#   name        = "ssh-policy"
 
-  policy = data.aws_iam_policy_document.bastion_ssh_access_via_ssm.json
-}
+#   policy = data.aws_iam_policy_document.bastion_ssh_access_via_ssm.json
+# }
 
-resource "aws_iam_role_policy_attachment" "bastion_ssh" {
-  role   = module.ec2_bastion.role
-  policy_arn = aws_iam_policy.bastion_ssh_access_via_ssm.arn
-}
+# resource "aws_iam_role_policy_attachment" "bastion_ssh" {
+#   role   = module.ec2_bastion.role
+#   policy_arn = aws_iam_policy.bastion_ssh_access_via_ssm.arn
+# }
 
 # resource "aws_iam_role" "bastion_ssh_access_via_ssm" {
 #   name                 = "${var.name}-auth-ssh-role"

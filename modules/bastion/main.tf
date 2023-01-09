@@ -32,7 +32,6 @@ resource "aws_instance" "application" {
   iam_instance_profile        = local.role_name == "" ? null : aws_iam_instance_profile.profile[0].name
   ebs_optimized = true
   associate_public_ip_address = var.assign_public_ip
-  security_groups = [aws_security_group.sg.id]
   monitoring = true
   root_block_device {
     volume_size = var.root_volume_config.volume_size
@@ -453,6 +452,7 @@ data "cloudinit_config" "config" {
         keys_update_frequency       = local.keys_update_frequency
         enable_hourly_cron_updates  = local.enable_hourly_cron_updates
         additional_user_data_script = var.additional_user_data_script
+        ssm_enabled                 = var.ssm_enabled
       }
     )
   }
@@ -468,4 +468,44 @@ resource "aws_s3_object" "ssh_public_keys" {
   bucket = aws_s3_bucket.b.bucket
   key    = "${element(var.ssh_public_key_names, count.index)}.pub"
 
+}
+
+data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
+  arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "SSM-role-policy-attach" {
+  role       = aws_iam_role.role[0].name
+  policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
+}
+
+data "aws_iam_policy_document" "ssm_ec2_access" {
+  statement {
+    sid = "KMSEncryptionForSessionManager"
+    actions = [
+      "kms:DescribeKey",
+      "kms:GenerateDataKey",
+      "kms:Decrypt",
+      "kms:Encrypt",
+    ]
+    resources = [var.ssmkey_arn]
+  }
+  statement {
+      actions = ["ssm:StartSession"]
+      resources = [
+        "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.application.id}",
+        "arn:aws:ssm:*:*:document/AWS-StartSSHSession"
+      ]
+  }
+}
+
+resource "aws_iam_policy" "ssm_ec2_access" {
+  name   = "ssm-${var.name}-${var.aws_region}"
+  path   = "/"
+  policy = data.aws_iam_policy_document.ssm_ec2_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "SSM2-role-policy-attach" {
+  role       = aws_iam_role.role[0].name
+  policy_arn = aws_iam_policy.ssm_ec2_access.arn
 }

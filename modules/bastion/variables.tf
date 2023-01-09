@@ -220,5 +220,16 @@ variable "cluster_sops_policy_arn" {
 variable "add_sops_policy" {
   description = "value of the policy arn for the cluster sops policy"
   type = bool
-  default = "true"
+  default = false
+}
+
+variable ssm_enabled {
+  description = "Enable SSM agent"
+  type = bool
+  default = true
+}
+
+variable "ssmkey_arn" {
+  description = "SSM key arn"
+  default = ""
 }
