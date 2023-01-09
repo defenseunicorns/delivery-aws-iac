@@ -28,3 +28,9 @@ output "ssm_kms_key_arn" {
   description = "The ARN of the KMS key that is used to encrypt the SSM parameter"
   value       = module.ssm.kms_key_arn
 }
+
+output "bastion_private_key" {
+  description = "The private key for the bastion host"
+  value       = module.bastion.private_key
+  sensitive   = true
+}
