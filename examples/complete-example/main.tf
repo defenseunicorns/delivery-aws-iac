@@ -31,7 +31,6 @@ module "ssm" {
                               }
   enable_log_to_s3          = true
   enable_log_to_cloudwatch  = true
-  # vpc_endpoints_enabled     = true # enabled in vpc module
 }
 
 ###########################################################
@@ -97,6 +96,7 @@ module "bastion" {
   availability_zones      = local.azs 
   # cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
   add_sops_policy         = false
+  instance_profile        = module.ssm.iam_profile_name
 }
 
 ###########################################################

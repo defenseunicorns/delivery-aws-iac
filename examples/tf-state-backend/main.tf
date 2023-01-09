@@ -1,9 +1,13 @@
 locals {
   region                      = "us-east-2"  # target AWS region
   account                     = "8675309"  # target AWS account
-  aws_admin_1_username        = "bob" # enables eks access & ssh access to bastion
-  aws_admin_2_username        = "jane" # enables eks access & ssh access to bastion
+  aws_admin_1_username        = "Bob" # enables eks access & ssh access to bastion
+  aws_admin_2_username        = "Jane" # enables eks access & ssh access to bastion
   cluster_key_admin_arns      = ["arn:aws:iam::${local.account}:user/${local.aws_admin_1_username}","arn:aws:iam::${local.account}:user/${local.aws_admin_2_username}"]   # list of admin's AWS account arn to allow control of KMS keys
+}
+
+provider "aws" {
+  region = local.region
 }
 
 module "tfstate_backend" {

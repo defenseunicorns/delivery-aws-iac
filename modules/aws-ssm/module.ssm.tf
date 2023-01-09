@@ -1,12 +1,3 @@
-# module "ssm" {
-#   source                   = "git::https://github.com/bridgecrewio/terraform-aws-session-manager.git?ref=v0.4.2"
-#   bucket_name              = "my-session-logs"
-#   access_log_bucket_name   = "my-session-access-logs"
-#   enable_log_to_s3         = true
-#   enable_log_to_cloudwatch = true
-#   linux_shell_profile      = "date"
-# }
-
 module "ssm" {
   source                    = "bridgecrewio/session-manager/aws"
   version                   = "0.4.2"

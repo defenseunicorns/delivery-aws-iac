@@ -23,3 +23,8 @@ output "keycloak_db_instance_port" {
   description = "The database port"
   value       = module.rds_postgres_keycloak[0].db_instance_port
 }
+
+output "ssm_kms_key_arn" {
+  description = "The ARN of the KMS key that is used to encrypt the SSM parameter"
+  value       = module.ssm.kms_key_arn
+}
