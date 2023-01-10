@@ -20,18 +20,17 @@ module "vpc" {
 
 }
 
-module "ssm" {
-  source                    = "bridgecrewio/session-manager/aws"
-  version                   = "0.4.2"
-  bucket_name               = "my-session-logs"
-  access_log_bucket_name    = "my-session-access-logs"
-  vpc_id                    = module.vpc.vpc_id
-  tags                      = {
-                                Function = "ssm"
-                              }
-  enable_log_to_s3          = false
-  enable_log_to_cloudwatch  = false
-}
+# module "ssm" {
+#   source                    = "../../modules/aws-ssm-local"
+#   bucket_name               = "my-session-logs"
+#   access_log_bucket_name    = "my-session-access-logs"
+#   vpc_id                    = module.vpc.vpc_id
+#   tags                      = {
+#                                 Function = "ssm"
+#                               }
+#   enable_log_to_s3          = false
+#   enable_log_to_cloudwatch  = false
+# }
 
 ###########################################################
 ################### EKS Cluster ###########################
@@ -78,12 +77,18 @@ module "bastion" {
   vpc_id                  = module.vpc.vpc_id
   subnet_id               = module.vpc.private_subnets[0]
   aws_region              = local.region
+  access_log_bucket_name  = "my-session-access-logs"
+  bucket_name             = "my-session-logs"
   ssh_public_key_names    = local.ssh_public_key_names
   allowed_public_ips      = local.allowed_public_ips
   ssh_user                = local.ssh_user
   assign_public_ip        = false # local.assign_public_ip
   # cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
-  ssmkey_arn              = module.ssm.kms_key_arn
+  enable_log_to_s3          = false
+  enable_log_to_cloudwatch  = false
+  tags                      = {
+                                Function = "bastion-ssm"
+                              }
 }
 
 ###########################################################
