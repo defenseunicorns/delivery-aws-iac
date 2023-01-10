@@ -234,6 +234,7 @@ data "aws_iam_policy_document" "generic_endpoint_policy" {
 }
 
 resource "aws_security_group" "vpc_tls" {
+  #checkov:skip=CKV2_AWS_5: Secuirity group is being referenced by the VPC endpoint
   name = "${var.name}-vpc_tls"
   description = "Allow TLS inbound traffic"
   vpc_id      = module.vpc.vpc_id
