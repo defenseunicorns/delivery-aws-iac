@@ -35,12 +35,12 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "access_log_bucket
   }
 }
 
-resource "aws_s3_bucket_logging" "access_logging_bucket" {
-  bucket = aws_s3_bucket.access_log_bucket.id
+# resource "aws_s3_bucket_logging" "access_logging_bucket" {
+#   bucket = aws_s3_bucket.session_logs_bucket.id
 
-  target_bucket = aws_s3_bucket.access_log_bucket.id
-  target_prefix = "log/"
-}
+#   target_bucket = aws_s3_bucket.access_log_bucket.id
+#   target_prefix = "log/"
+# }
 
 resource "aws_s3_bucket_public_access_block" "access_log_bucket" {
   bucket                  = aws_s3_bucket.access_log_bucket.id

@@ -315,3 +315,9 @@ variable "windows_shell_profile" {
   default     = ""
   type        = string
 }
+
+variable "vpc_endpoints_enabled" {
+  description = "Create VPC Endpoints"
+  type        = bool
+  default     = true
+}

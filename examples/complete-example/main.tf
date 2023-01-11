@@ -77,15 +77,16 @@ module "bastion" {
   vpc_id                  = module.vpc.vpc_id
   subnet_id               = module.vpc.private_subnets[0]
   aws_region              = local.region
-  access_log_bucket_name  = "my-session-access-logs"
-  bucket_name             = "my-session-logs"
+  access_log_bucket_name  = "${local.bastion_name}-access-logs"
+  bucket_name             = "${local.bastion_name}-session-logs"
   ssh_public_key_names    = local.ssh_public_key_names
   allowed_public_ips      = local.allowed_public_ips
   ssh_user                = local.ssh_user
   assign_public_ip        = false # local.assign_public_ip
   # cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
-  enable_log_to_s3          = false
-  enable_log_to_cloudwatch  = false
+  enable_log_to_s3          = true
+  enable_log_to_cloudwatch  = true
+  vpc_endpoints_enabled     = true
   tags                      = {
                                 Function = "bastion-ssm"
                               }
