@@ -1,8 +1,3 @@
-# output "tfstate_bucket_id" {
-#   value       = module.tfstate_backend.tfstate_bucket_id
-#   description = "Terraform State Bucket Name"
-# }
-
 output "loki_s3_bucket" {
   description = "Loki S3 Bucket Name"
   value       = module.loki_s3_bucket.s3_bucket
@@ -27,4 +22,10 @@ output "keycloak_db_instance_username" {
 output "keycloak_db_instance_port" {
   description = "The database port"
   value       = module.rds_postgres_keycloak[0].db_instance_port
+}
+
+output "bastion_private_key" {
+  description = "The private key for the bastion host"
+  value       = module.bastion.private_key
+  sensitive   = true
 }

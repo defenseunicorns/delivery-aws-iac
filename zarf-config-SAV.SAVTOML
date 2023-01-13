@@ -2,7 +2,9 @@
 region = "us-east-2"  # target AWS region
 region2 = "us-east-1"  # RDS backup target AWS region
 account = "8675309"  # target AWS account
-aws_profile = "something-dev"  # local AWS profile to be used for deployment
+aws_profile = "example-profile"  # local AWS profile to be used for deployment
+aws_admin_1_username = "bob"
+aws_admin_2_username = "jane"
 
 vpc_cidr = "10.10.10.0/16"
 vpc_name = "my-vpc"
@@ -15,7 +17,6 @@ cluster_key_admin_arns = ["arn:aws:iam::${local.account}:user/bob","arn:aws:iam:
 bastion_name = "my-bastion"
 bastion_ami_id = "ami-000d4884381edb14c"
 ssh_user = "ec2-user"
-ssh_public_key_names = '"bob","jane"'
 allowed_public_ips = '"${local.aws_admin_1_public_ip}/32","${local.aws_admin_2_public_ip}/32"'
 
 keycloak_db_password = "my-password"

@@ -2,13 +2,13 @@
 ####################### VPC ###############################
 
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v0.0.0-alpha.0"
+  source = "../../modules/vpc"
 
-  region              = local.region
-  name                = local.vpc_name
-  vpc_cidr            = local.vpc_cidr
-  azs                 = local.azs
-  
+  region   = local.region
+  name     = local.vpc_name
+  vpc_cidr = local.vpc_cidr
+  azs      = local.azs
+
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = 1
@@ -19,6 +19,18 @@ module "vpc" {
   create_database_subnet_route_table = local.create_database_subnet_route_table
 
 }
+
+# module "ssm" {
+#   source                    = "../../modules/aws-ssm-local"
+#   bucket_name               = "my-session-logs"
+#   access_log_bucket_name    = "my-session-access-logs"
+#   vpc_id                    = module.vpc.vpc_id
+#   tags                      = {
+#                                 Function = "ssm"
+#                               }
+#   enable_log_to_s3          = false
+#   enable_log_to_cloudwatch  = false
+# }
 
 ###########################################################
 ################### EKS Cluster ###########################
@@ -42,36 +54,43 @@ module "eks" {
 module "flux_sops" {
   source = "git::https://github.com/defenseunicorns/iac.git//modules/sops?ref=v0.0.0-alpha.0"
 
-  region                      = local.region
-  cluster_name                = module.eks.eks_cluster_id
-  vpc_id                      = module.vpc.vpc_id
-  policy_name_prefix          = "${module.eks.eks_cluster_id}-flux-sops"
-  kms_key_alias               = "${module.eks.eks_cluster_id}-flux-sops"
-  kubernetes_service_account  = "flux-system-sops-sa"
-  kubernetes_namespace        = "flux-system"
-  irsa_sops_iam_role_name     = "${module.eks.eks_cluster_id}-flux-system-sa-role"
-  eks_oidc_provider_arn       = module.eks.eks_oidc_provider_arn
-  tags                        = local.tags
+  region                     = local.region
+  cluster_name               = module.eks.eks_cluster_id
+  vpc_id                     = module.vpc.vpc_id
+  policy_name_prefix         = "${module.eks.eks_cluster_id}-flux-sops"
+  kms_key_alias              = "${module.eks.eks_cluster_id}-flux-sops"
+  kubernetes_service_account = "flux-system-sops-sa"
+  kubernetes_namespace       = "flux-system"
+  irsa_sops_iam_role_name    = "${module.eks.eks_cluster_id}-flux-system-sa-role"
+  eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn
+  tags                       = local.tags
 }
 
 ###########################################################
 ##################### Bastion #############################
 
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=v0.0.0-alpha.0"
-  
+  source = "../../modules/bastion"
+
   ami_id                  = local.bastion_ami_id
   name                    = local.bastion_name
   vpc_id                  = module.vpc.vpc_id
-  subnet_id               = module.vpc.public_subnets[0]
+  subnet_id               = module.vpc.private_subnets[0]
   aws_region              = local.region
+  access_log_bucket_name  = "${local.bastion_name}-access-logs"
+  bucket_name             = "${local.bastion_name}-session-logs"
   ssh_public_key_names    = local.ssh_public_key_names
   allowed_public_ips      = local.allowed_public_ips
   ssh_user                = local.ssh_user
-  assign_public_ip        = local.assign_public_ip
-  cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
+  assign_public_ip        = false # local.assign_public_ip
+  # cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
+  enable_log_to_s3          = true
+  enable_log_to_cloudwatch  = true
+  vpc_endpoints_enabled     = true
+  tags                      = {
+                                Function = "bastion-ssm"
+                              }
 }
-
 
 ###########################################################
 ############## Big Bang Core Dependencies #################

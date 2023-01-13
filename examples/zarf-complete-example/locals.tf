@@ -7,6 +7,8 @@ locals {
   region2                     = "###ZARF_VAR_REGION2###"  # RDS backup target AWS region
   account                     = "###ZARF_VAR_AWS_ACCOUNT###"  # target AWS account
   aws_profile                 = "###ZARF_VAR_AWS_PROFILE###"  # local AWS profile to be used for deployment
+  aws_admin_1_username = "###ZARF_VAR_AWS_ADMIN_1_USERNAME###" # enables eks access
+  aws_admin_2_username = "###ZARF_VAR_AWS_ADMIN_2_USERNAME###" # enables eks access
 
 
   tags = {
@@ -52,17 +54,10 @@ locals {
 ################## Bastion Config #########################
 
   bastion_name                = "###ZARF_VAR_BASTION_NAME###"
-  assign_public_ip            = true   # comment out if behind Software Defined Perimeter / VPN
   bastion_ami_id              = "###ZARF_VAR_BASTION_AMI_ID###"
   # local user in bastion used to ssh
   ssh_user                    = "###ZARF_VAR_BASTION_SSH_USER###"
   
-  # list of keys that match names in public_keys folder (without file extension)
-  ### need to figure this out later ###
-  ssh_public_key_names        = ["###ZARF_VAR_SSH_PUBLIC_KEY_NAMES###"]
-  # list of admin Publc IPs
-  allowed_public_ips          = ["###ZARF_VAR_BASTION_ALLOWED_PUBLIC_IPs###"] 
-
 ###########################################################
 ############## Big Bang Dependencies ######################
 
@@ -76,9 +71,7 @@ locals {
   kc_db_engine_version          = "###ZARF_VAR_KC_DB_ENGINE_VERSION###"
   kc_db_family                  = "###ZARF_VAR_KC_DB_FAMILY###" # DB parameter group
   kc_db_major_engine_version    = "###ZARF_VAR_KC_DB_MAJOR_ENGINE_VERSION###"         # DB option group
-  kc_db_allocated_storage       = 20
-  kc_db_max_allocated_storage   = 100
-  # kc_db_allocated_storage       = tonumber("###ZARF_VAR_KC_DB_ALLOCATED_STORAGE###")
-  # kc_db_max_allocated_storage   = tonumber("###ZARF_VAR_KC_DB_MAX_ALLOCATED_STORAGE###")
+  kc_db_allocated_storage     = var.kc_db_allocated_storage
+  kc_db_max_allocated_storage = var.kc_db_max_allocated_storage
   kc_db_instance_class          = "###ZARF_VAR_KC_DB_INSTANCE_CLASS###"
 }

@@ -3,15 +3,68 @@ metadata:
   name: "terraform"
   description: "Run terraform/terragrunt code"
 
+variables:
+  - name: REGION
+    description: "target AWS region"
+    default: "us-east-2"
+  - name: REGION2
+    description: "RDS backup target AWS region"
+    default: "us-east-1"
+  - name: ACCOUNT
+    description: "target AWS account"
+    default: "8675309"
+  - name: AWS_PROFILE
+    description: "local AWS profile to be used for deployment"
+    default: "example-aws-profile"
+  - name: AWS_ADMIN_1_USERNAME
+    default: "bob"
+  - name: AWS_ADMIN_2_USERNAME
+    default: "jane"
+  - name: VPC_CIDR
+    default: "10.10.10.0/16"
+  - name: VPC_NAME
+    default: "my-vpc"
+  - name: DATABASE_SUBNETS
+    default: '"10.10.17.0/24","10.10.18.0/24","10.10.19.0/24"'
+  - name: CLUSTER_NAME
+    default: "my-eks"
+  - name: EKS_K8S_VERSION
+    default: "1.23"
+  - name: CLUSTER_KEY_ADMIN_ARNS
+    default: '["arn:aws:iam::${local.account}:user/bob","arn:aws:iam::${local.account}:user/jane"]'
+  - name: BASTION_NAME
+    default: "my-bastion"
+  - name: BASTION_AMI_ID
+    default: "ami-000d4884381edb14c"
+  - name: SSH_USER
+    default: "ec2-user"
+  - name: KEYCLOAK_DB_PASSWORD
+    default: "my-password"
+  - name: KC_DB_ENGINE_VERSION
+    default: "14.1"
+  - name: KC_DB_FAMILY
+    default: "postgres14"
+  - name: KC_DB_MAJOR_ENGINE_VERSION
+    default: "14"
+  - name: KC_DB_ALLOCATED_STORAGE
+    default: 20.0
+  - name: KC_DB_MAX_ALLOCATED_STORAGE
+    default: 100.0
+  - name: KC_DB_INSTANCE_CLASS
+    default: "db.t4g.large"
+
 components:
   - name: download-dependencies
     required: true
-    scripts:
-      after:
-        - "rm -f terraform"
-        - "./zarf tools archiver decompress tmp/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip ."
-        # - "./zarf tools archiver decompress tmp/awscliv2.zip ."
-        # - "rm -rf tmp/"
+    actions:
+      onDeploy:
+        after:
+          - retry: true
+            cmd: "rm -f terraform"
+          - retry: true
+            cmd: "./zarf tools archiver decompress tmp/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip ."
+          # - "./zarf tools archiver decompress tmp/awscliv2.zip ."
+          # - "rm -rf tmp/"
     files:
       # terraform binary
       - source: https://releases.hashicorp.com/terraform/###ZARF_PKG_VAR_TF_VERSION###/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip
@@ -21,12 +74,15 @@ components:
       #   target: tmp/awscliv2.zip
 
   - name: terraform-init
+    description: Terraform init using zarf actions
     required: true
-    scripts:
-      showOutput: true
-      prepare:
-        - "cd ###ZARF_PKG_VAR_TF_ENV_DIR### && terraform init -backend=false"
-        - "cd ###ZARF_PKG_VAR_TF_ENV_STATE_DIR### && terraform init -backend=false"
+    actions:
+      onCreate:
+        before:
+          - retry: true
+            cmd:  "cd ###ZARF_PKG_VAR_TF_ENV_DIR### && terraform init -backend=false"
+          - retry: true
+            cmd: "cd ###ZARF_PKG_VAR_TF_ENV_STATE_DIR### && terraform init -backend=false"
     files:
       - source: "###ZARF_PKG_VAR_TF_ENV_DIR###"
         target: "tmp/###ZARF_PKG_VAR_TF_ENV###"
@@ -35,30 +91,53 @@ components:
       - source: "###ZARF_PKG_VAR_TF_MODULES_DIR###"
         target: "tmp/modules"
   
+  - name: update-tf-vars
+    required: true
+    actions:
+      onDeploy:
+        before:
+          - cmd: env
+        after:
+          - cmd: rm tmp/###ZARF_PKG_VAR_TF_ENV###/terraform.tfvars.tmpl
+    files:
+      - source: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###/main.tf"
+        target: tmp/###ZARF_PKG_VAR_TF_ENV_STATE###/main.tf
+      - source: "###ZARF_PKG_VAR_TF_ENV_DIR###/terraform.tfvars.tmpl"
+        target: tmp/###ZARF_PKG_VAR_TF_ENV###/terraform.tfvars
+
   - name: terraform-s3-bucket
-    scripts:
-      showOutput: true
-      before:
-        - "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && terraform apply -auto-approve"
-        - "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)` && echo $BUCKET_ID && mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' backend.tf"
-        - "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && terraform init -migrate-state -force-copy"
+    actions:
+      onDeploy:
+        before:
+          - retry: true
+            cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && terraform apply -auto-approve"
+          - retry: true
+            cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)` && echo $BUCKET_ID && mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' backend.tf"
+          - retry: true
+            cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && terraform init -migrate-state -force-copy"
 
   - name: terraform-apply-bootstrap
-    required: false
-    scripts:
-      showOutput: true
-      before:
-        - "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)` && echo $BUCKET_ID && mv ../###ZARF_PKG_VAR_TF_ENV###/backend.example ../###ZARF_PKG_VAR_TF_ENV###/backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' ../###ZARF_PKG_VAR_TF_ENV###/backend.tf && aws s3 cp ../###ZARF_PKG_VAR_TF_ENV###/backend.tf s3://$BUCKET_ID/backend.tf"
-        - "cd tmp/###ZARF_PKG_VAR_TF_ENV### && terraform init -migrate-state -force-copy && terraform apply -auto-approve"
+    actions:
+        onDeploy:
+          before:
+            - retry: true
+              cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)` && echo $BUCKET_ID && mv ../###ZARF_PKG_VAR_TF_ENV###/backend.example ../###ZARF_PKG_VAR_TF_ENV###/backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' ../###ZARF_PKG_VAR_TF_ENV###/backend.tf && aws s3 cp ../###ZARF_PKG_VAR_TF_ENV###/backend.tf s3://$BUCKET_ID/backend.tf"
+            - cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV### && mv terraform.tfvars.tmpl terraform.tfvars"
+            - retry: true
+              cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV### && terraform init -migrate-state -force-copy && terraform apply -auto-approve"
 
   - name: terraform-apply-day2
-    scripts:
-      showOutput: true
-      before:
-        - "cd tmp/###ZARF_PKG_VAR_TF_ENV### && aws s3 cp s3://my-tfstate-backend20221221075202171300000001/backend.tf backend.tf && terraform init && terraform apply -target=module.vpc -auto-approve"
+    actions:
+      onDeploy:
+        before:
+          - cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV### && mv terraform.tfvars.tmpl terraform.tfvars"
+          - retry: true  
+            cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV### && aws s3 cp s3://my-tfstate-backend20221221075202171300000001/backend.tf backend.tf && terraform init && terraform apply -target=module.vpc -auto-approve"
 
   - name: terraform-destroy
-    scripts:
-      showOutput: true
-      before:
-        - "cd tmp/###ZARF_PKG_VAR_TF_ENV### && aws s3 cp s3://my-tfstate-backend20221221075202171300000001/backend.tf backend.tf && terraform init && terraform apply -destroy -auto-approve"
+    actions:
+      onDeploy:
+        before:
+          - cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV### && mv terraform.tfvars.tmpl terraform.tfvars"
+          - retry: true
+            cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV### && aws s3 cp s3://my-tfstate-backend20221221075202171300000001/backend.tf backend.tf && terraform init && terraform apply -destroy -auto-approve"
