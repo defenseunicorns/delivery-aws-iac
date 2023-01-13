@@ -35,12 +35,12 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "access_log_bucket
   }
 }
 
-# resource "aws_s3_bucket_logging" "access_logging_bucket" {
-#   bucket = aws_s3_bucket.session_logs_bucket.id
+resource "aws_s3_bucket_logging" "access_logging_bucket" {
+  bucket = aws_s3_bucket.session_logs_bucket.id
 
-#   target_bucket = aws_s3_bucket.access_log_bucket.id
-#   target_prefix = "log/"
-# }
+  target_bucket = aws_s3_bucket.access_log_bucket.id
+  target_prefix = "log/"
+}
 
 resource "aws_s3_bucket_public_access_block" "access_log_bucket" {
   bucket                  = aws_s3_bucket.access_log_bucket.id
@@ -72,17 +72,6 @@ resource "aws_s3_bucket_notification" "access_log_bucket_notification" {
     events    = ["s3:ObjectCreated:*"]
   }
 }
-
-# resource "aws_s3_object" "ssh_public_keys" {
-#   # Make sure that you put files into correct location and name them accordingly (`public-keys/{keyname}.pub`)
-#   source     = "./public-keys/${element(var.ssh_public_key_names, count.index)}.pub"
-#   depends_on = [aws_s3_bucket.b]
-
-#   count = length(var.ssh_public_key_names)
-
-#   bucket = aws_s3_bucket.b.bucket
-#   key    = "${element(var.ssh_public_key_names, count.index)}.pub"
-# }
 
 # Create S3 bucket for session logs with versioning, encryption, blocked public acess enabled
 resource "aws_s3_bucket" "session_logs_bucket" {
