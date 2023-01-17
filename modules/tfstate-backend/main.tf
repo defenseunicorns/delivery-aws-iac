@@ -1,3 +1,5 @@
+data "aws_partition" "current" {}
+
 resource "aws_kms_key" "objects" {
   enable_key_rotation     = true
   description             = "KMS key is used to encrypt bucket objects"

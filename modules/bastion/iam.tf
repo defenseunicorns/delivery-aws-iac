@@ -124,8 +124,8 @@ data "aws_iam_policy_document" "ssm_ec2_access" {
   statement {
       actions = ["ssm:StartSession"]
       resources = [
-        "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.application.id}",
-        "arn:aws:ssm:*:*:document/AWS-StartSSHSession"
+        "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.application.id}",
+        "arn:${data.aws_partition.current.partition}:ssm:*:*:document/AWS-StartSSHSession"
       ]
   }
 }

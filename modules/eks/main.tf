@@ -9,6 +9,8 @@ data "aws_availability_zones" "available" {
   }
 }
 
+data "aws_partition" "current" {}
+
 #---------------------------------------------------------------
 # EKS Blueprints
 #---------------------------------------------------------------
@@ -271,10 +273,10 @@ resource "aws_iam_role" "self_managed_ng" {
   path                  = "/"
   force_detach_policies = true
   managed_policy_arns = [
-    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKS_CNI_Policy",
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
   ]
 
   tags = local.tags

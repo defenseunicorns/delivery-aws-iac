@@ -4,53 +4,53 @@ metadata:
   description: "Run terraform/terragrunt code"
 
 variables:
-  - name: REGION
+  - name: TF_VAR_REGION
     description: "target AWS region"
     default: "us-east-2"
-  - name: REGION2
+  - name: TF_VAR_REGION2
     description: "RDS backup target AWS region"
     default: "us-east-1"
-  - name: ACCOUNT
+  - name: TF_VAR_ACCOUNT
     description: "target AWS account"
     default: "8675309"
-  - name: AWS_PROFILE
+  - name: TF_VAR_AWS_PROFILE
     description: "local AWS profile to be used for deployment"
     default: "example-aws-profile"
-  - name: AWS_ADMIN_1_USERNAME
+  - name: TF_VAR_AWS_ADMIN_1_USERNAME
     default: "bob"
-  - name: AWS_ADMIN_2_USERNAME
+  - name: TF_VAR_AWS_ADMIN_2_USERNAME
     default: "jane"
-  - name: VPC_CIDR
+  - name: TF_VAR_VPC_CIDR
     default: "10.10.10.0/16"
-  - name: VPC_NAME
+  - name: TF_VAR_VPC_NAME
     default: "my-vpc"
-  - name: DATABASE_SUBNETS
+  - name: TF_VAR_DATABASE_SUBNETS
     default: '"10.10.17.0/24","10.10.18.0/24","10.10.19.0/24"'
-  - name: CLUSTER_NAME
+  - name: TF_VAR_CLUSTER_NAME
     default: "my-eks"
-  - name: EKS_K8S_VERSION
+  - name: TF_VAR_EKS_K8S_VERSION
     default: "1.23"
-  - name: CLUSTER_KEY_ADMIN_ARNS
+  - name: TF_VAR_CLUSTER_KEY_ADMIN_ARNS
     default: '["arn:aws:iam::${local.account}:user/bob","arn:aws:iam::${local.account}:user/jane"]'
-  - name: BASTION_NAME
+  - name: TF_VAR_BASTION_NAME
     default: "my-bastion"
-  - name: BASTION_AMI_ID
+  - name: TF_VAR_BASTION_AMI_ID
     default: "ami-000d4884381edb14c"
-  - name: SSH_USER
+  - name: TF_VAR_SSH_USER
     default: "ec2-user"
-  - name: KEYCLOAK_DB_PASSWORD
+  - name: TF_VAR_KEYCLOAK_DB_PASSWORD
     default: "my-password"
-  - name: KC_DB_ENGINE_VERSION
+  - name: TF_VAR_KC_DB_ENGINE_VERSION
     default: "14.1"
-  - name: KC_DB_FAMILY
+  - name: TF_VAR_KC_DB_FAMILY
     default: "postgres14"
-  - name: KC_DB_MAJOR_ENGINE_VERSION
+  - name: TF_VAR_KC_DB_MAJOR_ENGINE_VERSION
     default: "14"
-  - name: KC_DB_ALLOCATED_STORAGE
+  - name: TF_VAR_KC_DB_ALLOCATED_STORAGE
     default: 20.0
-  - name: KC_DB_MAX_ALLOCATED_STORAGE
+  - name: TF_VAR_KC_DB_MAX_ALLOCATED_STORAGE
     default: 100.0
-  - name: KC_DB_INSTANCE_CLASS
+  - name: TF_VAR_KC_DB_INSTANCE_CLASS
     default: "db.t4g.large"
 
 components:

@@ -1,9 +1,3 @@
-data "aws_caller_identity" "current" {}
-
-data "aws_region" "current" {}
-
-data "aws_partition" "current" {}
-
 data "aws_iam_policy_document" "kms_access" {
   # checkov:skip=CKV_AWS_111: todo reduce perms on key
   # checkov:skip=CKV_AWS_109: ADD REASON
