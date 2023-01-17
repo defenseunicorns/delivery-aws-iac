@@ -78,8 +78,8 @@ variable "control_plane_subnet_ids" {
   default     = []
 }
 
-variable "cluster_additional_security_group_ids" {
+variable "cluster_security_group_additional_rules" {
   description = "List of additional rules to add to cluster security group"
-  type        = list(string)
-  default     = []
+  type        = any
+  default     = {}
 }
