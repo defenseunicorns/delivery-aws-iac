@@ -37,6 +37,9 @@ module "eks" {
   name                                  = var.cluster_name
   vpc_id                                = module.vpc.vpc_id
   private_subnet_ids                    = module.vpc.private_subnets
+  control_plane_subnet_ids              = module.vpc.private_subnets
+  # cluster_endpoint_public_access        = true
+  # cluster_endpoint_private_access       = false
   aws_region                            = var.region
   aws_account                           = var.account
   cluster_kms_key_additional_admin_arns = ["arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${var.aws_admin_1_username}","arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${var.aws_admin_2_username}"]
@@ -53,6 +56,7 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
+  cluster_additional_security_group_ids = module.bastion.security_group_ids
 }
 
 ###########################################################

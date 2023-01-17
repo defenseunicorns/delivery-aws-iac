@@ -23,6 +23,12 @@ variable "eks_k8s_version" {
   default     = []
  }
 
+ variable "public_subnet_ids" {
+  description = "Public subnet IDs"
+  type        = list(string)
+  default     = []
+ }
+
 variable "aws_region" {
   type    = string
   default = ""
@@ -50,6 +56,30 @@ variable "aws_auth_eks_map_users" {
 
 variable "cluster_kms_key_additional_admin_arns" {
   description = "List of ARNs of additional users to add to KMS key policy"
+  type        = list(string)
+  default     = []
+}
+
+variable "cluster_endpoint_private_access" {
+  description = "Enable private access to the cluster endpoint"
+  type        = bool
+  default     = true
+}
+
+variable "cluster_endpoint_public_access" {
+  description = "Enable public access to the cluster endpoint"
+  type        = bool
+  default     = false
+}
+
+variable "control_plane_subnet_ids" {
+  description = "Subnet IDs for control plane"
+  type        = list(string)
+  default     = []
+}
+
+variable "cluster_additional_security_group_ids" {
+  description = "List of additional rules to add to cluster security group"
   type        = list(string)
   default     = []
 }
