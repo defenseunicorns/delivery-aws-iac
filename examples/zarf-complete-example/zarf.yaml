@@ -4,53 +4,53 @@ metadata:
   description: "Run terraform/terragrunt code"
 
 variables:
-  - name: TF_VAR_REGION
+  - name: TF_VAR_region
     description: "target AWS region"
     default: "us-east-2"
-  - name: TF_VAR_REGION2
+  - name: TF_VAR_region2
     description: "RDS backup target AWS region"
     default: "us-east-1"
-  - name: TF_VAR_AWS_ACCOUNT
+  - name: TF_VAR_aws_account
     description: "target AWS account"
     default: "100008675309"
-  - name: TF_VAR_AWS_PROFILE
+  - name: TF_VAR_aws_profile
     description: "local AWS profile to be used for deployment"
     default: "example-aws-profile"
-  - name: TF_VAR_AWS_ADMIN_1_USERNAME
+  - name: TF_VAR_aws_admin_1_username
     default: "Bob.Marley"
-  - name: TF_VAR_AWS_ADMIN_2_USERNAME
+  - name: TF_VAR_aws_admin_2_username
     default: "Jane.Doe"
-  - name: TF_VAR_VPC_CIDR
+  - name: TF_VAR_vpc_cidr
     default: "10.10.10.0/16"
-  - name: TF_VAR_VPC_NAME
+  - name: TF_VAR_vpc_name
     default: "my-vpc"
-  - name: TF_VAR_DB_SUBNETS
+  - name: TF_VAR_db_subnets
     default: '"10.10.17.0/24","10.10.18.0/24","10.10.19.0/24"'
-  - name: TF_VAR_EKS_CLUSTER_NAME
+  - name: TF_VAR_eks_cluster_name
     default: "my-eks"
-  - name: TF_VAR_EKS_CLUSTER_VERSION
+  - name: TF_VAR_eks_cluster_version
     default: "1.23"
-  - name: TF_VAR_BASTION_NAME
+  - name: TF_VAR_bastion_name
     default: "my-bastion"
-  - name: TF_VAR_BASTION_AMI_ID
+  - name: TF_VAR_bastion_ami_id
     default: "ami-000d4884381edb14c"
-  - name: TF_VAR_BASTION_SSH_USER
+  - name: TF_VAR_bastion_ssh_user
     default: "ec2-user"
-  - name: TF_VAR_KEYCLOAK_ENABLED
+  - name: TF_VAR_keycloak_enabled
     default: "true"
-  - name: TF_VAR_KEYCLOAK_DB_PASSWORD
+  - name: TF_VAR_keycloak_db_password
     default: "my-password"
-  - name: TF_VAR_KC_DB_ENGINE_VERSION
+  - name: TF_VAR_kc_db_engine_version
     default: "14.1"
-  - name: TF_VAR_KC_DB_FAMILY
+  - name: TF_VAR_kc_db_family
     default: "postgres14"
-  - name: TF_VAR_KC_DB_MAJOR_ENGINE_VERSION
+  - name: TF_VAR_kc_db_major_engine_version
     default: "14"
-  - name: TF_VAR_KC_DB_ALLOCATED_STORAGE
+  - name: TF_VAR_kc_db_allocated_storage
     default: 20.0
-  - name: TF_VAR_KC_DB_MAX_ALLOCATED_STORAGE
+  - name: TF_VAR_kc_db_max_allocated_storage
     default: 100.0
-  - name: TF_VAR_KC_DB_INSTANCE_CLASS
+  - name: TF_VAR_kc_db_instance_class
     default: "db.t4g.large"
 
 components:
