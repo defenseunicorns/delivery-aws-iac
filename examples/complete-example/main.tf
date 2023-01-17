@@ -24,8 +24,8 @@ module "vpc" {
   }
   database_subnets = var.database_subnets
 
-  create_database_subnet_group       = var.create_database_subnet_group
-  create_database_subnet_route_table = var.create_database_subnet_route_table
+  create_database_subnet_group        = true
+  create_database_subnet_route_table  = true
 }
 
 ###########################################################

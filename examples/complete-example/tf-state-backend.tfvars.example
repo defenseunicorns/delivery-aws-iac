@@ -15,12 +15,12 @@
 ###########################################################
 #################### VPC Config ###########################
 
-  vpc_cidr                    = "10.200.0.0/16"
-  vpc_name                    = "my-vpc"
-  database_subnets            = ["10.200.7.0/24", "10.200.8.0/24", "10.200.9.0/24"]
+  vpc_cidr                            = "10.200.0.0/16"
+  vpc_name                            = "my-vpc"
+  database_subnets                    = ["10.200.7.0/24", "10.200.8.0/24", "10.200.9.0/24"]
 
-  create_database_subnet_group       = true
-  create_database_subnet_route_table = true
+  create_database_subnet_group        = true
+  create_database_subnet_route_table  = true
 
 ###########################################################
 #################### EKS Config ###########################
@@ -32,15 +32,14 @@
 ################## Bastion Config #########################
 
   bastion_name                = "my-bastion"
-  assign_public_ip            = true   # comment out if behind Software Defined Perimeter / VPN
   bastion_ami_id              = "ami-000d4884381edb14c"
-  # local user in bastion used to ssh
-  ssh_user                    = "ec2-user"
+  ssh_user                    = "ec2-user" # local user in bastion used to ssh
+
 
 ###########################################################
 ############## Big Bang Dependencies ######################
 
-  keycloak_enabled = true
+  keycloak_enabled      = true
   # other_addon_enabled = true
 
 
@@ -53,4 +52,3 @@
   kc_db_allocated_storage       = 20
   kc_db_max_allocated_storage   = 100
   kc_db_instance_class          = "db.t4g.large"
-}
