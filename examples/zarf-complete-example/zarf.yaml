@@ -108,22 +108,33 @@ components:
   - name: terraform-s3-bucket
     actions:
       onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: "tmp/###ZARF_PKG_VAR_TF_ENV_STATE###"
         before:
-          - retry: true
-            cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && terraform apply -auto-approve"
-          - retry: true
-            cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)` && echo $BUCKET_ID && mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' backend.tf"
-          - retry: true
-            cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && terraform init -migrate-state -force-copy"
+          - cmd: "terraform apply -auto-approve"
+          - cmd: "terraform output -raw tfstate_bucket_id"
+            setVariable: BUCKET_ID 
+        onSuccess:
+          - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' backend.tf"
+            cmd: "terraform init -migrate-state -force-copy"
 
   - name: terraform-apply-bootstrap
     actions:
         onDeploy:
+          defaults:
+            maxTotalSeconds: 300
+            maxRetries: 3
+            dir: tmp/###ZARF_PKG_VAR_TF_ENV###
           before:
-            - retry: true
-              cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV_STATE### && export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)` && echo $BUCKET_ID && mv ../###ZARF_PKG_VAR_TF_ENV###/backend.example ../###ZARF_PKG_VAR_TF_ENV###/backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' ../###ZARF_PKG_VAR_TF_ENV###/backend.tf && aws s3 cp ../###ZARF_PKG_VAR_TF_ENV###/backend.tf s3://$BUCKET_ID/backend.tf"
-            - retry: true
-              cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV### && terraform init -migrate-state -force-copy && terraform apply -auto-approve"
+            - cmd: "terraform output -raw tfstate_bucket_id"
+              dir: tmp/###ZARF_PKG_VAR_TF_ENV_STATE###
+              setVariable: BUCKET_ID 
+          onSuccess:
+            - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' backend.tf"
+            - cmd: "aws s3 cp backend.tf s3://$BUCKET_ID/backend.tf"
+            - cmd: "terraform init -migrate-state -force-copy && terraform apply -auto-approve"
 
   - name: terraform-apply-day2
     actions:
