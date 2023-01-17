@@ -1,10 +1,10 @@
 provider "aws" {
-  region = local.region
+  region = var.region
 }
 
 provider "aws" {
   alias  = "region2"
-  region = local.region2
+  region = var.region2
 }
 
 provider "kubernetes" {
