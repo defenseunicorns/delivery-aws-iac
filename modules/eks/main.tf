@@ -27,8 +27,7 @@ module "eks_blueprints" {
   cluster_endpoint_public_access = var.cluster_endpoint_public_access
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
   control_plane_subnet_ids = var.control_plane_subnet_ids
-
-  cluster_security_group_additional_rules = var.cluster_security_group_additional_rules
+  # manage_aws_auth_configmap = true
 
   #----------------------------------------------------------------------------------------------------------#
   # Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
@@ -36,6 +35,19 @@ module "eks_blueprints" {
   #   So, by default the security groups are restrictive. Users needs to enable rules for specific ports required for App requirement or Add-ons
   #   See the notes below for each rule used in these examples
   #----------------------------------------------------------------------------------------------------------#
+  cluster_security_group_additional_rules = {
+    ingress_bastion_to_cluster = {
+      # name        = "allow bastion ingress to cluster"
+      description = "Bastion SG to Cluster"
+      security_group_id = module.eks_blueprints.cluster_security_group_id
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      type        = "ingress"
+      source_security_group_id = var.source_security_group_id
+    }
+  }
+
   node_security_group_additional_rules = {
     # Extend node-to-node security group rules. Recommended and required for the Add-ons
     ingress_self_all = {

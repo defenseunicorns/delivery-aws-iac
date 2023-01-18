@@ -78,8 +78,14 @@ variable "control_plane_subnet_ids" {
   default     = []
 }
 
-variable "cluster_security_group_additional_rules" {
+variable "source_security_group_id" {
   description = "List of additional rules to add to cluster security group"
-  type        = any
-  default     = {}
+  type        = string
+  default     = ""
 }
+
+# variable "manage_aws_auth_configmap" {
+#   description = "Whether to manage the aws-auth configmap"
+#   type        = bool
+#   default     = true
+# }

@@ -56,26 +56,29 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
-  cluster_security_group_additional_rules = {
-    ingress_bastion_to_cluster = {
-      # name        = "allow bastion ingress to cluster"
-      # description = "Bastion SG to Cluster"
-      security_group_id = module.bastion.security_group_ids
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      type        = "ingress"
-    }
-    # egress_cluster_api_to_bastion = {
-    #   # name        = "allow bastion ingress to cluster"
-    #   # description = "Cluster API to bastion"
-    #   security_group_id = module.bastion.security_group_ids
-    #   from_port   = 443
-    #   to_port     = 443
-    #   protocol    = "tcp"
-    #   type        = "egress"
-    # }
-  }
+  source_security_group_id = module.bastion.security_group_ids[0]
+  
+  # cluster_security_group_additional_rules = {
+  #   ingress_bastion_to_cluster = {
+  #     # name        = "allow bastion ingress to cluster"
+  #     description = "Bastion SG to Cluster"
+  #     security_group_id = aws_security_group.cluster[0].id
+  #     from_port   = 443
+  #     to_port     = 443
+  #     protocol    = "tcp"
+  #     type        = "ingress"
+  #     source_security_group_id = module.bastion.security_group_ids
+  #   }
+  #   # egress_cluster_api_to_bastion = {
+  #   #   # name        = "allow bastion ingress to cluster"
+  #   #   # description = "Cluster API to bastion"
+  #   #   security_group_id = module.bastion.security_group_ids
+  #   #   from_port   = 443
+  #   #   to_port     = 443
+  #   #   protocol    = "tcp"
+  #   #   type        = "egress"
+  #   # }
+  # }
 }
 
 ###########################################################
