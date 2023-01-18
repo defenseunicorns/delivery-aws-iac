@@ -27,7 +27,6 @@ module "eks_blueprints" {
   cluster_endpoint_public_access = var.cluster_endpoint_public_access
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
   control_plane_subnet_ids = var.control_plane_subnet_ids
-  # manage_aws_auth_configmap = true
 
   #----------------------------------------------------------------------------------------------------------#
   # Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
