@@ -106,7 +106,8 @@ components:
           - cmd: "terraform output -raw tfstate_bucket_id"
             setVariable: BUCKET_ID 
         onSuccess:
-          - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' backend.tf"
+          - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$ZARF_VAR_BUCKET_ID'\"|' backend.tf"
+          - cmd: "aws s3 cp backend.tf s3://$ZARF_VAR_BUCKET_ID/backend.tf"
           - cmd: "terraform init -migrate-state -force-copy"
 
   - name: terraform-apply-bootstrap
@@ -117,13 +118,9 @@ components:
             maxRetries: 3
             dir: tmp/###ZARF_PKG_VAR_TF_ENV###
           before:
-            - cmd: "terraform output -raw tfstate_bucket_id"
-              dir: tmp/###ZARF_PKG_VAR_TF_ENV_STATE###
-              setVariable: BUCKET_ID 
-          onSuccess:
-            - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' backend.tf"
-            - cmd: "aws s3 cp backend.tf s3://$BUCKET_ID/backend.tf"
-            - cmd: "terraform init -migrate-state -force-copy && terraform apply -auto-approve"
+            - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/backend.tf backend.tf"
+            - cmd: "terraform init -migrate-state -force-copy"
+            - cmd: "terraform apply -auto-approve"
 
   - name: terraform-apply-day2
     actions:
@@ -133,11 +130,7 @@ components:
           maxRetries: 3
           dir: tmp/###ZARF_PKG_VAR_TF_ENV###
         before:
-          - cmd: "terraform output -raw tfstate_bucket_id"
-            dir: tmp/###ZARF_PKG_VAR_TF_ENV_STATE###
-            setVariable: BUCKET_ID 
-        onSuccess:
-          - cmd: "aws s3 cp s3://$BUCKET_ID/backend.tf backend.tf"
+          - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/backend.tf backend.tf"
           - cmd: "terraform init"
           - cmd: "terraform apply -target=module.vpc -auto-approve"
 
@@ -149,10 +142,6 @@ components:
           maxRetries: 3
           dir: tmp/###ZARF_PKG_VAR_TF_ENV###
         before:
-          - cmd: "terraform output -raw tfstate_bucket_id"
-            dir: tmp/###ZARF_PKG_VAR_TF_ENV_STATE###
-            setVariable: BUCKET_ID 
-        onSuccess:
-          - cmd: "aws s3 cp s3://$BUCKET_ID/backend.tf backend.tf"
+          - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/backend.tf backend.tf"
           - cmd: "terraform init"
           - cmd: "terraform apply -destroy -auto-approve"
