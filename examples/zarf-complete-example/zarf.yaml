@@ -4,53 +4,56 @@ metadata:
   description: "Run terraform/terragrunt code"
 
 variables:
-  - name: TF_VAR_region
+  - name: TF_VAR_REGION
     description: "target AWS region"
     default: "us-east-2"
-  - name: TF_VAR_region2
+  - name: TF_VAR_REGION2
     description: "RDS backup target AWS region"
     default: "us-east-1"
-  - name: TF_VAR_aws_account
+  - name: TF_VAR_AWS_ACCOUNT
     description: "target AWS account"
-    default: "100008675309"
-  - name: TF_VAR_aws_profile
+    prompt: true
+  - name: TF_VAR_AWS_PROFILE
     description: "local AWS profile to be used for deployment"
-    default: "example-aws-profile"
-  - name: TF_VAR_aws_admin_1_username
-    default: "Bob.Marley"
-  - name: TF_VAR_aws_admin_2_username
-    default: "Jane.Doe"
-  - name: TF_VAR_vpc_cidr
+    prompt: true
+  - name: TF_VAR_AWS_ADMIN_1_USERNAME
+    description: "AWS username for admin, ex. Bob.Marley"
+    prompt: true
+  - name: TF_VAR_AWS_ADMIN_2_USERNAME
+    description: "AWS username for additional admin, ex. Jane.Doe"
+    prompt: true
+  - name: TF_VAR_VPC_CIDR
     default: "10.10.10.0/16"
-  - name: TF_VAR_vpc_name
+  - name: TF_VAR_VPC_NAME
     default: "my-vpc"
-  - name: TF_VAR_db_subnets
+  - name: TF_VAR_DB_SUBNETS
     default: '"10.10.17.0/24","10.10.18.0/24","10.10.19.0/24"'
-  - name: TF_VAR_eks_cluster_name
+  - name: TF_VAR_EKS_CLUSTER_NAME
     default: "my-eks"
-  - name: TF_VAR_eks_cluster_version
+  - name: TF_VAR_EKS_CLUSTER_VERSION
     default: "1.23"
-  - name: TF_VAR_bastion_name
+  - name: TF_VAR_BASTION_NAME
     default: "my-bastion"
-  - name: TF_VAR_bastion_ami_id
+  - name: TF_VAR_BASTION_AMI_ID
     default: "ami-000d4884381edb14c"
-  - name: TF_VAR_bastion_ssh_user
+  - name: TF_VAR_BASTION_SSH_USER
     default: "ec2-user"
-  - name: TF_VAR_keycloak_enabled
+  - name: TF_VAR_KEYCLOAK_ENABLED
     default: "true"
-  - name: TF_VAR_keycloak_db_password
-    default: "my-password"
-  - name: TF_VAR_kc_db_engine_version
+  - name: TF_VAR_KEYCLOAK_DB_PASSWORD
+    description: "User provided password for keycloak DB"
+    prompt: true
+  - name: TF_VAR_KC_DB_ENGINE_VERSION
     default: "14.1"
-  - name: TF_VAR_kc_db_family
+  - name: TF_VAR_KC_DB_FAMILY
     default: "postgres14"
-  - name: TF_VAR_kc_db_major_engine_version
+  - name: TF_VAR_KC_DB_MAJOR_ENGINE_VERSION
     default: "14"
-  - name: TF_VAR_kc_db_allocated_storage
+  - name: TF_VAR_KC_DB_ALLOCATED_STORAGE
     default: 20.0
-  - name: TF_VAR_kc_db_max_allocated_storage
+  - name: TF_VAR_KC_DB_MAX_ALLOCATED_STORAGE
     default: 100.0
-  - name: TF_VAR_kc_db_instance_class
+  - name: TF_VAR_KC_DB_INSTANCE_CLASS
     default: "db.t4g.large"
 
 components:
@@ -91,20 +94,6 @@ components:
       - source: "###ZARF_PKG_VAR_TF_MODULES_DIR###"
         target: "tmp/modules"
   
-  - name: update-tf-vars
-    required: true
-    actions:
-      onDeploy:
-        before:
-          - cmd: env
-        after:
-          - cmd: rm tmp/###ZARF_PKG_VAR_TF_ENV###/terraform.tfvars.tmpl
-    files:
-      - source: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###/main.tf"
-        target: tmp/###ZARF_PKG_VAR_TF_ENV_STATE###/main.tf
-      - source: "###ZARF_PKG_VAR_TF_ENV_DIR###/terraform.tfvars.tmpl"
-        target: tmp/###ZARF_PKG_VAR_TF_ENV###/terraform.tfvars
-
   - name: terraform-s3-bucket
     actions:
       onDeploy:
@@ -118,7 +107,7 @@ components:
             setVariable: BUCKET_ID 
         onSuccess:
           - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$BUCKET_ID'\"|' backend.tf"
-            cmd: "terraform init -migrate-state -force-copy"
+          - cmd: "terraform init -migrate-state -force-copy"
 
   - name: terraform-apply-bootstrap
     actions:
@@ -139,13 +128,31 @@ components:
   - name: terraform-apply-day2
     actions:
       onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
         before:
-          - retry: true  
-            cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV### && aws s3 cp s3://my-tfstate-backend20221221075202171300000001/backend.tf backend.tf && terraform init && terraform apply -target=module.vpc -auto-approve"
+          - cmd: "terraform output -raw tfstate_bucket_id"
+            dir: tmp/###ZARF_PKG_VAR_TF_ENV_STATE###
+            setVariable: BUCKET_ID 
+        onSuccess:
+          - cmd: "aws s3 cp s3://$BUCKET_ID/backend.tf backend.tf"
+          - cmd: "terraform init"
+          - cmd: "terraform apply -target=module.vpc -auto-approve"
 
   - name: terraform-destroy
     actions:
       onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
         before:
-          - retry: true
-            cmd: "cd tmp/###ZARF_PKG_VAR_TF_ENV### && aws s3 cp s3://my-tfstate-backend20221221075202171300000001/backend.tf backend.tf && terraform init && terraform apply -destroy -auto-approve"
+          - cmd: "terraform output -raw tfstate_bucket_id"
+            dir: tmp/###ZARF_PKG_VAR_TF_ENV_STATE###
+            setVariable: BUCKET_ID 
+        onSuccess:
+          - cmd: "aws s3 cp s3://$BUCKET_ID/backend.tf backend.tf"
+          - cmd: "terraform init"
+          - cmd: "terraform apply -destroy -auto-approve"

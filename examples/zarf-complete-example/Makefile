@@ -36,12 +36,13 @@ endif
 # Set terraform version
 TF_VERSION := 1.3.6
 # Terraform environment directory
-TF_ENV_DIR := "./examples/complete-example"
+TF_ENV_DIR := "../complete-example"
 TF_ENV := "complete-example"
-TF_ENV_STATE_DIR := "./examples/tf-state-backend"
+TF_ENV_STATE_DIR := "../tf-state-backend"
 TF_ENV_STATE := "tf-state-backend"
+TF_ENV_VAR_DIR := "."
 # Terraform modules directory
-TF_MODULES_DIR := "./modules"
+TF_MODULES_DIR := "../../modules"
 
 .DEFAULT_GOAL := help
 
@@ -64,5 +65,5 @@ mkdir:
 .PHONY: build
 build: mkdir ## Build the IaC Zarf Package
 	@echo "Creating the deploy package"
-	@$(ZARF_BIN) package create --set TF_ENV_DIR=$(TF_ENV_DIR) --set TF_ENV_STATE_DIR=$(TF_ENV_STATE_DIR) --set TF_MODULES_DIR=$(TF_MODULES_DIR) --set TF_ENV=$(TF_ENV) --set TF_ENV_STATE=$(TF_ENV_STATE) --set ARCH_PROC=$(ARCH_PROC) --set ARCH_NAME=$(ARCH_NAME) --set TF_VERSION=$(TF_VERSION) --confirm
+	@$(ZARF_BIN) package create --set TF_ENV_DIR=$(TF_ENV_DIR) --set TF_ENV_STATE_DIR=$(TF_ENV_STATE_DIR) --set TF_MODULES_DIR=$(TF_MODULES_DIR) --set TF_ENV=$(TF_ENV) --set TF_ENV_STATE=$(TF_ENV_STATE) --set ARCH_PROC=$(ARCH_PROC) --set ARCH_NAME=$(ARCH_NAME) --set TF_VERSION=$(TF_VERSION) --set TF_ENV_VAR_DIR=$(TF_ENV_VAR_DIR) --confirm
 	@mv zarf-package-terraform-$(ARCH_PROC).tar.zst build/zarf-package-terraform-$(ARCH_PROC).tar.zst
