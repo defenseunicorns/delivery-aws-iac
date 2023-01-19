@@ -24,6 +24,11 @@ output "keycloak_db_instance_port" {
   value       = module.rds_postgres_keycloak[0].db_instance_port
 }
 
+output "bastion_instance_id" {
+  description = "The ID of the bastion host"
+  value       = module.bastion.instance_id
+}
+
 output "bastion_private_key" {
   description = "The private key for the bastion host"
   value       = module.bastion.private_key
