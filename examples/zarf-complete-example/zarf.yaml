@@ -10,7 +10,7 @@ variables:
   - name: REGION2
     description: "RDS backup target AWS region"
     default: "us-east-1"
-  - name: AWS_ACCOUNT
+  - name: ACCOUNT
     description: "target AWS account"
     prompt: true
   - name: AWS_PROFILE
@@ -26,8 +26,6 @@ variables:
     default: "10.10.10.0/16"
   - name: VPC_NAME
     default: "my-vpc"
-  - name: DB_SUBNETS
-    default: '"10.10.17.0/24","10.10.18.0/24","10.10.19.0/24"'
   - name: EKS_CLUSTER_NAME
     default: "my-eks"
   - name: EKS_CLUSTER_VERSION
@@ -110,17 +108,34 @@ components:
           - cmd: "aws s3 cp backend.tf s3://$ZARF_VAR_BUCKET_ID/backend.tf"
           - cmd: "terraform init -migrate-state -force-copy"
 
-  - name: terraform-apply-bootstrap
+  - name: terraform-apply-vpc-bastion
     actions:
-        onDeploy:
-          defaults:
-            maxTotalSeconds: 300
-            maxRetries: 3
-            dir: tmp/###ZARF_PKG_VAR_TF_ENV###
-          before:
-            - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/backend.tf backend.tf"
-            - cmd: "terraform init -migrate-state -force-copy"
-            - cmd: "terraform apply -auto-approve"
+      onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+        before:
+          - cmd: env
+          - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/backend.tf backend.tf"
+          - cmd: "terraform init -migrate-state -force-copy"
+          - cmd: "terraform apply -target=module.vpc -target=module.bastion -auto-approve"
+
+  - name: terraform-apply-eks
+    actions:
+      onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+        before:
+          - cmd: "terraform output -raw tfstate_bucket_id"
+            dir: tmp/###ZARF_PKG_VAR_TF_ENV_STATE###
+            setVariable: BUCKET_ID 
+        onSuccess:
+          - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/backend.tf backend.tf"
+          - cmd: "terraform init -migrate-state -force-copy"
+          - cmd: "terraform apply -target=module.eks -auto-approve"
 
   - name: terraform-apply-day2
     actions:
