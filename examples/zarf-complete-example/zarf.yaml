@@ -61,10 +61,11 @@ components:
     required: true
     actions:
       onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
         after:
-          - retry: true
             cmd: "rm -f terraform"
-          - retry: true
             cmd: "./zarf tools archiver decompress tmp/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip ."
           # - "./zarf tools archiver decompress tmp/awscliv2.zip ."
           # - "rm -rf tmp/"
@@ -81,11 +82,14 @@ components:
     required: true
     actions:
       onCreate:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
         before:
-          - retry: true
-            cmd:  "cd ###ZARF_PKG_VAR_TF_ENV_DIR### && terraform init -backend=false"
-          - retry: true
-            cmd: "cd ###ZARF_PKG_VAR_TF_ENV_STATE_DIR### && terraform init -backend=false"
+          - cmd: "terraform init -backend=false"
+            dir: "###ZARF_PKG_VAR_TF_ENV_DIR###"
+          - cmd: "terraform init -backend=false"
+            dir: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###"
     files:
       - source: "###ZARF_PKG_VAR_TF_ENV_DIR###"
         target: "tmp/###ZARF_PKG_VAR_TF_ENV###"
