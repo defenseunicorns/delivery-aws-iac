@@ -17,7 +17,6 @@
 
   vpc_cidr                            = "10.200.0.0/16"
   vpc_name                            = "my-vpc"
-  database_subnets                    = ["10.200.7.0/24", "10.200.8.0/24", "10.200.9.0/24"]
 
   create_database_subnet_group        = true
   create_database_subnet_route_table  = true

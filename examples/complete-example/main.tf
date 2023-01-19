@@ -11,7 +11,7 @@ locals {
 ####################### VPC ###############################
 
 module "vpc" {
-  source = "../../modules/vpc"
+  source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=refactor-ssm"
 
   region   = var.region
   name     = var.vpc_name
@@ -22,8 +22,6 @@ module "vpc" {
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = 1
   }
-  database_subnets = var.database_subnets
-
   create_database_subnet_group        = true
   create_database_subnet_route_table  = true
 }
@@ -32,7 +30,7 @@ module "vpc" {
 ################### EKS Cluster ###########################
 
 module "eks" {
-  source = "../../modules/eks"
+  source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=refactor-ssm"
 
   name                                  = var.cluster_name
   vpc_id                                = module.vpc.vpc_id
@@ -63,7 +61,7 @@ module "eks" {
 ################# Enable EKS Sops #########################
 
 module "flux_sops" {
-  source = "../../modules/sops"
+  source = "git::https://github.com/defenseunicorns/iac.git//modules/sops?ref=refactor-ssm"
 
   region                     = var.region
   cluster_name               = module.eks.eks_cluster_id
@@ -81,7 +79,7 @@ module "flux_sops" {
 ##################### Bastion #############################
 
 module "bastion" {
-  source = "../../modules/bastion"
+  source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=refactor-ssm"
 
   ami_id                  = var.bastion_ami_id
   name                    = var.bastion_name
@@ -110,7 +108,7 @@ module "bastion" {
 ################## Loki S3 Bucket #########################
 
 module "loki_s3_bucket" {
-  source = "../../modules/s3-irsa"
+  source = "git::https://github.com/defenseunicorns/iac.git//modules/s3-irsa?ref=refactor-ssm"
 
   region                     = var.region
   cluster_name               = module.eks.eks_cluster_id

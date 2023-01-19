@@ -45,11 +45,6 @@ variable "vpc_name" {
   default = "my-vpc"
 }
 
-variable "database_subnets" {
-  description = "A list of database subnets"
-  type = list(string)
-}
-
 variable "create_database_subnet_group" {
   description = "Whether to create a database subnet group"
   type = bool
