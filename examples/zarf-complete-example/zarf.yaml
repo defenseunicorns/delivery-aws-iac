@@ -63,8 +63,8 @@ components:
           maxTotalSeconds: 300
           maxRetries: 3
         after:
-            cmd: "rm -f terraform"
-            cmd: "./zarf tools archiver decompress tmp/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip ."
+          - cmd: "rm -f terraform"
+          - cmd: "./zarf tools archiver decompress tmp/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip ."
           # - "./zarf tools archiver decompress tmp/awscliv2.zip ."
           # - "rm -rf tmp/"
     files:
