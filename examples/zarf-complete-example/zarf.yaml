@@ -23,7 +23,7 @@ variables:
     description: "AWS username for additional admin, ex. Jane.Doe"
     prompt: true
   - name: VPC_CIDR
-    default: "10.10.10.0/16"
+    default: "10.200.0.0/16"
   - name: VPC_NAME
     default: "my-vpc"
   - name: EKS_CLUSTER_NAME
