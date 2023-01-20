@@ -121,3 +121,18 @@ module "loki_s3_bucket" {
   eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn
   tags                       = local.tags
 }
+
+###########################################################
+################## DynamoDB Table #########################
+
+module "dynamodb-table" {
+  
+  source  = "git::https://github.com/defenseunicorns/iac.git//modules/dynamodb?ref=v0.0.0-alpha.1"
+  
+  count = var.dynamodb_enabled ? 1 : 0
+  
+  region                     = var.region
+  tags                       = local.tags
+
+}
+
