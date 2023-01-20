@@ -1,18 +1,18 @@
-locals {
-  region                      = "us-east-2"  # target AWS region
-  account                     = "8675309"  # target AWS account
-  aws_admin_1_username        = "bob" # enables eks access & ssh access to bastion
-  aws_admin_2_username        = "jane" # enables eks access & ssh access to bastion
-  cluster_key_admin_arns      = ["arn:aws:iam::${local.account}:user/${local.aws_admin_1_username}","arn:aws:iam::${local.account}:user/${local.aws_admin_2_username}"]   # list of admin's AWS account arn to allow control of KMS keys
+provider "aws" {
+  region = var.region
 }
 
-module "tfstate_backend" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/tfstate-backend?ref=v0.0.0-alpha.0"
+data "aws_partition" "current" {}
 
-  region                 = local.region
+module "tfstate_backend" {
+  source = "git::https://github.com/defenseunicorns/iac.git//modules/tfstate-backend?ref=v0.0.0-alpha.1"
+
+  region                 = var.region
   bucket_prefix          = "my-tfstate-backend"
   dynamodb_table_name    = "my-tfstate-backend-lock"
-  cluster_key_admin_arns = local.cluster_key_admin_arns
+
+  # list of admin's AWS account arn to allow control of KMS keys
+  cluster_key_admin_arns = ["arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${var.aws_admin_1_username}","arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${var.aws_admin_2_username}"]
 }
 
 output "tfstate_bucket_id" {

@@ -1,0 +1,8 @@
+# Rename this file to <filename>.tfvars and fill in the values
+# Run terraform command to specify using the tfvars file `terraform plan -var-file tf-state-backend.tfvars`
+# Variables can also be set via environment variables
+
+  region                      = "us-east-2"  # target AWS region
+  account                     = "008675309"  # target AWS account
+  aws_admin_1_username        = "Bob.Marley" # enables eks access & ssh access to bastion
+  aws_admin_2_username        = "Jane.Doe" # enables eks access & ssh access to bastion

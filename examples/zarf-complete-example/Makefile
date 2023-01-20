@@ -1,6 +1,6 @@
 # The version of Zarf to use. To keep this repo as portable as possible the Zarf binary will be downloaded and added to
 # the build folder.
-ZARF_VERSION := v0.22.2
+ZARF_VERSION := v0.23.4-40-g929bc645
 
 # Figure out which Zarf binary we should use based on the operating system we are on
 ZARF_BIN := zarf
@@ -36,12 +36,12 @@ endif
 # Set terraform version
 TF_VERSION := 1.3.6
 # Terraform environment directory
-TF_ENV_DIR := "./examples/complete-example"
+TF_ENV_DIR := "../complete-example"
 TF_ENV := "complete-example"
-TF_ENV_STATE_DIR := "./examples/tf-state-backend"
+TF_ENV_STATE_DIR := "../tf-state-backend"
 TF_ENV_STATE := "tf-state-backend"
 # Terraform modules directory
-TF_MODULES_DIR := "./modules"
+TF_MODULES_DIR := "../../modules"
 
 .DEFAULT_GOAL := help
 
