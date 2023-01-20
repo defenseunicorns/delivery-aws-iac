@@ -124,6 +124,7 @@ components:
           - cmd: "terraform init -migrate-state -force-copy"
           - cmd: "terraform apply -target=module.vpc -target=module.bastion -auto-approve"
           - cmd: "terraform output bastion_instance_id"
+          - cmd: "terraform output -raw bastion_private_key"
           - cmd: echo "update your sshuttle info"
           - cmd: "sleep 180"
 
