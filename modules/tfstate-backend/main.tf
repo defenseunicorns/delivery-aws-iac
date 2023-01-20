@@ -1,6 +1,13 @@
+data "aws_partition" "current" {}
+
 resource "aws_kms_key" "objects" {
   enable_key_rotation     = true
   description             = "KMS key is used to encrypt bucket objects"
+  deletion_window_in_days = 7
+}
+resource "aws_kms_key" "dynamo" {
+  enable_key_rotation     = true
+  description             = "KMS key is used to encrypt dynamodb table"
   deletion_window_in_days = 7
 }
 
@@ -8,10 +15,16 @@ resource "aws_dynamodb_table" "dynamodb_terraform_state_lock" {
   name         = var.dynamodb_table_name
   hash_key     = "LockID"
   billing_mode = "PAY_PER_REQUEST"
-
+  point_in_time_recovery {
+    enabled = true
+  }
   attribute {
     name = "LockID"
     type = "S"
+  }
+  server_side_encryption {
+    enabled = true
+    kms_key_arn= aws_kms_key.dynamo.arn
   }
 }
 
@@ -43,6 +56,13 @@ bucket = module.s3_bucket.s3_bucket_id
   }
 }
 
+resource "aws_s3_bucket_logging" "logging" {
+  bucket = module.s3_bucket.s3_bucket_id
+
+  target_bucket = module.s3_bucket.s3_bucket_id
+  target_prefix = "log/"
+}
+
 resource "aws_s3_bucket_policy" "backend_bucket" {
   bucket = module.s3_bucket.s3_bucket_id
 
@@ -56,7 +76,7 @@ resource "aws_s3_bucket_policy" "backend_bucket" {
         "AWS": ${var.cluster_key_admin_arns == [] ? "[]" : jsonencode(var.cluster_key_admin_arns)}
       },
       "Action": [
-				"s3:ListObject",
+				"s3:ListBucket",
 				"s3:GetObject",
         "s3:PutObject"
       ],

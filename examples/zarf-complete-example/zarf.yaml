@@ -1,0 +1,164 @@
+kind: ZarfPackageConfig
+metadata:
+  name: "terraform"
+  description: "Run terraform/terragrunt code"
+
+variables:
+  - name: REGION
+    description: "target AWS region"
+    default: "us-east-2"
+  - name: REGION2
+    description: "RDS backup target AWS region"
+    default: "us-east-1"
+  - name: ACCOUNT
+    description: "target AWS account"
+    prompt: true
+  - name: AWS_PROFILE
+    description: "local AWS profile to be used for deployment"
+    prompt: true
+  - name: AWS_ADMIN_1_USERNAME
+    description: "AWS username for admin, ex. Bob.Marley"
+    prompt: true
+  - name: AWS_ADMIN_2_USERNAME
+    description: "AWS username for additional admin, ex. Jane.Doe"
+    prompt: true
+  - name: VPC_CIDR
+    default: "10.200.0.0/16"
+  - name: VPC_NAME
+    default: "my-vpc"
+  - name: EKS_CLUSTER_NAME
+    default: "my-eks"
+  - name: EKS_CLUSTER_VERSION
+    default: "1.23"
+  - name: BASTION_NAME
+    default: "my-bastion"
+  - name: BASTION_AMI_ID
+    default: "ami-000d4884381edb14c"
+  - name: BASTION_SSH_USER
+    default: "ec2-user"
+  - name: KEYCLOAK_ENABLED
+    default: "true"
+  - name: KEYCLOAK_DB_PASSWORD
+    description: "User provided password for keycloak DB"
+    prompt: true
+  - name: KC_DB_ENGINE_VERSION
+    default: "14.1"
+  - name: KC_DB_FAMILY
+    default: "postgres14"
+  - name: KC_DB_MAJOR_ENGINE_VERSION
+    default: "14"
+  - name: KC_DB_ALLOCATED_STORAGE
+    default: 20.0
+  - name: KC_DB_MAX_ALLOCATED_STORAGE
+    default: 100.0
+  - name: KC_DB_INSTANCE_CLASS
+    default: "db.t4g.large"
+
+components:
+  - name: download-dependencies
+    required: true
+    actions:
+      onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+        after:
+          - cmd: "rm -f terraform"
+          - cmd: "./zarf tools archiver decompress tmp/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip ."
+          # - "./zarf tools archiver decompress tmp/awscliv2.zip ."
+          # - "rm -rf tmp/"
+    files:
+      # terraform binary
+      - source: https://releases.hashicorp.com/terraform/###ZARF_PKG_VAR_TF_VERSION###/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip
+        target: tmp/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip
+      # aws cli binary
+      # - source: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+      #   target: tmp/awscliv2.zip
+
+  - name: terraform-init
+    description: Terraform init using zarf actions
+    required: true
+    actions:
+      onCreate:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+        before:
+          - cmd: "terraform init -backend=false"
+            dir: "###ZARF_PKG_VAR_TF_ENV_DIR###"
+          - cmd: "terraform init -backend=false"
+            dir: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###"
+    files:
+      - source: "###ZARF_PKG_VAR_TF_ENV_DIR###"
+        target: "tmp/examples/###ZARF_PKG_VAR_TF_ENV###"
+      - source: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###"
+        target: "tmp/examples/###ZARF_PKG_VAR_TF_ENV_STATE###"
+      - source: "###ZARF_PKG_VAR_TF_MODULES_DIR###"
+        target: "tmp/modules"
+  
+  - name: terraform-s3-bucket
+    actions:
+      onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: "tmp/###ZARF_PKG_VAR_TF_ENV_STATE###"
+        before:
+          - cmd: "terraform apply -auto-approve"
+          - cmd: "terraform output -raw tfstate_bucket_id"
+            setVariable: BUCKET_ID 
+        onSuccess:
+          - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$ZARF_VAR_BUCKET_ID'\"|' backend.tf"
+          - cmd: "aws s3 cp backend.tf s3://$ZARF_VAR_BUCKET_ID/tf-state-backend.tf"
+          - cmd: "terraform init -migrate-state -force-copy"
+
+  - name: terraform-apply-vpc-bastion
+    actions:
+      onDeploy:
+        defaults:
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+        before:
+          - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$ZARF_VAR_BUCKET_ID'\"|' backend.tf"
+          - cmd: "aws s3 cp backend.tf s3://$ZARF_VAR_BUCKET_ID/complete-ex-backend.tf"
+          - cmd: "terraform init -migrate-state -force-copy"
+          - cmd: "terraform apply -target=module.vpc -target=module.bastion -auto-approve"
+          - cmd: "terraform output bastion_instance_id"
+          - cmd: "terraform output -raw bastion_private_key"
+          - cmd: echo "update your sshuttle info"
+          - cmd: "sleep 180"
+
+  - name: terraform-apply-eks
+    actions:
+      onDeploy:
+        defaults:
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+        before:
+          # - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/complete-ex-backend.tf backend.tf"
+          # - cmd: "terraform init -migrate-state -force-copy"
+          - cmd: "terraform apply -target=module.eks -auto-approve"
+
+  - name: terraform-apply-day2
+    actions:
+      onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+        before:
+          - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/complete-ex-backend.tf backend.tf"
+          - cmd: "terraform init"
+          - cmd: "terraform apply -target=module.vpc -auto-approve"
+
+  - name: terraform-destroy
+    actions:
+      onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+        before:
+          - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/complete-ex-backend.tf backend.tf"
+          - cmd: "terraform init"
+          - cmd: "terraform apply -destroy -auto-approve"

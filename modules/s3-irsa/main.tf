@@ -5,6 +5,8 @@ locals {
 
 data "aws_caller_identity" "current" {}
 
+data "aws_partition" "current" {}
+
 #####################################################
 ################## Loki S3 Bucket ###################
 module "s3_bucket" {
@@ -58,7 +60,7 @@ data "aws_iam_policy_document" "irsa_policy" {
       "ssm:DeleteParameters",
       "ssm:DescribeParameters"
     ]
-    resources = ["arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/bigbang-*"]
+    resources = ["arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/bigbang-*"]
   }
 
   statement {

@@ -102,17 +102,18 @@ module "vpc_endpoints" {
 #       policy          = data.aws_iam_policy_document.dynamodb_endpoint_policy.json
 #       tags            = { Name = "dynamodb-vpc-endpoint" }
 #     },
-#     ssm = {
-#       service             = "ssm"
-#       private_dns_enabled = true
-#       subnet_ids          = module.vpc.private_subnets
-#       security_group_ids  = [aws_security_group.vpc_tls.id]
-#     },
-#     ssmmessages = {
-#       service             = "ssmmessages"
-#       private_dns_enabled = true
-#       subnet_ids          = module.vpc.private_subnets
-#     },
+    ssm = {
+      service             = "ssm"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
+    ssmmessages = {
+      service             = "ssmmessages"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
 #     lambda = {
 #       service             = "lambda"
 #       private_dns_enabled = true
@@ -129,17 +130,18 @@ module "vpc_endpoints" {
 #       private_dns_enabled = true
 #       subnet_ids          = module.vpc.private_subnets
 #     },
-#     ec2 = {
-#       service             = "ec2"
-#       private_dns_enabled = true
-#       subnet_ids          = module.vpc.private_subnets
-#       security_group_ids  = [aws_security_group.vpc_tls.id]
-#     },
-#     ec2messages = {
-#       service             = "ec2messages"
-#       private_dns_enabled = true
-#       subnet_ids          = module.vpc.private_subnets
-#     },
+    ec2 = {
+      service             = "ec2"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
+    ec2messages = {
+      service             = "ec2messages"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
 #     ecr_api = {
 #       service             = "ecr.api"
 #       private_dns_enabled = true
@@ -232,7 +234,8 @@ data "aws_iam_policy_document" "generic_endpoint_policy" {
 }
 
 resource "aws_security_group" "vpc_tls" {
-  name_prefix = "${var.name}-vpc_tls"
+  #checkov:skip=CKV2_AWS_5: Secuirity group is being referenced by the VPC endpoint
+  name = "${var.name}-vpc_tls"
   description = "Allow TLS inbound traffic"
   vpc_id      = module.vpc.vpc_id
 

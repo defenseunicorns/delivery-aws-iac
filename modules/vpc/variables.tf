@@ -30,11 +30,6 @@ variable public_subnet_tags {
   default     = {}
 }
 
-variable "database_subnets" {
-  description = "List of database subnets"
-  type        = list(string)
-}
-
 variable "create_database_subnet_group" {
   description = "Create database subnet group"
   type        = bool
