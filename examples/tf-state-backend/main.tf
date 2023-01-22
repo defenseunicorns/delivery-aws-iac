@@ -5,7 +5,7 @@ provider "aws" {
 data "aws_partition" "current" {}
 
 module "tfstate_backend" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/tfstate-backend?ref=v0.0.0-alpha.1"
+  source = "../../modules/tfstate-backend"
 
   region                 = var.region
   bucket_prefix          = "my-tfstate-backend"
@@ -17,5 +17,10 @@ module "tfstate_backend" {
 
 output "tfstate_bucket_id" {
   value       = module.tfstate_backend.tfstate_bucket_id
+  description = "Terraform State Bucket Name"
+}
+
+output "tfstate_dynamodb_table_name" {
+  value       = module.tfstate_backend.tfstate_dynamodb_table_name
   description = "Terraform State Bucket Name"
 }

@@ -11,7 +11,7 @@ locals {
 ####################### VPC ###############################
 
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v0.0.0-alpha.1"
+  source = "../../modules/vpc"
 
   region   = var.region
   name     = var.vpc_name
@@ -30,7 +30,7 @@ module "vpc" {
 ################### EKS Cluster ###########################
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v0.0.0-alpha.1"
+  source = "../../modules/eks"
 
   name                                  = var.cluster_name
   vpc_id                                = module.vpc.vpc_id
@@ -61,7 +61,7 @@ module "eks" {
 ################# Enable EKS Sops #########################
 
 module "flux_sops" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/sops?ref=v0.0.0-alpha.1"
+  source = "../../modules/sops"
 
   region                     = var.region
   cluster_name               = module.eks.eks_cluster_id
@@ -79,7 +79,7 @@ module "flux_sops" {
 ##################### Bastion #############################
 
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=v0.0.0-alpha.1"
+  source = "../../modules/bastion"
 
   ami_id                  = var.bastion_ami_id
   name                    = var.bastion_name
@@ -108,7 +108,7 @@ module "bastion" {
 ################## Loki S3 Bucket #########################
 
 module "loki_s3_bucket" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/s3-irsa?ref=v0.0.0-alpha.1"
+  source = "../../modules/s3-irsa"
 
   region                     = var.region
   cluster_name               = module.eks.eks_cluster_id
