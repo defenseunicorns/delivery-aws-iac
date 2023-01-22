@@ -1,4 +1,4 @@
-# EKS Cluster Deployment with new VPC
+# EKS Cluster Deployment with new VPC & Big Bang Dependencies 
 
 This example deploys the following Basic EKS Cluster with VPC
 
