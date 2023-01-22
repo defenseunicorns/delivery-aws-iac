@@ -26,9 +26,9 @@ Ensure that your AWS credentials are configured. This can be done by running `aw
 #### Step 1: Preparation
 
 ```sh
-mkdir tmp 
+mkdir tmp && cd tmp
 git clone https://github.com/defenseunicorns/iac.git
-cd tmp/examples/complete-example/
+cd examples/complete-example/
 mv terraform.tfvars.example ../../../terraform.tfvars
 ```
 
