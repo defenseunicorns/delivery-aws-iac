@@ -57,9 +57,9 @@ tf init -backend-config="bucket=<bucket_id from output of previous apply>" \
 #### Step 3: Provision VPC and Bastion
 
 ```sh
-terraform plan -var-file ../../../tmp/complete-example.tfvars -target=module.vpc -target=module.bastion
+terraform plan -var-file ../../../complete-example.tfvars -target=module.vpc -target=module.bastion
 # verify these changes are desired
-terraform apply -var-file ../../../tmp/complete-example.tfvars -target=module.vpc -target=module.bastion
+terraform apply -var-file ../../../complete-example.tfvars -target=module.vpc -target=module.bastion
 # type yes to confirm or utilize the ```-auto-approve``` flag in the above command
 ```
 
@@ -89,13 +89,13 @@ sudo expect -c 'spawn sshuttle --dns -vr ec2-user@<bastion instance id> <vpc cid
 Navigate back to the terminal in the complete-example directory and Provision the EKS Cluster
 
 ```sh
-terraform apply -var-file ../../../tmp/complete-example.tfvars
+terraform apply -var-file ../../../complete-example.tfvars
 # type yes to confirm or utilize the ```-auto-approve``` flag in the above command
 ```
 
 ### Configure `kubectl` and test cluster
 
-Note: In this example we are using a private EKS Cluster endpoint for the control plan. You must ensure the sshuttle is running to utilize `kubectl`
+Note: In this example we are using a private EKS Cluster endpoint for the control plane. You must ensure the sshuttle is running to the bastion to utilize `kubectl`
 
 EKS Cluster details can be extracted from terraform output or from AWS Console to get the name of cluster.
 This following command used to update the `kubeconfig` in your local machine where you run kubectl commands to interact with your EKS Cluster.
@@ -121,7 +121,7 @@ To clean up your environment, destroy the Terraform modules in reverse order.
 Destroy the Kubernetes Add-ons, EKS cluster with Node groups and VPC
 
 ```sh
-terraform destroy -var-file ../../../tmp/complete-example.tfvars -auto-approve
+terraform destroy -var-file ../../../complete-example.tfvars -auto-approve
 ```
 
 ## Requirements
