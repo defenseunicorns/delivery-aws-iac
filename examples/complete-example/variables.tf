@@ -99,6 +99,12 @@ variable "ssh_user" {
   default = "ec2-user"
 }
 
+variable "bastion_ssh_password" {
+  description = "The SSH password to use for the bastion if SSM authentication is used"
+  type = string
+  default = "my-password"
+}
+
 ###########################################################
 ############## Big Bang Dependencies ######################
 

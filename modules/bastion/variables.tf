@@ -269,6 +269,11 @@ variable ssm_enabled {
   default = true
 }
 
+variable "ssh_password" {
+  description = "Password for SSH access if SSM authentication is enabled"
+  type = string
+}
+
 variable "ssmkey_arn" {
   description = "SSM key arn"
   default = ""

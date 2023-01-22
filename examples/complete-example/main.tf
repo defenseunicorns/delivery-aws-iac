@@ -89,6 +89,7 @@ module "bastion" {
   access_log_bucket_name  = "${var.bastion_name}-access-logs"
   bucket_name             = "${var.bastion_name}-session-logs"
   ssh_user                = var.ssh_user
+  ssh_password            = var.bastion_ssh_password 
   assign_public_ip        = false # var.assign_public_ip
   # cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
   enable_log_to_s3          = true
