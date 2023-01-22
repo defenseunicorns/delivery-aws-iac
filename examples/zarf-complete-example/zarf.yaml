@@ -90,9 +90,9 @@ components:
             dir: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###"
     files:
       - source: "###ZARF_PKG_VAR_TF_ENV_DIR###"
-        target: "tmp/###ZARF_PKG_VAR_TF_ENV###"
+        target: "tmp/examples/###ZARF_PKG_VAR_TF_ENV###"
       - source: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###"
-        target: "tmp/###ZARF_PKG_VAR_TF_ENV_STATE###"
+        target: "tmp/examples/###ZARF_PKG_VAR_TF_ENV_STATE###"
       - source: "###ZARF_PKG_VAR_TF_MODULES_DIR###"
         target: "tmp/modules"
   
