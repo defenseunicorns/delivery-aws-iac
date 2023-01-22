@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    region         = "us-east-2"
+    region         = ""
     bucket         = ""
     key            = ""
     dynamodb_table = ""
