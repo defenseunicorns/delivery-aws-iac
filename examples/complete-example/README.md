@@ -34,13 +34,15 @@ mv terraform.tfvars.example ../../../terraform.tfvars
 
 Modify terraform.tfvars (located in tmp directory) with desired values
 
+#### Step 2: Terraform Init & State
+
 Initialize a working directory with configuration files and create local terraform state file 
 
 ```sh
 terraform init
 ```
 
-Alternatively, you can provision an S3 backend prior to this step using the tf-state-backend example and init via the following:
+(OPTIONAL) Alternatively, you can provision an S3 backend prior to this step using the tf-state-backend example and init via the following:
 
 ```sh
 cd tmp/examples/tf-state-backend
