@@ -198,6 +198,7 @@ data "cloudinit_config" "config" {
         enable_hourly_cron_updates  = local.enable_hourly_cron_updates
         additional_user_data_script = var.additional_user_data_script
         ssm_enabled                 = var.ssm_enabled
+        ssh_password                = var.ssh_password
       }
     )
   }

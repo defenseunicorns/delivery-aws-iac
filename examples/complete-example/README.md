@@ -1,11 +1,11 @@
-# EKS Cluster Deployment with new VPC
+# EKS Cluster Deployment with new VPC & Big Bang Dependencies 
 
 This example deploys the following Basic EKS Cluster with VPC
 
 - Creates a new sample VPC, 3 Private Subnets and 3 Public Subnets
 - Creates Internet gateway for Public Subnets and NAT Gateway for Private Subnets
 - Creates EKS Cluster Control plane with one managed node group
-- Creates a Bastion host
+- Creates a Bastion host in a private subnet
 - Creates dependencies needed for BigBang
 
 ## How to Deploy
@@ -17,22 +17,24 @@ Ensure that you have installed the following tools in your Mac or Windows Laptop
 1. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 2. [Kubectl](https://Kubernetes.io/docs/tasks/tools/)
 3. [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+4. [SSHuttle](https://github.com/sshuttle/sshuttle)
 
-### Minimum IAM Policy
-
-> **Note**: The policy resource is set as `*` to allow all resources, this is not a recommended practice.
-You can find the policy [here](min-iam-policy.json)
-
+Ensure that your AWS credentials are configured. This can be done by running `aws configure`
 
 ### Deployment Steps
 
 #### Step 1: Preparation
 
 ```sh
+mkdir tmp && cd tmp
 git clone https://github.com/defenseunicorns/iac.git
 cd examples/complete-example/
+mv terraform.tfvars.example ../../../terraform.tfvars
 ```
-Modify locals.tf in root module with desired values
+
+Modify terraform.tfvars (located in tmp directory) with desired values
+
+#### Step 2: Terraform Init & State
 
 Initialize a working directory with configuration files and create local terraform state file 
 
@@ -40,41 +42,62 @@ Initialize a working directory with configuration files and create local terrafo
 terraform init
 ```
 
-
-
-#### Step 2: Migrate Terraform State (OPTIONAL)
+(OPTIONAL) Alternatively, you can provision an S3 backend prior to this step using the tf-state-backend example and init via the following:
 
 ```sh
-terraform apply -target=module.tfstate_backend
-```
-
-Uncomment the backend.tf & add the output tfstate-backend bucket name (output from the apply above) along with other desired values (i.e. region)
-
-```sh
-terraform init -migrate-state -auto-approve
-
-```
-
-#### Step 3: Run Terraform PLAN
-
-Verify the resources created by this execution
-
-```sh
-export AWS_REGION=<ENTER YOUR REGION>   # Select your own region if not set in locals
-terraform plan
-```
-
-#### Step 4: Finally, Terraform APPLY
-
-**Deploy the pattern**
-
-```sh
+cd tmp/examples/tf-state-backend
 terraform apply
+
+cd tmp/examples/complete-example
+mv backend.example backend.tf
+tf init -backend-config="bucket=<bucket_id from output of previous apply>" \
+-backend-config="key=complete-example/terraform.tfstate" \
+-backend-config="dynamodb_table=<table_name from output of previous apply>" \
+-backend-config="region=<region from tfvars file"
 ```
 
-Enter `yes` to apply.
+#### Step 3: Provision VPC and Bastion
+
+```sh
+terraform plan -var-file ../../../terraform.tfvars -target=module.vpc -target=module.bastion
+# verify these changes are desired
+terraform apply -var-file ../../../terraform.tfvars -target=module.vpc -target=module.bastion
+# type yes to confirm or utilize the ```-auto-approve``` flag in the above command
+```
+
+#### Step 4: Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
+
+Add the following to your ~/.ssh/config to connect to the Bastion via AWS SSM (create config file if it does not exist)
+
+```sh
+# SSH over Session Manager
+host i-* mi-*
+    ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+```
+
+Test SSH connection to the Bastion 
+
+```sh
+# replace "my-password" with the variable set if changed from the default
+expect -c 'spawn ssh ec2-user@<bastion instance id> ; expect "assword:"; send "my-password\r"; interact'
+```
+
+In a new terminal, open an sshuttle tunnel to the bastion
+
+```sh
+sudo expect -c 'spawn sshuttle --dns -vr ec2-user@<bastion instance id> <vpc cidr block> ; expect "assword:"; send "my-password\r"; interact'
+```
+
+Navigate back to the terminal in the complete-example directory and Provision the EKS Cluster
+
+```sh
+terraform apply -var-file ../../../terraform.tfvars
+# type yes to confirm or utilize the ```-auto-approve``` flag in the above command
+```
 
 ### Configure `kubectl` and test cluster
+
+Note: In this example we are using a private EKS Cluster endpoint for the control plane. You must ensure the sshuttle is running to the bastion to utilize `kubectl`
 
 EKS Cluster details can be extracted from terraform output or from AWS Console to get the name of cluster.
 This following command used to update the `kubeconfig` in your local machine where you run kubectl commands to interact with your EKS Cluster.
@@ -100,21 +123,7 @@ To clean up your environment, destroy the Terraform modules in reverse order.
 Destroy the Kubernetes Add-ons, EKS cluster with Node groups and VPC
 
 ```sh
-terraform destroy -target="module.bigbang-dependencies" -auto-approve
-terraform destroy -target="module.bastion" -auto-approve
-terraform destroy -target="module.eks" -auto-approve
-terraform destroy -target="module.vpc" -auto-approve
-
-# or the YOLO way
-# comment out all lines in the backend.tf
-terraform init -migrate-state
-terraform destroy -auto-approve
-```
-
-Finally, destroy any additional resources that are not in the above modules
-
-```sh
-terraform destroy -auto-approve
+terraform destroy -var-file ../../../terraform.tfvars -auto-approve
 ```
 
 ## Requirements
@@ -125,7 +134,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.46.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.51.0 |
 
 ## Modules
 
@@ -136,26 +145,54 @@ No requirements.
 | <a name="module_flux_sops"></a> [flux\_sops](#module\_flux\_sops) | ../../modules/sops | n/a |
 | <a name="module_loki_s3_bucket"></a> [loki\_s3\_bucket](#module\_loki\_s3\_bucket) | ../../modules/s3-irsa | n/a |
 | <a name="module_rds_postgres_keycloak"></a> [rds\_postgres\_keycloak](#module\_rds\_postgres\_keycloak) | ../../modules/rds | n/a |
-| <a name="module_tfstate_backend"></a> [tfstate\_backend](#module\_tfstate\_backend) | ../../modules/tfstate-backend | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 
 ## Resources
 
 | Name | Type |
 |------|------|
+| [aws_eks_cluster.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 | [aws_eks_cluster_auth.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
 ## Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_account"></a> [account](#input\_account) | The AWS account to deploy into | `string` | n/a | yes |
+| <a name="input_assign_public_ip"></a> [assign\_public\_ip](#input\_assign\_public\_ip) | Whether to assign a public IP to the bastion | `bool` | `false` | no |
+| <a name="input_aws_admin_1_username"></a> [aws\_admin\_1\_username](#input\_aws\_admin\_1\_username) | The AWS admin username to use for deployment | `string` | n/a | yes |
+| <a name="input_aws_admin_2_username"></a> [aws\_admin\_2\_username](#input\_aws\_admin\_2\_username) | The AWS admin username to use for deployment | `string` | n/a | yes |
+| <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | The AWS profile to use for deployment | `string` | n/a | yes |
+| <a name="input_bastion_ami_id"></a> [bastion\_ami\_id](#input\_bastion\_ami\_id) | The AMI ID to use for the bastion | `string` | `"ami-000d4884381edb14c"` | no |
+| <a name="input_bastion_name"></a> [bastion\_name](#input\_bastion\_name) | The name to use for the bastion | `string` | `"my-bastion"` | no |
+| <a name="input_bastion_ssh_password"></a> [bastion\_ssh\_password](#input\_bastion\_ssh\_password) | The SSH password to use for the bastion if SSM authentication is used | `string` | `"my-password"` | no |
+| <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name to use for the EKS cluster | `string` | `"my-eks"` | no |
+| <a name="input_create_database_subnet_group"></a> [create\_database\_subnet\_group](#input\_create\_database\_subnet\_group) | Whether to create a database subnet group | `bool` | `true` | no |
+| <a name="input_create_database_subnet_route_table"></a> [create\_database\_subnet\_route\_table](#input\_create\_database\_subnet\_route\_table) | Whether to create a database subnet route table | `bool` | `true` | no |
+| <a name="input_eks_k8s_version"></a> [eks\_k8s\_version](#input\_eks\_k8s\_version) | The Kubernetes version to use for the EKS cluster | `string` | `"1.23"` | no |
+| <a name="input_kc_db_allocated_storage"></a> [kc\_db\_allocated\_storage](#input\_kc\_db\_allocated\_storage) | The database allocated storage to use for Keycloak | `number` | n/a | yes |
+| <a name="input_kc_db_engine_version"></a> [kc\_db\_engine\_version](#input\_kc\_db\_engine\_version) | The database engine to use for Keycloak | `string` | n/a | yes |
+| <a name="input_kc_db_family"></a> [kc\_db\_family](#input\_kc\_db\_family) | The database family to use for Keycloak | `string` | n/a | yes |
+| <a name="input_kc_db_instance_class"></a> [kc\_db\_instance\_class](#input\_kc\_db\_instance\_class) | The database instance class to use for Keycloak | `string` | n/a | yes |
+| <a name="input_kc_db_major_engine_version"></a> [kc\_db\_major\_engine\_version](#input\_kc\_db\_major\_engine\_version) | The database major engine version to use for Keycloak | `string` | n/a | yes |
+| <a name="input_kc_db_max_allocated_storage"></a> [kc\_db\_max\_allocated\_storage](#input\_kc\_db\_max\_allocated\_storage) | The database allocated storage to use for Keycloak | `number` | n/a | yes |
+| <a name="input_keycloak_db_password"></a> [keycloak\_db\_password](#input\_keycloak\_db\_password) | The password to use for the Keycloak database | `string` | `"my-password"` | no |
+| <a name="input_keycloak_enabled"></a> [keycloak\_enabled](#input\_keycloak\_enabled) | Whether to enable Keycloak | `bool` | `false` | no |
+| <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy into | `string` | n/a | yes |
+| <a name="input_region2"></a> [region2](#input\_region2) | The AWS region to deploy into | `string` | n/a | yes |
+| <a name="input_ssh_user"></a> [ssh\_user](#input\_ssh\_user) | The SSH user to use for the bastion | `string` | `"ec2-user"` | no |
+| <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | The CIDR block for the VPC | `string` | n/a | yes |
+| <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The name to use for the VPC | `string` | `"my-vpc"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
+| <a name="output_bastion_instance_id"></a> [bastion\_instance\_id](#output\_bastion\_instance\_id) | The ID of the bastion host |
+| <a name="output_bastion_private_key"></a> [bastion\_private\_key](#output\_bastion\_private\_key) | The private key for the bastion host |
 | <a name="output_keycloak_db_instance_endpoint"></a> [keycloak\_db\_instance\_endpoint](#output\_keycloak\_db\_instance\_endpoint) | The connection endpoint |
 | <a name="output_keycloak_db_instance_name"></a> [keycloak\_db\_instance\_name](#output\_keycloak\_db\_instance\_name) | The database name |
 | <a name="output_keycloak_db_instance_port"></a> [keycloak\_db\_instance\_port](#output\_keycloak\_db\_instance\_port) | The database port |
 | <a name="output_keycloak_db_instance_username"></a> [keycloak\_db\_instance\_username](#output\_keycloak\_db\_instance\_username) | The master username for the database |
 | <a name="output_loki_s3_bucket"></a> [loki\_s3\_bucket](#output\_loki\_s3\_bucket) | Loki S3 Bucket Name |
-| <a name="output_tfstate_bucket_id"></a> [tfstate\_bucket\_id](#output\_tfstate\_bucket\_id) | Terraform State Bucket Name |
