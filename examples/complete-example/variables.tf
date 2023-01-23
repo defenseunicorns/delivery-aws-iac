@@ -146,8 +146,3 @@ variable "kc_db_max_allocated_storage" {
   type = number
 }
 
-variable "dynamodb_enabled" {
-  description = "Whether to enable DynamoDB"
-  type = bool
-  default = false
-}

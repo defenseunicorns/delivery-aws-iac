@@ -113,3 +113,81 @@ resource "aws_iam_role_policy_attachment" "irsa" {
   policy_arn = aws_iam_policy.irsa_policy.arn
   role       = aws_iam_role.irsa[0].name
 }
+
+
+################################################################################
+# DynamoDB Module
+################################################################################
+
+
+
+resource "aws_dynamodb_table" "loki_dynamodb" {
+
+  name         = var.loki_dynamodb_name
+  hash_key     = "LockID"
+  billing_mode = "PAY_PER_REQUEST"
+  point_in_time_recovery {
+    enabled = true
+  }
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+  server_side_encryption {
+    enabled = true
+    kms_key_arn= aws_kms_key.dynamo.arn
+  }
+}
+
+resource "aws_iam_policy" "dynamo_policy" {
+  name = "dynamodb_policy"  ### May need to be variablized ##
+  policy = <<EOF
+{
+  "Statement": [
+    {
+  "Effect": "Allow",
+  "Resource": "${aws_dynamodb_table.loki_dynamodb.name}",
+  "Action": [
+    "dynamodb:BatchGetItem",
+    "dynamodb:BatchWriteItem"
+    "dynamodb:DeleteItem"
+    "dynamodb:DescribeTable"
+    "dynamodb:GetItem",
+    "dynamodb:ListTagsOfResource",
+    "dynamodb:PutItem",
+    "dynamodb:Query",
+    "dynamodb:TagResource",
+    "dynamodb:UntagResource",
+    "dynamodb:UpdateItem",
+    "dynamodb:UpdateTable",
+    "dynamodb:CreateTable",
+    "dynamodb:DeleteTable",
+    "dynamodb:ListTables"
+    ]
+}
+EOF
+}
+resource "aws_iam_role" "loki_index_role" {
+  name = "loki_index_role"
+
+  assume_role_policy = <<EOF
+{
+  
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "loki_index_attachment" {
+  role = aws_iam_role
+  policy_arn = aws_iam_policy.dynamodb_policy
+  
+}

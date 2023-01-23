@@ -74,3 +74,22 @@ variable "kms_key_alias" {
   type        = string
   default     = ""
 }
+
+
+# variable "billing_mode" {
+#   description = "A choice beetween billing mode: PAY_PER_REQUEST or PROVISIONED"
+#   type = string
+#   default = ""
+# }
+
+variable "name_dynamodb" {
+  description = "Name of DynamoDB table"
+  type = string
+  default = ""
+}
+
+variable "dynamodb_enabled" {
+  description = "Is dynamoDB enabled"
+  type = bool
+  default = false
+}

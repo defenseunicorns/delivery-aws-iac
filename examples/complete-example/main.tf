@@ -108,8 +108,8 @@ module "bastion" {
 ################## Loki S3 Bucket #########################
 
 module "loki_s3_bucket" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/s3-irsa?ref=v0.0.0-alpha.1"
-
+  # source = "git::https://github.com/defenseunicorns/iac.git//modules/s3-irsa?ref=v0.0.0-alpha.1"
+  source  = "../../modules/s3-irsa"
   region                     = var.region
   cluster_name               = module.eks.eks_cluster_id
   policy_name_prefix         = "loki-s3-policy"
@@ -120,19 +120,8 @@ module "loki_s3_bucket" {
   irsa_iam_role_name         = "${module.eks.eks_cluster_id}-logging-loki-sa-role"
   eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn
   tags                       = local.tags
+  name_dynamodb              =  "DynamoDB-Table"
+  dynamodb_enabled           = true
 }
 
-###########################################################
-################## DynamoDB Table #########################
-
-module "dynamodb-table" {
-  
-  source  = "git::https://github.com/defenseunicorns/iac.git//modules/dynamodb?ref=v0.0.0-alpha.1"
-  
-  count = var.dynamodb_enabled ? 1 : 0
-  
-  region                     = var.region
-  tags                       = local.tags
-
-}
 
