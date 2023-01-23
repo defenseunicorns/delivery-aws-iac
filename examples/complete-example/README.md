@@ -59,9 +59,9 @@ tf init -backend-config="bucket=<bucket_id from output of previous apply>" \
 #### Step 3: Provision VPC and Bastion
 
 ```sh
-terraform plan -var-file ../../../complete-example.tfvars -target=module.vpc -target=module.bastion
+terraform plan -var-file ../../../terraform.tfvars -target=module.vpc -target=module.bastion
 # verify these changes are desired
-terraform apply -var-file ../../../complete-example.tfvars -target=module.vpc -target=module.bastion
+terraform apply -var-file ../../../terraform.tfvars -target=module.vpc -target=module.bastion
 # type yes to confirm or utilize the ```-auto-approve``` flag in the above command
 ```
 
@@ -91,7 +91,7 @@ sudo expect -c 'spawn sshuttle --dns -vr ec2-user@<bastion instance id> <vpc cid
 Navigate back to the terminal in the complete-example directory and Provision the EKS Cluster
 
 ```sh
-terraform apply -var-file ../../../complete-example.tfvars
+terraform apply -var-file ../../../terraform.tfvars
 # type yes to confirm or utilize the ```-auto-approve``` flag in the above command
 ```
 
@@ -123,7 +123,7 @@ To clean up your environment, destroy the Terraform modules in reverse order.
 Destroy the Kubernetes Add-ons, EKS cluster with Node groups and VPC
 
 ```sh
-terraform destroy -var-file ../../../complete-example.tfvars -auto-approve
+terraform destroy -var-file ../../../terraform.tfvars -auto-approve
 ```
 
 ## Requirements
