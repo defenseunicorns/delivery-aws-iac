@@ -5,7 +5,7 @@ data "aws_caller_identity" "current" {}
 ################################################################################
 
 module "db" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git?ref=v5.2.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git?ref=v5.2.3"
 
   identifier = var.identifier
 
@@ -74,7 +74,7 @@ module "db" {
 ################################################################################
 module "kms" {
   source      = "terraform-aws-modules/kms/aws"
-  version     = "~> 1.0"
+  version     = "~> 1.3"
   description = "KMS key for cross region automated backups replication"
 
   # Aliases
@@ -91,7 +91,7 @@ module "kms" {
 }
 
 module "db_automated_backups_replication" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git//modules/db_instance_automated_backups_replication?ref=v5.2.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git//modules/db_instance_automated_backups_replication?ref=v5.2.3"
 
   source_db_instance_arn = module.db.db_instance_arn
   kms_key_arn            = module.kms.key_arn
@@ -106,7 +106,7 @@ module "db_automated_backups_replication" {
 ################################################################################
 module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  version = "~> 4.17"
 
   name            = var.db_name
   description     = "Complete PostgreSQL example security group"

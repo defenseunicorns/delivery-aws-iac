@@ -12,7 +12,7 @@ resource "aws_kms_key" "dynamo" {
 }
 
 resource "aws_dynamodb_table" "dynamodb_terraform_state_lock" {
-  name         = var.dynamodb_table_name
+  name         = "${var.dynamodb_table_name}-${formatdate("YYYYMMDDhhmmss", timestamp())}"
   hash_key     = "LockID"
   billing_mode = "PAY_PER_REQUEST"
   point_in_time_recovery {
