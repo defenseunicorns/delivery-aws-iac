@@ -5,8 +5,8 @@ provider "aws" {
 data "aws_partition" "current" {}
 
 module "tfstate_backend" {
-  source = "../../modules/tfstate-backend"
-
+  source = "git::https://github.com/defenseunicorns/iac.git//modules/tfstate-backend?ref=v0.0.0-alpha.2"
+  
   region                 = var.region
   bucket_prefix          = "my-tfstate-backend"
   dynamodb_table_name    = "my-tfstate-backend-lock"
