@@ -7,9 +7,6 @@
 /modules/ @brianrexrode @ntwkninja @RothAndrew @UncleGedd
 /examples/ @brianrexrode @ntwkninja @RothAndrew @UncleGedd
 
-# Terraform Modules
-/modules/ @brianrexrode @ntwkninja @RothAndrew @UncleGedd
-
 # Privileged Files
 /CODEOWNERS @brianrexrode @ntwkninja @RothAndrew @UncleGedd
 /LICENSE @jeff-mccoy @runyontr
