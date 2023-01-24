@@ -1,12 +1,12 @@
 locals {
-    name      = basename(path.cwd)
-    eks_oidc_issuer_url = replace(var.eks_oidc_provider_arn, "/^(.*provider/)/", "")
+  name                = basename(path.cwd)
+  eks_oidc_issuer_url = replace(var.eks_oidc_provider_arn, "/^(.*provider/)/", "")
 }
 
 data "aws_iam_policy_document" "sops" {
 
   statement {
-    actions   = ["kms:Encrypt","kms:Decrypt","kms:DescribeKey","kms:GenerateRandom"]
+    actions   = ["kms:Encrypt", "kms:Decrypt", "kms:DescribeKey", "kms:GenerateRandom"]
     resources = [aws_kms_key.sops.arn]
   }
   statement {

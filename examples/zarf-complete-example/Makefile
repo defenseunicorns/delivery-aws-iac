@@ -58,7 +58,7 @@ help: ## Show a list of all targets
 clean: ## Clean up build files
 	@rm -rf ./build
 
-mkdir: 
+mkdir:
 	@mkdir -p build
 
 .PHONY: build

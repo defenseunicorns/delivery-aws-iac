@@ -12,7 +12,7 @@ module "db" {
   # All available versions: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts
   engine               = var.engine
   engine_version       = var.engine_version
-  family               = var.family # DB parameter group
+  family               = var.family               # DB parameter group
   major_engine_version = var.major_engine_version # DB option group
   instance_class       = var.instance_class
 
@@ -22,24 +22,24 @@ module "db" {
   # NOTE: Do NOT use 'user' as the value for 'username' as it throws:
   # "Error creating DB Instance: InvalidParameterValue: MasterUsername
   # user cannot be used as it is a reserved word used by the engine"
-  db_name  = var.db_name
-  username = var.username
+  db_name                = var.db_name
+  username               = var.username
   create_random_password = var.create_random_password
-  password = var.password # If 'create_random_password' is false, then 'password' must be set
-  port     = 5432
+  password               = var.password # If 'create_random_password' is false, then 'password' must be set
+  port                   = 5432
 
-  multi_az                        = true
-  db_subnet_group_name            = var.database_subnet_group_name
-  vpc_security_group_ids          = [module.security_group.security_group_id]
+  multi_az               = true
+  db_subnet_group_name   = var.database_subnet_group_name
+  vpc_security_group_ids = [module.security_group.security_group_id]
 
   maintenance_window              = "Mon:00:00-Mon:03:00"
   backup_window                   = "03:00-06:00"
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
   create_cloudwatch_log_group     = true
 
-  backup_retention_period         = 1
-  skip_final_snapshot             = true
-  deletion_protection             = var.deletion_protection
+  backup_retention_period = 1
+  skip_final_snapshot     = true
+  deletion_protection     = var.deletion_protection
 
   performance_insights_enabled          = true
   performance_insights_retention_period = 7
@@ -81,7 +81,7 @@ module "kms" {
   aliases                 = [var.db_name]
   aliases_use_name_prefix = true
 
-  key_owners              = [data.aws_caller_identity.current.arn]
+  key_owners = [data.aws_caller_identity.current.arn]
 
   tags = var.tags
 
@@ -108,9 +108,9 @@ module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.17"
 
-  name            = var.db_name
-  description     = "Complete PostgreSQL example security group"
-  vpc_id          = var.vpc_id
+  name        = var.db_name
+  description = "Complete PostgreSQL example security group"
+  vpc_id      = var.vpc_id
 
   # ingress
   ingress_with_cidr_blocks = [

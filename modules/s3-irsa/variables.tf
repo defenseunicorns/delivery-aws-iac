@@ -63,7 +63,7 @@ variable "policy_name_prefix" {
   default     = "irsa-policy"
 }
 
-variable bucket_prefix {
+variable "bucket_prefix" {
   description = "Prefix for the S3 bucket"
   type        = string
   default     = "bigbang"
