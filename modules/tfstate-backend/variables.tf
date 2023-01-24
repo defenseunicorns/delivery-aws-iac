@@ -9,8 +9,8 @@ variable "bucket_prefix" {
 }
 
 variable "dynamodb_table_name" {
-    description = "DynamoDB Table Name"
-    type        = string
+  description = "DynamoDB Table Name"
+  type        = string
 }
 
 variable "versioning_enabled" {

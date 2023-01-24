@@ -23,8 +23,8 @@ resource "aws_dynamodb_table" "dynamodb_terraform_state_lock" {
     type = "S"
   }
   server_side_encryption {
-    enabled = true
-    kms_key_arn= aws_kms_key.dynamo.arn
+    enabled     = true
+    kms_key_arn = aws_kms_key.dynamo.arn
   }
 }
 
@@ -49,8 +49,8 @@ module "s3_bucket" {
 }
 
 resource "aws_s3_bucket_versioning" "versioning" {
-count = var.versioning_enabled ? 1 : 0
-bucket = module.s3_bucket.s3_bucket_id
+  count  = var.versioning_enabled ? 1 : 0
+  bucket = module.s3_bucket.s3_bucket_id
   versioning_configuration {
     status = "Enabled"
   }

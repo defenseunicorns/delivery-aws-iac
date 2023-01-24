@@ -1,4 +1,4 @@
-# EKS Cluster Deployment with new VPC & Big Bang Dependencies 
+# EKS Cluster Deployment with new VPC & Big Bang Dependencies
 
 This example deploys the following Basic EKS Cluster with VPC
 
@@ -36,7 +36,7 @@ Modify terraform.tfvars (located in tmp directory) with desired values
 
 #### Step 2: Terraform Init & State
 
-Initialize a working directory with configuration files and create local terraform state file 
+Initialize a working directory with configuration files and create local terraform state file
 
 ```sh
 terraform init
@@ -75,7 +75,7 @@ host i-* mi-*
     ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
 ```
 
-Test SSH connection to the Bastion 
+Test SSH connection to the Bastion
 
 ```sh
 # replace "my-password" with the variable set if changed from the default

@@ -41,7 +41,7 @@
 
 #################### Keycloak ###########################
 
-  keycloak_db_password          = "my-password" 
+  keycloak_db_password          = "my-password"
   kc_db_engine_version          = "14.1"
   kc_db_family                  = "postgres14" # DB parameter group
   kc_db_major_engine_version    = "14"         # DB option group

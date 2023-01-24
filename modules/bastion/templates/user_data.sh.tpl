@@ -18,7 +18,7 @@ then
     sudo sed -i '/PasswordAuthentication no/s/^/#/g' /etc/ssh/sshd_config
     sudo sed -i '/PasswordAuthentication yes/s/^#//g' /etc/ssh/sshd_config
     sudo systemctl restart sshd
-    echo ${ssh_password} | sudo passwd --stdin ec2-user        
+    echo ${ssh_password} | sudo passwd --stdin ec2-user
 else
     systemctl disable amazon-ssm-agent
     systemctl stop amazon-ssm-agent
