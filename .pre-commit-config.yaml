@@ -20,19 +20,19 @@ repos:
     rev: 0.2.0
     hooks:
       - id: fix-smartquotes
-# TODO: re-enable this after Zarf releases a new version that includes the "scripts to actions" changes
-#  - repo: https://github.com/python-jsonschema/check-jsonschema
-#    rev: 0.20.0
-#    hooks:
-#      - id: check-jsonschema
-#        name: "Validate Zarf Configs Against Schema"
-#        files: "zarf.yaml"
-#        types: [yaml]
-#        args:
-#          [
-#            "--schemafile",
-#            "https://raw.githubusercontent.com/defenseunicorns/zarf/v0.23.5/zarf.schema.json",
-#          ]
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.20.0
+    hooks:
+      # TODO: Change the schemafile to one from a release version instead of main
+      - id: check-jsonschema
+        name: "Validate Zarf Configs Against Schema"
+        files: "zarf.yaml"
+        types: [yaml]
+        args:
+          [
+            "--schemafile",
+            "https://raw.githubusercontent.com/defenseunicorns/zarf/main/zarf.schema.json",
+          ]
   - repo: https://github.com/dnephin/pre-commit-golang
     rev: v0.5.0
     hooks:
