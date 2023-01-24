@@ -3,13 +3,13 @@
 # Docs & Examples
 *.md @brianrexrode @ntwkninja @RothAndrew @jeff-mccoy
 
-# Terraform Modules & Examples 
+# Terraform Modules & Examples
 /modules/ @brianrexrode @ntwkninja @RothAndrew @UncleGedd
 /examples/ @brianrexrode @ntwkninja @RothAndrew @UncleGedd
 
 # Privileged Files
 /CODEOWNERS @brianrexrode @ntwkninja @RothAndrew @UncleGedd
-/LICENSE @jeff-mccoy @runyontr 
+/LICENSE @jeff-mccoy @runyontr
 /.github/ @jeff-mccoy @brianrexrode @ntwkninja @RothAndrew
 /.gitignore @jeff-mccoy @brianrexrode @ntwkninja @RothAndrew
 /renovate.json @jeff-mccoy @brianrexrode @ntwkninja @RothAndrew

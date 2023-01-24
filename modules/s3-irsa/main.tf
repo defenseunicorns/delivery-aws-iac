@@ -1,6 +1,6 @@
 locals {
-    name      = basename(path.cwd)
-    eks_oidc_issuer_url = replace(var.eks_oidc_provider_arn, "/^(.*provider/)/", "")
+  name                = basename(path.cwd)
+  eks_oidc_issuer_url = replace(var.eks_oidc_provider_arn, "/^(.*provider/)/", "")
 }
 
 data "aws_caller_identity" "current" {}

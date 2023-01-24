@@ -95,7 +95,7 @@ components:
         target: "tmp/examples/###ZARF_PKG_VAR_TF_ENV_STATE###"
       - source: "###ZARF_PKG_VAR_TF_MODULES_DIR###"
         target: "tmp/modules"
-  
+
   - name: terraform-s3-bucket
     actions:
       onDeploy:
@@ -106,7 +106,7 @@ components:
         before:
           - cmd: "terraform apply -auto-approve"
           - cmd: "terraform output -raw tfstate_bucket_id"
-            setVariable: BUCKET_ID 
+            setVariable: BUCKET_ID
         onSuccess:
           - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$ZARF_VAR_BUCKET_ID'\"|' backend.tf"
           - cmd: "aws s3 cp backend.tf s3://$ZARF_VAR_BUCKET_ID/tf-state-backend.tf"
