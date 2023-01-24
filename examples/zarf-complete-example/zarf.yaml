@@ -89,7 +89,7 @@ components:
         before:
           - cmd: "terraform init -backend=false"
             dir: "###ZARF_PKG_VAR_TF_ENV_DIR###"
-          - cmd: "terraform init -var-file ../###ZARF_PKG_VAR_TF_ENV###/terraform.tfvars.example"
+          - cmd: "terraform init"
             dir: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###"
     files:
       - source: "###ZARF_PKG_VAR_TF_ENV_DIR###"
