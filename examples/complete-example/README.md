@@ -89,7 +89,8 @@ expect -c 'spawn ssh ec2-user@$BASTION_INSTANCE_ID ; expect "assword:"; send "my
 In a new terminal, open an sshuttle tunnel to the bastion
 
 ```sh
-sshuttle --dns -vr ec2-user@$BASTION_INSTANCE_ID <vpc cidr block>
+# subnet below is the CIDR block from your tfvars file
+sshuttle --dns -vr ec2-user@$BASTION_INSTANCE_ID 10.200.0.0/16
 ```
 
 Navigate back to the terminal in the complete-example directory and Provision the EKS Cluster
