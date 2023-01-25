@@ -79,3 +79,8 @@ resource "aws_iam_role_policy_attachment" "irsa" {
   policy_arn = aws_iam_policy.sops_policy.arn
   role       = aws_iam_role.irsa_sops[0].name
 }
+
+resource "aws_iam_role_policy_attachment" "sops" {
+  role       = var.role_name
+  policy_arn = aws_iam_policy.sops_policy.arn
+}
