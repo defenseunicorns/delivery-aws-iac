@@ -18,7 +18,7 @@ module "s3_bucket" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
-
+  
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -122,8 +122,9 @@ resource "aws_iam_role_policy_attachment" "irsa" {
 
 
 resource "aws_dynamodb_table" "loki_dynamodb" {
-
-  name         = var.loki_dynamodb_name
+  count        = var.dynamodb_enabled != null ? 1 : 0
+  
+  name         = "Loki_DynamoDB"
   hash_key     = "LockID"
   billing_mode = "PAY_PER_REQUEST"
   point_in_time_recovery {
@@ -134,24 +135,20 @@ resource "aws_dynamodb_table" "loki_dynamodb" {
     type = "S"
   }
   server_side_encryption {
-    enabled = true
-    kms_key_arn= aws_kms_key.dynamo.arn
+    enabled     = true
+    kms_key_arn = aws_kms_key.objects.arn
   }
 }
 
-resource "aws_iam_policy" "dynamo_policy" {
-  name = "dynamodb_policy"  ### May need to be variablized ##
-  policy = <<EOF
-{
-  "Statement": [
-    {
-  "Effect": "Allow",
-  "Resource": "${aws_dynamodb_table.loki_dynamodb.name}",
-  "Action": [
+data "aws_iam_policy_document" "dynamo_policy" {
+ 
+
+  statement {
+  actions = [
     "dynamodb:BatchGetItem",
-    "dynamodb:BatchWriteItem"
-    "dynamodb:DeleteItem"
-    "dynamodb:DescribeTable"
+    "dynamodb:BatchWriteItem",
+    "dynamodb:DeleteItem",
+    "dynamodb:DescribeTable",
     "dynamodb:GetItem",
     "dynamodb:ListTagsOfResource",
     "dynamodb:PutItem",
@@ -164,30 +161,19 @@ resource "aws_iam_policy" "dynamo_policy" {
     "dynamodb:DeleteTable",
     "dynamodb:ListTables"
     ]
-}
-EOF
-}
-resource "aws_iam_role" "loki_index_role" {
-  name = "loki_index_role"
-
-  assume_role_policy = <<EOF
-{
-  
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
+  }
 }
 
-resource "aws_iam_role_policy_attachment" "loki_index_attachment" {
-  role = aws_iam_role
-  policy_arn = aws_iam_policy.dynamodb_policy
-  
+resource "aws_iam_policy" "dynamodb_policy" {
+  # count     = var.dynamodb_enabled != null ? 1 : 0
+
+  description = "DynamoDB policy"
+  policy      = data.aws_iam_policy_document.dynamo_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "dynamodb_index_attachment" {
+  # count    = var.dynamodb_enabled != null ? 1 : 0
+
+  policy_arn = aws_iam_policy.dynamodb_policy.arn
+  role       = aws_iam_role.irsa[0].name
 }

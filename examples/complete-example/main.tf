@@ -120,7 +120,6 @@ module "loki_s3_bucket" {
   irsa_iam_role_name         = "${module.eks.eks_cluster_id}-logging-loki-sa-role"
   eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn
   tags                       = local.tags
-  name_dynamodb              =  "DynamoDB-Table"
   dynamodb_enabled           = true
 }
 
