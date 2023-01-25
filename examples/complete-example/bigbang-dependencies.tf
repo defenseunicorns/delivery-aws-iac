@@ -8,7 +8,6 @@
 
 module "flux_sops" {
   source = "../../modules/sops"
-  depends_on = [module.eks]
 
   region                     = var.region
   cluster_name               = module.eks.eks_cluster_id
@@ -28,7 +27,6 @@ module "flux_sops" {
 
 module "loki_s3_bucket" {
   source = "git::https://github.com/defenseunicorns/iac.git//modules/s3-irsa?ref=v0.0.0-alpha.2"
-  depends_on = [module.eks]
 
   region                     = var.region
   cluster_name               = module.eks.eks_cluster_id

@@ -56,7 +56,6 @@ module "bastion" {
 
 module "eks" {
   source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v0.0.0-alpha.2"
-  depends_on = [module.bastion]
 
   name                     = var.cluster_name
   vpc_id                   = module.vpc.vpc_id
