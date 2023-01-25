@@ -74,6 +74,7 @@ module "db" {
 ################################################################################
 module "kms" {
   source      = "terraform-aws-modules/kms/aws"
+
   version     = "~> 1.3"
   description = "KMS key for cross region automated backups replication"
 
@@ -91,9 +92,9 @@ module "kms" {
 }
 
 module "db_automated_backups_replication" {
-  count = var.automated_backups_replication_enabled != null ? 1 : 0
-
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git//modules/db_instance_automated_backups_replication?ref=v5.2.3"
+
+  count = var.automated_backups_replication_enabled != null ? 1 : 0
 
   source_db_instance_arn = module.db.db_instance_arn
   kms_key_arn            = module.kms.key_arn
