@@ -29,10 +29,10 @@ Ensure that your AWS credentials are configured. This can be done by running `aw
 mkdir tmp && cd tmp
 git clone https://github.com/defenseunicorns/iac.git
 cd examples/complete-example/
-mv terraform.tfvars.example ../../../terraform.tfvars
+cp terraform.tfvars.example ../../../terraform.tfvars
 ```
 
-Modify terraform.tfvars (located in tmp directory) with desired values
+Modify terraform.tfvars (located in tmp directory) with desired values. AWS usernames must be changed to match actual usernames `aws iam get-user | jq '.[]' | jq -r '.UserName'`
 
 #### Step 2: Terraform Init & State
 
@@ -47,13 +47,15 @@ terraform init
 ```sh
 cd tmp/examples/tf-state-backend
 terraform apply
+export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)`
+export DYNAMODB_TABLE_NAME=`(terraform output -raw tfstate_dynamodb_table_name)`
 
 cd tmp/examples/complete-example
 mv backend.example backend.tf
-tf init -backend-config="bucket=<bucket_id from output of previous apply>" \
+tf init -backend-config="bucket=$BUCKET_ID" \
 -backend-config="key=complete-example/terraform.tfstate" \
--backend-config="dynamodb_table=<table_name from output of previous apply>" \
--backend-config="region=<region from tfvars file"
+-backend-config="dynamodb_table=$DYNAMODB_TABLE_NAME" \
+-backend-config="region=$AWS_DEFAULT_REGION"
 ```
 
 #### Step 3: Provision VPC and Bastion
@@ -78,14 +80,17 @@ host i-* mi-*
 Test SSH connection to the Bastion
 
 ```sh
+#grab bastion instance id from terraform
+export BASTION_INSTANCE_ID=`(terraform output -raw bastion_instance_id)`
 # replace "my-password" with the variable set if changed from the default
-expect -c 'spawn ssh ec2-user@<bastion instance id> ; expect "assword:"; send "my-password\r"; interact'
+expect -c 'spawn ssh ec2-user@$BASTION_INSTANCE_ID ; expect "assword:"; send "my-password\r"; interact'
 ```
 
 In a new terminal, open an sshuttle tunnel to the bastion
 
 ```sh
-sudo expect -c 'spawn sshuttle --dns -vr ec2-user@<bastion instance id> <vpc cidr block> ; expect "assword:"; send "my-password\r"; interact'
+# subnet below is the CIDR block from your tfvars file
+sshuttle --dns -vr ec2-user@$BASTION_INSTANCE_ID 10.200.0.0/16
 ```
 
 Navigate back to the terminal in the complete-example directory and Provision the EKS Cluster
