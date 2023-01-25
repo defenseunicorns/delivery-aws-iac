@@ -115,3 +115,9 @@ variable "password" {
   default     = null
   sensitive   = true
 }
+
+variable "automated_backups_replication_enabled" {
+  description = "Whether to enable automated backups cross-region replication"
+  type        = bool
+  default     = false
+}
