@@ -1,6 +1,6 @@
 locals {
-    name      = basename(path.cwd)
-    eks_oidc_issuer_url = replace(var.eks_oidc_provider_arn, "/^(.*provider/)/", "")
+  name                = basename(path.cwd)
+  eks_oidc_issuer_url = replace(var.eks_oidc_provider_arn, "/^(.*provider/)/", "")
 }
 
 data "aws_caller_identity" "current" {}
@@ -18,7 +18,7 @@ module "s3_bucket" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
-  
+
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -113,8 +113,6 @@ resource "aws_iam_role_policy_attachment" "irsa" {
   policy_arn = aws_iam_policy.irsa_policy.arn
   role       = aws_iam_role.irsa[0].name
 }
-
-
 ################################################################################
 # DynamoDB Module
 ################################################################################
@@ -124,23 +122,26 @@ resource "aws_iam_role_policy_attachment" "irsa" {
 resource "aws_dynamodb_table" "loki_dynamodb" {
   count        = var.dynamodb_enabled != null ? 1 : 0
   
-  name         = "Loki_DynamoDB"
+  name         = "${var.cluster_name}-dynamodb_index"
   hash_key     = "LockID"
   billing_mode = "PAY_PER_REQUEST"
+  
   point_in_time_recovery {
-    enabled = true
+    enabled    = true
   }
+  
   attribute {
-    name = "LockID"
-    type = "S"
+    name       = "LockID"
+    type       = "S"
   }
+  
   server_side_encryption {
     enabled     = true
     kms_key_arn = aws_kms_key.objects.arn
   }
 }
 
-data "aws_iam_policy_document" "dynamo_policy" {
+data "aws_iam_policy_document" "dynamo_irsa_policy" {
  
 
   statement {
@@ -161,19 +162,20 @@ data "aws_iam_policy_document" "dynamo_policy" {
     "dynamodb:DeleteTable",
     "dynamodb:ListTables"
     ]
+    resources = ["arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/bigbang-*"]
   }
 }
 
-resource "aws_iam_policy" "dynamodb_policy" {
+resource "aws_iam_policy" "dynamodb_irsa_policy" {
   # count     = var.dynamodb_enabled != null ? 1 : 0
-
-  description = "DynamoDB policy"
-  policy      = data.aws_iam_policy_document.dynamo_policy.json
+  name        = "${var.cluster_name}-dynmodb_irsa_policy"
+  description = "DynamoDB IAM policy"
+  policy      = data.aws_iam_policy_document.dynamo_irsa_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "dynamodb_index_attachment" {
+resource "aws_iam_role_policy_attachment" "dynamodb_policy_attachment" {
   # count    = var.dynamodb_enabled != null ? 1 : 0
 
-  policy_arn = aws_iam_policy.dynamodb_policy.arn
+  policy_arn = aws_iam_policy.dynamodb_irsa_policy.arn
   role       = aws_iam_role.irsa[0].name
 }

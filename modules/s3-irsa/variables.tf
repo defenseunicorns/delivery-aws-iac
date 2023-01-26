@@ -63,7 +63,7 @@ variable "policy_name_prefix" {
   default     = "irsa-policy"
 }
 
-variable bucket_prefix {
+variable "bucket_prefix" {
   description = "Prefix for the S3 bucket"
   type        = string
   default     = "bigbang"
@@ -74,7 +74,6 @@ variable "kms_key_alias" {
   type        = string
   default     = ""
 }
-
 variable "name_dynamodb" {
   description = "Name of DynamoDB table"
   type = string
