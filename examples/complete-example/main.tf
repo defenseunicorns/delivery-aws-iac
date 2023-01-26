@@ -42,7 +42,6 @@ module "bastion" {
   ssh_user               = var.ssh_user
   ssh_password           = var.bastion_ssh_password
   assign_public_ip       = false # var.assign_public_ip
-  # cluster_sops_policy_arn = module.flux_sops.sops_policy_arn
   enable_log_to_s3         = true
   enable_log_to_cloudwatch = true
   vpc_endpoints_enabled    = true
