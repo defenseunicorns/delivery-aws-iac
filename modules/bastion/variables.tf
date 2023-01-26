@@ -254,24 +254,29 @@ variable "ssh_public_key_names" {
 
 variable "cluster_sops_policy_arn" {
   description = "value of the policy arn for the cluster sops policy"
-  default = ""
+  default     = ""
 }
 
 variable "add_sops_policy" {
   description = "value of the policy arn for the cluster sops policy"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
-variable ssm_enabled {
+variable "ssm_enabled" {
   description = "Enable SSM agent"
-  type = bool
-  default = true
+  type        = bool
+  default     = true
+}
+
+variable "ssh_password" {
+  description = "Password for SSH access if SSM authentication is enabled"
+  type        = string
 }
 
 variable "ssmkey_arn" {
   description = "SSM key arn"
-  default = ""
+  default     = ""
 }
 
 variable "tags" {

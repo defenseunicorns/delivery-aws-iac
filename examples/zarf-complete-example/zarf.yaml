@@ -26,16 +26,17 @@ variables:
     default: "10.200.0.0/16"
   - name: VPC_NAME
     default: "my-vpc"
-  - name: EKS_CLUSTER_NAME
+  - name: CLUSTER_NAME
     default: "my-eks"
-  - name: EKS_CLUSTER_VERSION
+  - name: EKS_K8S_VERSION
     default: "1.23"
   - name: BASTION_NAME
     default: "my-bastion"
+  - name: SSH_USER
+    description: "Bastion user password for ssh"
+    prompt: true
   - name: BASTION_AMI_ID
     default: "ami-000d4884381edb14c"
-  - name: BASTION_SSH_USER
-    default: "ec2-user"
   - name: KEYCLOAK_ENABLED
     default: "true"
   - name: KEYCLOAK_DB_PASSWORD
@@ -75,9 +76,9 @@ components:
       # - source: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
       #   target: tmp/awscliv2.zip
 
+
   - name: terraform-init
     description: Terraform init using zarf actions
-    required: true
     actions:
       onCreate:
         defaults:
@@ -86,7 +87,7 @@ components:
         before:
           - cmd: "terraform init -backend=false"
             dir: "###ZARF_PKG_VAR_TF_ENV_DIR###"
-          - cmd: "terraform init -backend=false"
+          - cmd: "terraform init"
             dir: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###"
     files:
       - source: "###ZARF_PKG_VAR_TF_ENV_DIR###"
@@ -95,7 +96,7 @@ components:
         target: "tmp/examples/###ZARF_PKG_VAR_TF_ENV_STATE###"
       - source: "###ZARF_PKG_VAR_TF_MODULES_DIR###"
         target: "tmp/modules"
-  
+
   - name: terraform-s3-bucket
     actions:
       onDeploy:
@@ -107,10 +108,9 @@ components:
           - cmd: "terraform apply -auto-approve"
           - cmd: "terraform output -raw tfstate_bucket_id"
             setVariable: BUCKET_ID 
-        onSuccess:
-          - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$ZARF_VAR_BUCKET_ID'\"|' backend.tf"
-          - cmd: "aws s3 cp backend.tf s3://$ZARF_VAR_BUCKET_ID/tf-state-backend.tf"
-          - cmd: "terraform init -migrate-state -force-copy"
+          - cmd: "terraform output -raw tfstate_dynamodb_table_name"
+            setVariable: DYNAMODB_TABLE_NAME
+          - cmd: terraform init -migrate-state -force-copy -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV_STATE###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
 
   - name: terraform-apply-vpc-bastion
     actions:
@@ -119,14 +119,11 @@ components:
           maxRetries: 3
           dir: tmp/###ZARF_PKG_VAR_TF_ENV###
         before:
-          - cmd: "mv backend.example backend.tf && sed -i '' 's|bucket.*|bucket         = \"'$ZARF_VAR_BUCKET_ID'\"|' backend.tf"
-          - cmd: "aws s3 cp backend.tf s3://$ZARF_VAR_BUCKET_ID/complete-ex-backend.tf"
-          - cmd: "terraform init -migrate-state -force-copy"
+          - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
           - cmd: "terraform apply -target=module.vpc -target=module.bastion -auto-approve"
           - cmd: "terraform output bastion_instance_id"
           - cmd: "terraform output -raw bastion_private_key"
           - cmd: echo "update your sshuttle info"
-          - cmd: "sleep 180"
 
   - name: terraform-apply-eks
     actions:
@@ -135,9 +132,22 @@ components:
           maxRetries: 3
           dir: tmp/###ZARF_PKG_VAR_TF_ENV###
         before:
-          # - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/complete-ex-backend.tf backend.tf"
-          # - cmd: "terraform init -migrate-state -force-copy"
           - cmd: "terraform apply -target=module.eks -auto-approve"
+
+  - name: terraform-set-state-vars
+    actions:
+      required: true
+      onDeploy:
+        defaults:
+          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: "tmp/###ZARF_PKG_VAR_TF_ENV_STATE###"
+        before:
+          - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV_STATE###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
+          - cmd: "terraform output -raw tfstate_bucket_id"
+            setVariable: BUCKET_ID 
+          - cmd: "terraform output -raw tfstate_dynamodb_table_name"
+            setVariable: DYNAMODB_TABLE_NAME
 
   - name: terraform-apply-day2
     actions:
@@ -147,8 +157,7 @@ components:
           maxRetries: 3
           dir: tmp/###ZARF_PKG_VAR_TF_ENV###
         before:
-          - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/complete-ex-backend.tf backend.tf"
-          - cmd: "terraform init"
+          - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
           - cmd: "terraform apply -target=module.vpc -auto-approve"
 
   - name: terraform-destroy
@@ -159,6 +168,5 @@ components:
           maxRetries: 3
           dir: tmp/###ZARF_PKG_VAR_TF_ENV###
         before:
-          - cmd: "aws s3 cp s3://$ZARF_VAR_BUCKET_ID/complete-ex-backend.tf backend.tf"
-          - cmd: "terraform init"
+          - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
           - cmd: "terraform apply -destroy -auto-approve"

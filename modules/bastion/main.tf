@@ -30,16 +30,16 @@ data "aws_subnet" "subnet_by_name" {
 
 resource "aws_instance" "application" {
   #checkov:skip=CKV2_AWS_41: IAM role is created in the module
-  ami                         = var.ami_id != "" ? var.ami_id : data.aws_ami.from_filter[0].id
-  instance_type               = local.instance_type
+  ami           = var.ami_id != "" ? var.ami_id : data.aws_ami.from_filter[0].id
+  instance_type = local.instance_type
   # key_name                    = var.ec2_key_name
   key_name                    = aws_key_pair.bastion_key.key_name
   vpc_security_group_ids      = length(local.security_group_configs) > 0 ? aws_security_group.sg.*.id : var.security_group_ids
   user_data                   = data.cloudinit_config.config.rendered
   iam_instance_profile        = local.role_name == "" ? null : aws_iam_instance_profile.bastion_ssm_profile.name
-  ebs_optimized = true
+  ebs_optimized               = true
   associate_public_ip_address = var.assign_public_ip
-  monitoring = true
+  monitoring                  = true
   root_block_device {
     volume_size = var.root_volume_config.volume_size
     volume_type = var.root_volume_config.volume_type
@@ -198,6 +198,7 @@ data "cloudinit_config" "config" {
         enable_hourly_cron_updates  = local.enable_hourly_cron_updates
         additional_user_data_script = var.additional_user_data_script
         ssm_enabled                 = var.ssm_enabled
+        ssh_password                = var.ssh_password
       }
     )
   }

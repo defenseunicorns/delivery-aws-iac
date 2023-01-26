@@ -11,23 +11,23 @@ variable "eks_k8s_version" {
   default     = "1.23"
 }
 
- variable "vpc_id" {
+variable "vpc_id" {
   description = "VPC ID"
   type        = string
   default     = ""
- }
+}
 
- variable "private_subnet_ids" {
+variable "private_subnet_ids" {
   description = "Private subnet IDs"
   type        = list(string)
   default     = []
- }
+}
 
- variable "public_subnet_ids" {
+variable "public_subnet_ids" {
   description = "Public subnet IDs"
   type        = list(string)
   default     = []
- }
+}
 
 variable "aws_region" {
   type    = string
@@ -46,12 +46,12 @@ variable "name" {
 
 variable "aws_auth_eks_map_users" {
   description = "List of map of users to add to aws-auth configmap"
-  type        = list(object({
+  type = list(object({
     userarn  = string
     username = string
     groups   = list(string)
   }))
-  default     = []
+  default = []
 }
 
 variable "cluster_kms_key_additional_admin_arns" {

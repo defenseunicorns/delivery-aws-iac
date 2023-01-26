@@ -74,6 +74,7 @@ variable "kms_key_alias" {
   type        = string
   default     = ""
 }
+
 variable "name_dynamodb" {
   description = "Name of DynamoDB table"
   type = string

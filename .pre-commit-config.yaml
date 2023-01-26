@@ -1,0 +1,50 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: check-merge-conflict
+      - id: detect-aws-credentials
+        args:
+          - "--allow-missing-credentials"
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: check-yaml
+        args:
+          - "--allow-multiple-documents"
+  - repo: https://github.com/sirosen/fix-smartquotes
+    rev: 0.2.0
+    hooks:
+      - id: fix-smartquotes
+# TODO: Re-enable this after the new actions stuff has been released
+#  - repo: https://github.com/python-jsonschema/check-jsonschema
+#    rev: 0.20.0
+#    hooks:
+#      - id: check-jsonschema
+#        name: "Validate Zarf Configs Against Schema"
+#        files: "zarf.yaml"
+#        types: [yaml]
+#        args:
+#          [
+#            "--schemafile",
+#            "https://raw.githubusercontent.com/defenseunicorns/zarf/jeff-doing-stupid-jeff-things/zarf.schema.json",
+#          ]
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.0
+    hooks:
+      - id: go-fmt
+      - id: golangci-lint
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.77.0
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_docs
+      # TODO: Get checkov enabled based on existing configuration in github actions workflow
+      # - id: checkov
+#      - id: terraform_tflint
+#      - id: terraform_tfsec
+#      - id: terraform_validate

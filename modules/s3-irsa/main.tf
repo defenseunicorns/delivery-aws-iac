@@ -113,11 +113,10 @@ resource "aws_iam_role_policy_attachment" "irsa" {
   policy_arn = aws_iam_policy.irsa_policy.arn
   role       = aws_iam_role.irsa[0].name
 }
-################################################################################
-# DynamoDB Module
-################################################################################
 
-
+################################################################################
+# DynamoDB Table
+################################################################################
 
 resource "aws_dynamodb_table" "loki_dynamodb" {
   count        = var.dynamodb_enabled != null ? 1 : 0

@@ -18,13 +18,13 @@ variable "azs" {
   type        = list(string)
 }
 
-variable private_subnet_tags {
+variable "private_subnet_tags" {
   description = "Tags to apply to private subnets"
   type        = map(string)
   default     = {}
 }
 
-variable public_subnet_tags {
+variable "public_subnet_tags" {
   description = "Tags to apply to public subnets"
   type        = map(string)
   default     = {}

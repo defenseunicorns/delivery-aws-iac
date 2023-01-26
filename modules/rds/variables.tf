@@ -1,7 +1,7 @@
 variable "vpc_cidr" {
   description = "The CIDR block for the VPC."
   type        = string
-  default     = ""  
+  default     = ""
 }
 
 variable "vpc_id" {
@@ -114,4 +114,10 @@ variable "password" {
   type        = string
   default     = null
   sensitive   = true
+}
+
+variable "automated_backups_replication_enabled" {
+  description = "Whether to enable automated backups cross-region replication"
+  type        = bool
+  default     = false
 }

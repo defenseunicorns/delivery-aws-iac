@@ -1,8 +1,8 @@
 
 # Create EC2 Instance Profile
 resource "aws_iam_instance_profile" "bastion_ssm_profile" {
-  name  = "${var.name}-ssm-profile"
-  role  = aws_iam_role.bastion_ssm_role.name
+  name = "${var.name}-ssm-profile"
+  role = aws_iam_role.bastion_ssm_role.name
 }
 
 # Create EC2 Instance Role
@@ -99,7 +99,7 @@ data "aws_iam_policy_document" "ssm_s3_cwl_access" {
 }
 
 resource "aws_iam_policy" "ssm_s3_cwl_access" {
-  name   = "ssm_s3_cwl_access-${var.aws_region}"
+  name   = "${var.name}-ssm_s3_cwl_access-${var.aws_region}"
   path   = "/"
   policy = data.aws_iam_policy_document.ssm_s3_cwl_access.json
 }
@@ -122,11 +122,11 @@ data "aws_iam_policy_document" "ssm_ec2_access" {
     resources = [aws_kms_key.ssmkey.arn]
   }
   statement {
-      actions = ["ssm:StartSession"]
-      resources = [
-        "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.application.id}",
-        "arn:${data.aws_partition.current.partition}:ssm:*:*:document/AWS-StartSSHSession"
-      ]
+    actions = ["ssm:StartSession"]
+    resources = [
+      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.application.id}",
+      "arn:${data.aws_partition.current.partition}:ssm:*:*:document/AWS-StartSSHSession"
+    ]
   }
 }
 
@@ -158,11 +158,6 @@ resource "aws_iam_role_policy_attachment" "custom" {
 }
 
 # Additional policy attachments if needed
-resource "aws_iam_role_policy_attachment" "sops" {
-  count      = var.add_sops_policy ? 1 : 0
-  role       = aws_iam_role.bastion_ssm_role.name
-  policy_arn = var.cluster_sops_policy_arn
-}
 
 resource "aws_iam_role_policy_attachment" "managed" {
   count      = local.role_name == "" ? 0 : length(var.policy_arns)

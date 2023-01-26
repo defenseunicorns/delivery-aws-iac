@@ -73,3 +73,9 @@ variable "vpc_id" {
   description = "VPC ID"
   default     = ""
 }
+
+variable "role_name" {
+  type        = string
+  description = "Role to attach the sops policy to"
+  default     = ""
+}
