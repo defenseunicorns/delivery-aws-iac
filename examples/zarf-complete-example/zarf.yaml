@@ -33,7 +33,10 @@ variables:
   - name: BASTION_NAME
     default: "my-bastion"
   - name: SSH_USER
-    description: "Bastion user password for ssh"
+    description: "Bastion user for ssh"
+    default: "ec2-user"
+  - name: BASTION_SSH_PASSWORD
+    description: "Bastion password for ssh"
     prompt: true
   - name: BASTION_AMI_ID
     default: "ami-000d4884381edb14c"
@@ -122,17 +125,9 @@ components:
           - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
           - cmd: "terraform apply -target=module.vpc -target=module.bastion -auto-approve"
           - cmd: "terraform output bastion_instance_id"
-          - cmd: "terraform output -raw bastion_private_key"
+          # - cmd: "terraform output -raw bastion_private_key"
           - cmd: echo "update your sshuttle info"
-
-  - name: terraform-apply-eks
-    actions:
-      onDeploy:
-        defaults:
-          maxRetries: 3
-          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
-        before:
-          - cmd: "terraform apply -target=module.eks -auto-approve"
+          - cmd: echo "Allow the bastion up to 5 minutes to completely initialize"
 
   - name: terraform-set-state-vars
     actions:
@@ -143,28 +138,56 @@ components:
           maxRetries: 3
           dir: "tmp/###ZARF_PKG_VAR_TF_ENV_STATE###"
         before:
-          - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV_STATE###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
           - cmd: "terraform output -raw tfstate_bucket_id"
             setVariable: BUCKET_ID 
           - cmd: "terraform output -raw tfstate_dynamodb_table_name"
             setVariable: DYNAMODB_TABLE_NAME
+          - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
+            dir: tmp/###ZARF_PKG_VAR_TF_ENV###
 
-  - name: terraform-apply-day2
+  - name: terraform-apply-eks
     actions:
       onDeploy:
         defaults:
-          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+        before:
+          - cmd: "terraform apply -target=module.eks -auto-approve"
+
+  - name: terraform-apply-bigbang-dependencies
+    actions:
+      onDeploy:
+        defaults:
           maxRetries: 3
           dir: tmp/###ZARF_PKG_VAR_TF_ENV###
         before:
           - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
-          - cmd: "terraform apply -target=module.vpc -auto-approve"
+          - cmd: "terraform apply -target=module.flux_sops -target=module.loki_s3_bucket -target=module.rds_postgres_keycloak -auto-approve"
 
-  - name: terraform-destroy
+  - name: terraform-destroy-bigbang-dependencies
     actions:
       onDeploy:
         defaults:
-          maxTotalSeconds: 300
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+        before:
+          - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
+          - cmd: "terraform apply -destroy -target=module.rds_postgres_keycloak -target=module.loki_s3_bucket -target=module.flux_sops -auto-approve"
+
+  - name: terraform-destroy-eks
+    actions:
+      onDeploy:
+        defaults:
+          maxRetries: 3
+          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+        before:
+          - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
+          - cmd: "terraform apply -destroy -target=module.eks -auto-approve"
+
+  - name: terraform-destroy-vpc-bastion
+    actions:
+      onDeploy:
+        defaults:
           maxRetries: 3
           dir: tmp/###ZARF_PKG_VAR_TF_ENV###
         before:
