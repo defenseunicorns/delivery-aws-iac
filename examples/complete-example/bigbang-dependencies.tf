@@ -41,6 +41,7 @@ module "loki_s3_bucket" {
   eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn
   tags                       = local.tags
   dynamodb_enabled           = true
+  dynamodb_url               = "dynamodb://${var.region}"
 }
 
 ###########################################################
