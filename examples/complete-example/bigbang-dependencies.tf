@@ -7,6 +7,7 @@
 ################# Enable EKS Sops #########################
 
 module "flux_sops" {
+  # source = "git::https://github.com/defenseunicorns/iac.git//modules/sops?ref=v<insert tagged version>"
   source = "../../modules/sops"
 
   region                     = var.region
@@ -26,8 +27,9 @@ module "flux_sops" {
 ################## Loki S3 Buckets ########################
 
 module "loki_s3_bucket" {
-  # source = "git::https://github.com/defenseunicorns/iac.git//modules/s3-irsa?ref=v0.0.0-alpha.2"
+  # source = "git::https://github.com/defenseunicorns/iac.git//modules/s3-irsa?ref=v<insert tagged version>"
     source  = "../../modules/s3-irsa"
+
   region                     = var.region
   cluster_name               = module.eks.eks_cluster_id
   policy_name_prefix         = "loki-s3-policy"
@@ -49,6 +51,7 @@ module "loki_s3_bucket" {
 ############### Keycloak RDS Database #####################
 
 module "rds_postgres_keycloak" {
+  # source = "git::https://github.com/defenseunicorns/iac.git//modules/rds_postgres_keycloak?ref=v<insert tagged version>"
   source = "../../modules/rds"
 
   count = var.keycloak_enabled ? 1 : 0

@@ -1,9 +1,9 @@
 data "aws_partition" "current" {}
 
 locals {
-    tags = {
-    Blueprint                 = "${replace(basename(path.cwd), "_", "-")}"  # tag names based on the directory name
-    GithubRepo                = "github.com/aws-ia/terraform-aws-eks-blueprints"
+  tags = {
+    Blueprint  = "${replace(basename(path.cwd), "_", "-")}"  # tag names based on the directory name
+    GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
   }
 }
 
@@ -11,7 +11,8 @@ locals {
 ####################### VPC ###############################
 
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v0.0.0-alpha.1"
+  # source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v<insert tagged version>"
+  source = "../../modules/vpc"
 
   region   = var.region
   name     = var.vpc_name
@@ -20,7 +21,7 @@ module "vpc" {
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"             = 1
+    "kubernetes.io/role/internal-elb"           = 1
   }
   create_database_subnet_group        = true
   create_database_subnet_route_table  = true
@@ -30,7 +31,8 @@ module "vpc" {
 ################### EKS Cluster ###########################
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v0.0.0-alpha.1"
+  # source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v<insert tagged version>"
+  source = "../../modules/eks"
 
   name                                  = var.cluster_name
   vpc_id                                = module.vpc.vpc_id
