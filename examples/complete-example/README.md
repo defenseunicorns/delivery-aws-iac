@@ -125,7 +125,13 @@ This following command used to update the `kubeconfig` in your local machine whe
 
 To clean up your environment, destroy the Terraform modules in reverse order.
 
-Destroy the Kubernetes Add-ons, EKS cluster with Node groups and VPC
+Destroy the Kubernetes Add-ons / EKS cluster first (requires sshuttle through bastion)
+
+```sh
+terraform destroy -var-file ../../../terraform.tfvars -auto-approve -target=module.eks 
+```
+
+Destroy all other resources
 
 ```sh
 terraform destroy -var-file ../../../terraform.tfvars -auto-approve

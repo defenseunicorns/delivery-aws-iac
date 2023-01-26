@@ -158,11 +158,6 @@ resource "aws_iam_role_policy_attachment" "custom" {
 }
 
 # Additional policy attachments if needed
-resource "aws_iam_role_policy_attachment" "sops" {
-  count      = var.add_sops_policy ? 1 : 0
-  role       = aws_iam_role.bastion_ssm_role.name
-  policy_arn = var.cluster_sops_policy_arn
-}
 
 resource "aws_iam_role_policy_attachment" "managed" {
   count      = local.role_name == "" ? 0 : length(var.policy_arns)
