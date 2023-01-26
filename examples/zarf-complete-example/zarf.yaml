@@ -26,19 +26,17 @@ variables:
     default: "10.200.0.0/16"
   - name: VPC_NAME
     default: "my-vpc"
-  - name: EKS_CLUSTER_NAME
+  - name: CLUSTER_NAME
     default: "my-eks"
-  - name: EKS_CLUSTER_VERSION
+  - name: EKS_K8S_VERSION
     default: "1.23"
   - name: BASTION_NAME
     default: "my-bastion"
-  - name: BASTION_SSH_PASSWORD
+  - name: SSH_USER
     description: "Bastion user password for ssh"
     prompt: true
   - name: BASTION_AMI_ID
     default: "ami-000d4884381edb14c"
-  - name: BASTION_SSH_USER
-    default: "ec2-user"
   - name: KEYCLOAK_ENABLED
     default: "true"
   - name: KEYCLOAK_DB_PASSWORD
