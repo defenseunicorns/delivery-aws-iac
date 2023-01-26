@@ -72,37 +72,40 @@ module "db" {
 ################################################################################
 # RDS Automated Backups Replication Module
 ################################################################################
-module "kms" {
-  source      = "terraform-aws-modules/kms/aws"
 
-  version     = "~> 1.3"
-  description = "KMS key for cross region automated backups replication"
+# needs additional testing for GovCloud
 
-  # Aliases
-  aliases                 = [var.db_name]
-  aliases_use_name_prefix = true
+# module "kms" {
+#   source      = "terraform-aws-modules/kms/aws"
 
-  key_owners = [data.aws_caller_identity.current.arn]
+#   version     = "~> 1.3"
+#   description = "KMS key for cross region automated backups replication"
 
-  tags = var.tags
+#   # Aliases
+#   aliases                 = [var.db_name]
+#   aliases_use_name_prefix = true
 
-  providers = {
-    aws = aws.region2
-  }
-}
+#   key_owners = [data.aws_caller_identity.current.arn]
 
-module "db_automated_backups_replication" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git//modules/db_instance_automated_backups_replication?ref=v5.2.3"
+#   tags = var.tags
 
-  count = var.automated_backups_replication_enabled != null ? 1 : 0
+#   providers = {
+#     aws = aws.region2
+#   }
+# }
 
-  source_db_instance_arn = module.db.db_instance_arn
-  kms_key_arn            = module.kms.key_arn
+# module "db_automated_backups_replication" {
+#   source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git//modules/db_instance_automated_backups_replication?ref=v5.2.3"
 
-  providers = {
-    aws = aws.region2
-  }
-}
+#   count = var.automated_backups_replication_enabled != null ? 1 : 0
+
+#   source_db_instance_arn = module.db.db_instance_arn
+#   kms_key_arn            = module.kms.key_arn
+
+#   providers = {
+#     aws = aws.region2
+#   }
+# }
 
 ################################################################################
 # Supporting Resources
