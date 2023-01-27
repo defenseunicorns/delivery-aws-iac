@@ -32,7 +32,7 @@ variables:
     default: "1.23"
   - name: BASTION_NAME
     default: "my-bastion"
-  - name: SSH_USER
+  - name: BASTION_SSH_USER
     description: "Bastion user for ssh"
     default: "ec2-user"
   - name: BASTION_SSH_PASSWORD
@@ -110,7 +110,7 @@ components:
         before:
           - cmd: "terraform apply -auto-approve"
           - cmd: "terraform output -raw tfstate_bucket_id"
-            setVariable: BUCKET_ID 
+            setVariable: BUCKET_ID
           - cmd: "terraform output -raw tfstate_dynamodb_table_name"
             setVariable: DYNAMODB_TABLE_NAME
           - cmd: terraform init -migrate-state -force-copy -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV_STATE###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
@@ -139,7 +139,7 @@ components:
           dir: "tmp/###ZARF_PKG_VAR_TF_ENV_STATE###"
         before:
           - cmd: "terraform output -raw tfstate_bucket_id"
-            setVariable: BUCKET_ID 
+            setVariable: BUCKET_ID
           - cmd: "terraform output -raw tfstate_dynamodb_table_name"
             setVariable: DYNAMODB_TABLE_NAME
           - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"

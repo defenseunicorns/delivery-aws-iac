@@ -41,7 +41,7 @@ module "bastion" {
   aws_region               = var.region
   access_log_bucket_name   = "${var.bastion_name}-access-logs"
   bucket_name              = "${var.bastion_name}-session-logs"
-  ssh_user                 = var.ssh_user
+  ssh_user                 = var.bastion_ssh_user
   ssh_password             = var.bastion_ssh_password
   assign_public_ip         = false # var.assign_public_ip
   enable_log_to_s3         = true
