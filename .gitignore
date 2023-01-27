@@ -39,3 +39,6 @@ terraform.rc
 
 # Ignore Terraform cache
 .terragrunt-cache*
+
+# Ignore Terraform state files
+backend.*
