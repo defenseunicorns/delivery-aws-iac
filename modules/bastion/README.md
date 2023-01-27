@@ -1,3 +1,13 @@
+# Bastion Module
+
+This repository contains Terraform configuration files that create an AWS EC2 instance using a hardened AMI, assigns it to a security group, and attaches it to a subnet. This is for secure access into a private subnet via a hardened device. It also creates an SSH key pair for the instance and an IAM instance profile with an optional role. Additionally, it creates an optional KMS key and security group for event queue. 
+
+## Examples
+
+To view examples for how you can leverage this Bastion, please see the [examples](https://github.com/defenseunicorns/iac/tree/main/examples) directory.
+
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -146,3 +156,4 @@ No modules.
 | <a name="output_security_group_ids"></a> [security\_group\_ids](#output\_security\_group\_ids) | Security Group Ids |
 | <a name="output_session_logs_bucket_arn"></a> [session\_logs\_bucket\_arn](#output\_session\_logs\_bucket\_arn) | Session Logs Bucket ARN |
 | <a name="output_session_logs_bucket_name"></a> [session\_logs\_bucket\_name](#output\_session\_logs\_bucket\_name) | Session Logs Bucket Name |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

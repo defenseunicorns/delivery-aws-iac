@@ -1,3 +1,11 @@
+# AWS tfstate-backend Module
+
+This repository contains Terraform configuration files that create various AWS resources, such as an S3 bucket, a DynamoDB table, and KMS keys. These resources are configured to hold store your terraform TFSTATE files.
+
+## Examples
+
+To view examples for how you can leverage this tfstate-backend Module, please see the [examples](https://github.com/defenseunicorns/iac/tree/main/examples) directory.
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 No requirements.
@@ -42,3 +50,4 @@ No requirements.
 | Name | Description |
 |------|-------------|
 | <a name="output_tfstate_bucket_id"></a> [tfstate\_bucket\_id](#output\_tfstate\_bucket\_id) | Terraform State Bucket Name |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

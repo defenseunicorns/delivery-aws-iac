@@ -93,7 +93,7 @@ variable "bastion_ami_id" {
   default     = "ami-000d4884381edb14c"
 }
 
-variable "ssh_user" {
+variable "bastion_ssh_user" {
   description = "The SSH user to use for the bastion"
   type        = string
   default     = "ec2-user"

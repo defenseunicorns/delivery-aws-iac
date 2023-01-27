@@ -1,3 +1,11 @@
+# AWS SOPS Module
+
+This repository contains Terraform configuration files that create resources for encrypting and decrypting secrets using the SOPS tool. It creates an IAM policy, KMS key, KMS alias, IAM role, and attaches the IAM policy to the IAM role. The IAM policy allows for encrypting, decrypting, describing, and generating random data using the KMS key and alias. The IAM role is created with an assume role policy that allows it to be assumed by a Kubernetes service account with a specific namespace and service account name.
+
+## Examples
+
+To view examples for how you can leverage this SOPS, please see the [examples](https://github.com/defenseunicorns/iac/tree/main/examples) directory.
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -49,3 +57,4 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_sops_policy_arn"></a> [sops\_policy\_arn](#output\_sops\_policy\_arn) | ARN of the SOPS policy |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

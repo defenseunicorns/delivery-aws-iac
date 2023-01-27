@@ -113,3 +113,68 @@ resource "aws_iam_role_policy_attachment" "irsa" {
   policy_arn = aws_iam_policy.irsa_policy.arn
   role       = aws_iam_role.irsa[0].name
 }
+
+################################################################################
+# DynamoDB Table
+################################################################################
+
+resource "aws_dynamodb_table" "loki_dynamodb" {
+  count = var.dynamodb_enabled != null ? 1 : 0
+
+  name         = "${var.cluster_name}-dynamodb_index"
+  hash_key     = "Log_id"
+  billing_mode = "PAY_PER_REQUEST"
+
+  point_in_time_recovery {
+    enabled = true
+  }
+
+  attribute {
+    name = "Log_id"
+    type = "S"
+  }
+
+  server_side_encryption {
+    enabled     = true
+    kms_key_arn = aws_kms_key.objects.arn
+  }
+}
+
+data "aws_iam_policy_document" "dynamo_irsa_policy" {
+
+
+  statement {
+    actions = [
+      "dynamodb:BatchGetItem",
+      "dynamodb:BatchWriteItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:DescribeTable",
+      "dynamodb:GetItem",
+      "dynamodb:ListTagsOfResource",
+      "dynamodb:PutItem",
+      "dynamodb:Query",
+      "dynamodb:TagResource",
+      "dynamodb:UntagResource",
+      "dynamodb:UpdateItem",
+      "dynamodb:UpdateTable",
+      "dynamodb:CreateTable",
+      "dynamodb:DeleteTable",
+      "dynamodb:ListTables"
+    ]
+    resources = ["arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/bigbang-*"]
+  }
+}
+
+resource "aws_iam_policy" "dynamodb_irsa_policy" {
+  # count     = var.dynamodb_enabled != null ? 1 : 0
+  name        = "${var.cluster_name}-dynmodb_irsa_policy"
+  description = "DynamoDB IAM policy"
+  policy      = data.aws_iam_policy_document.dynamo_irsa_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "dynamodb_policy_attachment" {
+  # count    = var.dynamodb_enabled != null ? 1 : 0
+
+  policy_arn = aws_iam_policy.dynamodb_irsa_policy.arn
+  role       = aws_iam_role.irsa[0].name
+}

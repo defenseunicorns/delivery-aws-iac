@@ -11,7 +11,8 @@ locals {
 ####################### VPC ###############################
 
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v0.0.0-alpha.2"
+  # source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v<insert tagged version>"
+  source = "../../modules/vpc"
 
   region   = var.region
   name     = var.vpc_name
@@ -30,18 +31,19 @@ module "vpc" {
 ##################### Bastion #############################
 
 module "bastion" {
+  # source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=v<insert tagged version>"
   source = "../../modules/bastion"
 
-  ami_id                 = var.bastion_ami_id
-  name                   = var.bastion_name
-  vpc_id                 = module.vpc.vpc_id
-  subnet_id              = module.vpc.private_subnets[0]
-  aws_region             = var.region
-  access_log_bucket_name = "${var.bastion_name}-access-logs"
-  bucket_name            = "${var.bastion_name}-session-logs"
-  ssh_user               = var.ssh_user
-  ssh_password           = var.bastion_ssh_password
-  assign_public_ip       = false # var.assign_public_ip
+  ami_id                   = var.bastion_ami_id
+  name                     = var.bastion_name
+  vpc_id                   = module.vpc.vpc_id
+  subnet_id                = module.vpc.private_subnets[0]
+  aws_region               = var.region
+  access_log_bucket_name   = "${var.bastion_name}-access-logs"
+  bucket_name              = "${var.bastion_name}-session-logs"
+  ssh_user                 = var.bastion_ssh_user
+  ssh_password             = var.bastion_ssh_password
+  assign_public_ip         = false # var.assign_public_ip
   enable_log_to_s3         = true
   enable_log_to_cloudwatch = true
   vpc_endpoints_enabled    = true
@@ -54,7 +56,8 @@ module "bastion" {
 ################### EKS Cluster ###########################
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v0.0.0-alpha.2"
+  # source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v<insert tagged version>"
+  source = "../../modules/eks"
 
   name                     = var.cluster_name
   vpc_id                   = module.vpc.vpc_id
@@ -80,4 +83,3 @@ module "eks" {
   ]
   source_security_group_id = module.bastion.security_group_ids[0]
 }
-
