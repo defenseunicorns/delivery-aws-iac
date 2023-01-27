@@ -1,3 +1,10 @@
+# AWS VPC Module
+
+This repository contains Terraform configuration files that create an AWS Virtual Private Cloud (VPC). This module also sets up subnets for different types of resources, such as public, private and database subnets. Additionally, the module creates and configures a number of other resources, such as default network ACL, default route table, and default security group. It also creates VPC endpoints for services such as S3 and DynamoDB, to allow communication between resources in the VPC and those services without going over the internet.
+
+## Examples
+
+To view examples for how you can leverage this VPC Module, please see the [examples](https://github.com/defenseunicorns/iac/tree/main/examples) directory.
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 

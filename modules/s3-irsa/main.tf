@@ -122,7 +122,7 @@ resource "aws_dynamodb_table" "loki_dynamodb" {
   count        = var.dynamodb_enabled != null ? 1 : 0
   
   name         = "${var.cluster_name}-dynamodb_index"
-  hash_key     = "LockID"
+  hash_key     = "Log_id"
   billing_mode = "PAY_PER_REQUEST"
   
   point_in_time_recovery {

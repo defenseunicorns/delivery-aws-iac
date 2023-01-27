@@ -1,3 +1,10 @@
+# AWS S3-IRSA Module
+
+This repository contains Terraform configuration files that create an S3 bucket and DynamoDB table, both are secured with server-side encryption (SSE) using a KMS key. This module configures the S3 bucket and DynamoDB table to be used with Loki for the storage of Chunks and Indexes.
+
+## Examples
+
+To view examples for how you can leverage this S3-IRSA Module, please see the [examples](https://github.com/defenseunicorns/iac/tree/main/examples) directory.
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 

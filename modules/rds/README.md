@@ -1,3 +1,10 @@
+# AWS RDS Module
+
+This repository contains Terraform configuration files that create an RDS (Relational Database Service) instance. This module also creates a KMS (Key Management Service) key and uses it to encrypt and decrypt the backups of the RDS instance.
+
+## Examples
+
+To view examples for how you can leverage this RDS Module, please see the [examples](https://github.com/defenseunicorns/iac/tree/main/examples) directory.
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
