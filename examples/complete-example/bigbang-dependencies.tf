@@ -28,7 +28,7 @@ module "flux_sops" {
 
 module "loki_s3_bucket" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/s3-irsa?ref=v<insert tagged version>"
-    source  = "../../modules/s3-irsa"
+  source = "../../modules/s3-irsa"
 
   region                     = var.region
   cluster_name               = module.eks.eks_cluster_id
@@ -79,5 +79,5 @@ module "rds_postgres_keycloak" {
   create_db_subnet_group     = true
   deletion_protection        = false
   # automated_backups_replication_enabled = true
-  tags                       = local.tags
+  tags = local.tags
 }

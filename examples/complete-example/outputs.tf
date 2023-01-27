@@ -34,3 +34,7 @@ output "bastion_private_key" {
   value       = module.bastion.private_key
   sensitive   = true
 }
+output "dynamodb_name" {
+  description = "Name of DynmoDB table"
+  value       = aws_dynamodb_table.loki_dynamodb.name
+}

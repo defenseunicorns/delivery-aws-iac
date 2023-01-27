@@ -77,12 +77,12 @@ variable "kms_key_alias" {
 
 variable "name_dynamodb" {
   description = "Name of DynamoDB table"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "dynamodb_enabled" {
   description = "Is dynamoDB enabled"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }

@@ -119,21 +119,21 @@ resource "aws_iam_role_policy_attachment" "irsa" {
 ################################################################################
 
 resource "aws_dynamodb_table" "loki_dynamodb" {
-  count        = var.dynamodb_enabled != null ? 1 : 0
-  
+  count = var.dynamodb_enabled != null ? 1 : 0
+
   name         = "${var.cluster_name}-dynamodb_index"
   hash_key     = "Log_id"
   billing_mode = "PAY_PER_REQUEST"
-  
+
   point_in_time_recovery {
-    enabled    = true
+    enabled = true
   }
-  
+
   attribute {
-    name       = "LockID"
-    type       = "S"
+    name = "LockID"
+    type = "S"
   }
-  
+
   server_side_encryption {
     enabled     = true
     kms_key_arn = aws_kms_key.objects.arn
@@ -141,25 +141,25 @@ resource "aws_dynamodb_table" "loki_dynamodb" {
 }
 
 data "aws_iam_policy_document" "dynamo_irsa_policy" {
- 
+
 
   statement {
-  actions = [
-    "dynamodb:BatchGetItem",
-    "dynamodb:BatchWriteItem",
-    "dynamodb:DeleteItem",
-    "dynamodb:DescribeTable",
-    "dynamodb:GetItem",
-    "dynamodb:ListTagsOfResource",
-    "dynamodb:PutItem",
-    "dynamodb:Query",
-    "dynamodb:TagResource",
-    "dynamodb:UntagResource",
-    "dynamodb:UpdateItem",
-    "dynamodb:UpdateTable",
-    "dynamodb:CreateTable",
-    "dynamodb:DeleteTable",
-    "dynamodb:ListTables"
+    actions = [
+      "dynamodb:BatchGetItem",
+      "dynamodb:BatchWriteItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:DescribeTable",
+      "dynamodb:GetItem",
+      "dynamodb:ListTagsOfResource",
+      "dynamodb:PutItem",
+      "dynamodb:Query",
+      "dynamodb:TagResource",
+      "dynamodb:UntagResource",
+      "dynamodb:UpdateItem",
+      "dynamodb:UpdateTable",
+      "dynamodb:CreateTable",
+      "dynamodb:DeleteTable",
+      "dynamodb:ListTables"
     ]
     resources = ["arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/bigbang-*"]
   }
