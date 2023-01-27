@@ -136,7 +136,7 @@ Destroy all other resources
 ```sh
 terraform destroy -var-file ../../../terraform.tfvars -auto-approve
 ```
-
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 No requirements.
@@ -207,3 +207,4 @@ No requirements.
 | <a name="output_keycloak_db_instance_port"></a> [keycloak\_db\_instance\_port](#output\_keycloak\_db\_instance\_port) | The database port |
 | <a name="output_keycloak_db_instance_username"></a> [keycloak\_db\_instance\_username](#output\_keycloak\_db\_instance\_username) | The master username for the database |
 | <a name="output_loki_s3_bucket"></a> [loki\_s3\_bucket](#output\_loki\_s3\_bucket) | Loki S3 Bucket Name |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

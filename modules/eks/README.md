@@ -1,3 +1,4 @@
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -66,3 +67,4 @@
 | <a name="output_eks_managed_nodegroups"></a> [eks\_managed\_nodegroups](#output\_eks\_managed\_nodegroups) | EKS managed node groups |
 | <a name="output_eks_oidc_provider_arn"></a> [eks\_oidc\_provider\_arn](#output\_eks\_oidc\_provider\_arn) | EKS OIDC provider ARN |
 | <a name="output_region"></a> [region](#output\_region) | AWS region |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

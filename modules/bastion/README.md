@@ -1,3 +1,4 @@
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -146,3 +147,4 @@ No modules.
 | <a name="output_security_group_ids"></a> [security\_group\_ids](#output\_security\_group\_ids) | Security Group Ids |
 | <a name="output_session_logs_bucket_arn"></a> [session\_logs\_bucket\_arn](#output\_session\_logs\_bucket\_arn) | Session Logs Bucket ARN |
 | <a name="output_session_logs_bucket_name"></a> [session\_logs\_bucket\_name](#output\_session\_logs\_bucket\_name) | Session Logs Bucket Name |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

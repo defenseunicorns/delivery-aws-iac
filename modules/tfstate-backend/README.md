@@ -1,3 +1,4 @@
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 No requirements.
@@ -42,3 +43,4 @@ No requirements.
 | Name | Description |
 |------|-------------|
 | <a name="output_tfstate_bucket_id"></a> [tfstate\_bucket\_id](#output\_tfstate\_bucket\_id) | Terraform State Bucket Name |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

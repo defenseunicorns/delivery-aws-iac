@@ -1,3 +1,4 @@
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -49,3 +50,4 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_sops_policy_arn"></a> [sops\_policy\_arn](#output\_sops\_policy\_arn) | ARN of the SOPS policy |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
