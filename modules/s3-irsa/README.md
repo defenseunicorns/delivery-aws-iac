@@ -1,3 +1,9 @@
+
+# Testing to see if this remains with Terraform-docs pre-commit hooks
+
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
 ## Requirements
 
 | Name | Version |
@@ -53,3 +59,10 @@
 | Name | Description |
 |------|-------------|
 | <a name="output_s3_bucket"></a> [s3\_bucket](#output\_s3\_bucket) | S3 Bucket Name |
+
+
+
+
+
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
