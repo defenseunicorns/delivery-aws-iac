@@ -111,14 +111,12 @@ module "eks_blueprints" {
       public_ip              = false
       enable_monitoring      = false
 
-      launch_template_self_managed_ng = {
-        placement           =   {
-          affinity          = null
-          availability_zone = null
-          group_name        = null
-          host_id           = null
-          tenancy           = var.tenancy
-        }
+      placement = {
+        affinity          = null
+        availability_zone = null
+        group_name        = null
+        host_id           = null
+        tenancy           = var.tenancy
       }
 
       enable_metadata_options = false

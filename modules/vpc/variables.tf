@@ -41,3 +41,9 @@ variable "create_database_subnet_route_table" {
   type        = bool
   default     = true
 }
+
+variable "instance_tenancy" {
+  description = "Tenancy of instances launched into the VPC"
+  type        = string
+  default     = "default"
+}
