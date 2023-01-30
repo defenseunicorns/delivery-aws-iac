@@ -94,6 +94,7 @@ variable "bastion_role_name" {
   description = "Name of role authorized kubectl access"
   type        = string
   default     = ""
+}
 
 variable "tenancy" {
   description = "Tenancy of the cluster"
