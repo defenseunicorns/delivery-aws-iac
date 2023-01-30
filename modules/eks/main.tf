@@ -16,6 +16,7 @@ data "aws_partition" "current" {}
 #---------------------------------------------------------------
 
 module "eks_blueprints" {
+  # pending approval of [PR](https://github.com/aws-ia/terraform-aws-eks-blueprints/issues/1387)
   source = "git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git?ref=v4.21.1"
 
   cluster_name    = local.cluster_name
