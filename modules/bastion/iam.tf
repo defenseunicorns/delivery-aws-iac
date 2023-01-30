@@ -335,7 +335,7 @@ resource "aws_iam_policy" "terraform_policy" {
             ],
             "Resource": [
                 "arn:${data.aws_partition.current.partition}:iam::*:role/*-rke2-*",
-                "arn:${data.aws_partition.current.partition}:iam::*:role/*" #TODO: restrict this further by standardizing naming convention & limiting based on that
+                "arn:${data.aws_partition.current.partition}:iam::*:role/*"
             ],
             "Effect": "Allow"
         },
