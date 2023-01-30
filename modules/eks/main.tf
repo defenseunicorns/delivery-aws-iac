@@ -89,6 +89,11 @@ module "eks_blueprints" {
       rolearn  = aws_iam_role.auth_eks_role.arn
       username = aws_iam_role.auth_eks_role.name
       groups   = ["system:masters"]
+    },
+    {
+      rolearn  = var.bastion_role_arn
+      username = var.bastion_role_name
+      groups   = ["system:masters"]
     }
   ]
   #---------------------------------------------------------------

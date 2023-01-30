@@ -51,3 +51,8 @@ output "bastion_role_name" {
   value       = aws_iam_role.bastion_ssm_role.name
   description = "Bastion Role Name"
 }
+
+output "bastion_role_arn" {
+  value       = aws_iam_role.bastion_ssm_role.arn
+  description = "Bastion Role ARN"
+}
