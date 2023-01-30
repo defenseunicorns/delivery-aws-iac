@@ -83,3 +83,9 @@ variable "source_security_group_id" {
   type        = string
   default     = ""
 }
+
+variable "tenancy" {
+  description = "Tenancy of the cluster"
+  type        = string
+  default     = "dedicated"
+}

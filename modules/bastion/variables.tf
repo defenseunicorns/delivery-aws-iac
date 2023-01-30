@@ -326,3 +326,9 @@ variable "vpc_endpoints_enabled" {
   type        = bool
   default     = true
 }
+
+variable "tenancy" {
+  description = "The tenancy of the instance (if the instance is running in a VPC). Valid values are 'default' or 'dedicated'."
+  type        = string
+  default     = "default"
+}

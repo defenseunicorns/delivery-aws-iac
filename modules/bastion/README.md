@@ -12,7 +12,7 @@ To view examples for how you can leverage this Bastion, please see the [examples
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.72 |
 
 ## Providers
@@ -46,7 +46,6 @@ No modules.
 | [aws_iam_role_policy_attachment.managed](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.s3_companion_cube](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.s3_logging_cube](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.sops](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_instance.application](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) | resource |
 | [aws_key_pair.bastion_key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair) | resource |
 | [aws_kms_alias.ssmkey](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_alias) | resource |
@@ -128,6 +127,7 @@ No modules.
 | <a name="input_role_name"></a> [role\_name](#input\_role\_name) | Name to give IAM role created for instance profile | `string` | `""` | no |
 | <a name="input_root_volume_config"></a> [root\_volume\_config](#input\_root\_volume\_config) | n/a | <pre>object({<br>    volume_type = any<br>    volume_size = any<br>  })</pre> | <pre>{<br>  "volume_size": "20",<br>  "volume_type": "gp2"<br>}</pre> | no |
 | <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | List of security groups to associate with instance | `list(any)` | `[]` | no |
+| <a name="input_ssh_password"></a> [ssh\_password](#input\_ssh\_password) | Password for SSH access if SSM authentication is enabled | `string` | n/a | yes |
 | <a name="input_ssh_public_key_names"></a> [ssh\_public\_key\_names](#input\_ssh\_public\_key\_names) | n/a | `list(string)` | <pre>[<br>  "user1",<br>  "user2",<br>  "admin"<br>]</pre> | no |
 | <a name="input_ssh_user"></a> [ssh\_user](#input\_ssh\_user) | n/a | `string` | `"ubuntu"` | no |
 | <a name="input_ssm_enabled"></a> [ssm\_enabled](#input\_ssm\_enabled) | Enable SSM agent | `bool` | `true` | no |
@@ -135,6 +135,7 @@ No modules.
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | IDs of subnets to deploy the instance in | `string` | `""` | no |
 | <a name="input_subnet_name"></a> [subnet\_name](#input\_subnet\_name) | Names of subnets to deploy the instance in | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
+| <a name="input_tenancy"></a> [tenancy](#input\_tenancy) | The tenancy of the instance (if the instance is running in a VPC). Valid values are 'default' or 'dedicated'. | `string` | `"default"` | no |
 | <a name="input_user_data"></a> [user\_data](#input\_user\_data) | (Optional) The user data to provide when launching the instance | `string` | `""` | no |
 | <a name="input_user_data_file"></a> [user\_data\_file](#input\_user\_data\_file) | n/a | `string` | `"templates/user_data.sh"` | no |
 | <a name="input_versioning_enabled"></a> [versioning\_enabled](#input\_versioning\_enabled) | Enable versioning. Once you version-enable a bucket, it can never return to an unversioned state. You can, however, suspend versioning on that bucket. | `bool` | `true` | no |
@@ -148,6 +149,7 @@ No modules.
 |------|-------------|
 | <a name="output_access_bucket_arn"></a> [access\_bucket\_arn](#output\_access\_bucket\_arn) | Access Bucket ARN |
 | <a name="output_access_bucket_name"></a> [access\_bucket\_name](#output\_access\_bucket\_name) | Access Bucket Name |
+| <a name="output_bastion_role_name"></a> [bastion\_role\_name](#output\_bastion\_role\_name) | Bastion Role Name |
 | <a name="output_instance_id"></a> [instance\_id](#output\_instance\_id) | Instance Id |
 | <a name="output_primary_network_interface_id"></a> [primary\_network\_interface\_id](#output\_primary\_network\_interface\_id) | Primary Network Interface Id |
 | <a name="output_private_ip"></a> [private\_ip](#output\_private\_ip) | Private IP |

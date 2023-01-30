@@ -16,7 +16,7 @@ data "aws_partition" "current" {}
 #---------------------------------------------------------------
 
 module "eks_blueprints" {
-  source = "git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git?ref=v4.21.0"
+  source = "git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git"
 
   cluster_name    = local.cluster_name
   cluster_version = var.eks_k8s_version
@@ -110,6 +110,16 @@ module "eks_blueprints" {
       format_mount_nvme_disk = true
       public_ip              = false
       enable_monitoring      = false
+
+      launch_template_self_managed_ng = {
+        placement           =   {
+          affinity          = null
+          availability_zone = null
+          group_name        = null
+          host_id           = null
+          tenancy           = var.tenancy
+        }
+      }
 
       enable_metadata_options = false
 
