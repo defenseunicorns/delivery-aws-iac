@@ -69,6 +69,8 @@ module "eks" {
   aws_account                           = var.account
   cluster_kms_key_additional_admin_arns = ["arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${var.aws_admin_1_username}", "arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${var.aws_admin_2_username}"]
   eks_k8s_version                       = var.eks_k8s_version
+  bastion_role_arn                      = module.bastion.bastion_role_arn
+  bastion_role_name                     = module.bastion.bastion_role_name
   aws_auth_eks_map_users = [
     {
       userarn  = "arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${var.aws_admin_1_username}"
