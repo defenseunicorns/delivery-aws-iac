@@ -322,6 +322,13 @@ resource "aws_iam_policy" "terraform_policy" {
             "Effect": "Allow"
         },
         {
+            "Effect": "Allow",
+            "Action": [
+                "eks:DescribeCluster"
+            ],
+            "Resource": "*"
+        },
+        {
             "Action": [
                 "iam:DeletePolicy",
                 "iam:DeletePolicyVersion"
