@@ -163,3 +163,9 @@ variable "bastion_tenancy" {
   type        = string
   default     = "default"
 }
+
+variable "eks_worker_tenancy" {
+  description = "The tenancy of the EKS worker nodes"
+  type        = string
+  default     = "default"
+}
