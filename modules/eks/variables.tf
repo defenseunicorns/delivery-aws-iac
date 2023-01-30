@@ -83,3 +83,8 @@ variable "source_security_group_id" {
   type        = string
   default     = ""
 }
+variable "node_group_type" {
+  description = "Either Self-managed or managed"
+  type        = string
+  default     = "self-managed"
+}

@@ -94,8 +94,11 @@ module "eks_blueprints" {
   # EKS Blueprints - Self Managed Node Groups
   #---------------------------------------------------------------
 
-  self_managed_node_groups = {
+ self_managed_node_groups = {
+  
+   condition = lower(var.node_group_type) == "self-managed"
     self_mg1 = {
+      # Needs to be variablized
       node_group_name        = "self_mg1"
       launch_template_os     = "amazonlinux2eks"
       subnet_ids             = var.private_subnet_ids
@@ -263,7 +266,84 @@ module "eks_blueprints" {
   #   }
   # }
 }
+  #---------------------------------------------------------------
+  # EKS - Managed Node Groups
+  #---------------------------------------------------------------
+  resource "aws_launch_template" "managed_ng" {
+     instance_type = "m5.xlarge"
 
+     
+     
+      block_device_mappings {
+          device_name = "/dev/xvda" # mount point to /
+          ebs {
+          volume_type = "gp3"
+          volume_size = 50
+        }
+        }
+      block_device_mappings {
+          device_name = "/dev/xvdf" # mount point to /local1 (it could be local2, depending upon the disks are attached during boot)
+          ebs {
+          volume_type = "gp3"
+          volume_size = 80
+          iops        = 3000
+          throughput  = 125
+        }
+        }
+      block_device_mappings {
+          device_name = "/dev/xvdg" # mount point to /local2 (it could be local1, depending upon the disks are attached during boot)
+          ebs {
+          volume_type = "gp3"
+          volume_size = 100
+          iops        = 3000
+          throughput  = 125
+        }
+      
+          
+    
+       
+      } 
+   }
+  resource "aws_eks_node_group" "managed" {
+    count = lower(var.node_group_type) == "managed" ? 1 : 0
+    
+  node_group_name = "managed_ng1"  
+  cluster_name      = local.cluster_name
+  subnet_ids        = var.private_subnet_ids
+  node_role_arn = aws_iam_instance_profile.self_managed_ng
+  
+  scaling_config {
+    desired_size = 1
+    max_size = 2
+    min_size = 1
+  }
+
+  launch_template {
+     id = aws_launch_template.managed_ng
+     version = "$Latest"
+   }
+
+  
+  tags = {
+    Environment = "preprod"
+    Zone        = "test"
+  }
+
+
+}
+
+resource "aws_security_group" "self_managed_ng" {
+  name        = "self_mg1_security_group"
+  description = "Security group for self-managed node group self_mg1"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+  }
+}
+    
+  
 #---------------------------------------------------------------
 # Custom IAM role for Self Managed Node Group
 #---------------------------------------------------------------
