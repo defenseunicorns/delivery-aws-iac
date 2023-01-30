@@ -3,7 +3,7 @@
 #---------------------------------------------------------------
 
 module "eks_blueprints_kubernetes_addons" {
-  source     = "git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git//modules/kubernetes-addons"
+  source     = "git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git//modules/kubernetes-addons?ref=v4.21.1"
   depends_on = [module.eks_blueprints]
 
   eks_cluster_id           = module.eks_blueprints.eks_cluster_id
