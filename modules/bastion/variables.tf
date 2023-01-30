@@ -113,7 +113,7 @@ variable "root_volume_config" {
     volume_size = any
   })
   default = {
-    volume_type = "gp2"
+    volume_type = "gp3"
     volume_size = "20"
   }
 }

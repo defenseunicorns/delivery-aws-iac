@@ -127,7 +127,7 @@ No modules.
 | <a name="input_policy_content"></a> [policy\_content](#input\_policy\_content) | Policy body. Use this to add a custom policy to your instance profile (Optional) | `string` | `""` | no |
 | <a name="input_requires_eip"></a> [requires\_eip](#input\_requires\_eip) | Whether or not the instance should have an Elastic IP associated to it | `bool` | `false` | no |
 | <a name="input_role_name"></a> [role\_name](#input\_role\_name) | Name to give IAM role created for instance profile | `string` | `""` | no |
-| <a name="input_root_volume_config"></a> [root\_volume\_config](#input\_root\_volume\_config) | n/a | <pre>object({<br>    volume_type = any<br>    volume_size = any<br>  })</pre> | <pre>{<br>  "volume_size": "20",<br>  "volume_type": "gp2"<br>}</pre> | no |
+| <a name="input_root_volume_config"></a> [root\_volume\_config](#input\_root\_volume\_config) | n/a | <pre>object({<br>    volume_type = any<br>    volume_size = any<br>  })</pre> | <pre>{<br>  "volume_size": "20",<br>  "volume_type": "gp3"<br>}</pre> | no |
 | <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | List of security groups to associate with instance | `list(any)` | `[]` | no |
 | <a name="input_ssh_password"></a> [ssh\_password](#input\_ssh\_password) | Password for SSH access if SSM authentication is enabled | `string` | n/a | yes |
 | <a name="input_ssh_public_key_names"></a> [ssh\_public\_key\_names](#input\_ssh\_public\_key\_names) | n/a | `list(string)` | <pre>[<br>  "user1",<br>  "user2",<br>  "admin"<br>]</pre> | no |
