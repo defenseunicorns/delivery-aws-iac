@@ -358,7 +358,7 @@ resource "aws_iam_policy" "terraform_policy" {
                 "sts:AssumeRole"
             ],
             "Resource": [
-                "arn:aws-us-gov:iam::*:role/s3-dataRefresh"
+                "arn:${data.aws_partition.current.partition}:iam::*:role/s3-dataRefresh"
             ],
             "Effect": "Allow"
         },
