@@ -13,16 +13,16 @@ module "eks_blueprints_kubernetes_addons" {
   auto_scaling_group_names = module.eks_blueprints.self_managed_node_group_autoscaling_groups
 
   # EKS Managed Add-ons
-  enable_amazon_eks_vpc_cni            = true
-  enable_amazon_eks_coredns            = true
-  enable_amazon_eks_kube_proxy         = true
-  enable_amazon_eks_aws_ebs_csi_driver = true
+  enable_amazon_eks_vpc_cni            = var.cni_add_on
+  enable_amazon_eks_coredns            = var.coredns
+  enable_amazon_eks_kube_proxy         = var.kube_proxy
+  enable_amazon_eks_aws_ebs_csi_driver = var.ebs_csi_add_on
 
   #K8s Add-ons
-  enable_metrics_server               = true
-  enable_aws_node_termination_handler = true
+  enable_metrics_server               = var.metric_server
+  enable_aws_node_termination_handler = var.aws_node_termination_handler
 
-  enable_cluster_autoscaler = true
+  enable_cluster_autoscaler = var.cluster_autoscaler
   cluster_autoscaler_helm_config = {
     set = [
       {
