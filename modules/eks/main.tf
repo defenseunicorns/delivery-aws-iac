@@ -16,7 +16,8 @@ data "aws_partition" "current" {}
 #---------------------------------------------------------------
 
 module "eks_blueprints" {
-  source = "git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git?ref=v4.21.0"
+  # pending approval of [PR](https://github.com/aws-ia/terraform-aws-eks-blueprints/issues/1387)
+  source = "git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git?ref=v4.21.1"
 
   cluster_name    = local.cluster_name
   cluster_version = var.eks_k8s_version
@@ -88,6 +89,11 @@ module "eks_blueprints" {
       rolearn  = aws_iam_role.auth_eks_role.arn
       username = aws_iam_role.auth_eks_role.name
       groups   = ["system:masters"]
+    },
+    {
+      rolearn  = var.bastion_role_arn
+      username = var.bastion_role_name
+      groups   = ["system:masters"]
     }
   ]
   #---------------------------------------------------------------
@@ -110,6 +116,14 @@ module "eks_blueprints" {
       format_mount_nvme_disk = true
       public_ip              = false
       enable_monitoring      = false
+
+      placement = {
+        affinity          = null
+        availability_zone = null
+        group_name        = null
+        host_id           = null
+        tenancy           = var.tenancy
+      }
 
       enable_metadata_options = false
 

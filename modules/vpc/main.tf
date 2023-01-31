@@ -36,6 +36,7 @@ module "vpc" {
   # intra_subnet_names       = []
 
   create_database_subnet_group = var.create_database_subnet_group
+  instance_tenancy             = var.instance_tenancy
 
   # Manage so we can name
   manage_default_network_acl = true

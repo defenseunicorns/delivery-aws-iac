@@ -221,3 +221,164 @@ resource "aws_iam_policy" "s3_logging_policy" {
 }
 EOF
 }
+
+# Terraform policy and attachment
+resource "aws_iam_role_policy_attachment" "terraform" {
+  role       = aws_iam_role.bastion_ssm_role.name
+  policy_arn = aws_iam_policy.terraform_policy.arn
+}
+
+resource "aws_iam_policy" "terraform_policy" {
+  name   = "${local.bucket_prefix}-terraform-policy"
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "autoscaling:*",
+                "aws-marketplace-management:*",
+                "aws-marketplace:*",
+                "cloudformation:*",
+                "cloudtrail:*",
+                "cloudwatch:*",
+                "events:*",
+                "logs:*",
+                "dynamodb:*",
+                "glacier:*",
+                "dms:*",
+                "iam:GetPolicyVersion",
+                "iam:GetRole",
+                "iam:ListInstance*",
+                "iam:CreateInstanceProfile",
+                "iam:UploadServerCertificate",
+                "iam:UpdateServerCertificate",
+                "iam:GetServerCertificate",
+                "iam:DeleteServerCertificate",
+                "iam:DetachRolePolicy",
+                "iam:DeleteRolePolicy",
+                "iam:PutRolePermissionsBoundary",
+                "iam:PutRolePolicy",
+                "iam:CreatePolicy",
+                "iam:CreatePolicyVersion",
+                "iam:AttachRolePolicy",
+                "iam:*InstanceProfile",
+                "iam:Generate*",
+                "iam:Get*",
+                "iam:List*",
+                "iam:Sim*",
+                "iam:Tag*",
+                "iam:Untag*",
+                "iam:*ServiceLinkedRole",
+                "ec2:*",
+                "elasticbeanstalk:*",
+                "elasticache:*",
+                "elasticloadbalancing:*",
+                "elasticmapreduce:*",
+                "events:*",
+                "glacier:*",
+                "kinesis:*",
+                "kms:*",
+                "lambda:*",
+                "logs:*",
+                "ram:*",
+                "rds:*",
+                "redshift:*",
+                "s3:*",
+                "sns:*",
+                "sqs:*",
+                "swf:*",
+                "tag:*",
+                "workspaces:*",
+                "ecs:*",
+                "ecr:*",
+                "inspector:Create*",
+                "inspector:Delete*",
+                "inspector:DescribeCrossAccountAccessRole",
+                "inspector:DescribeAssessmentRuns",
+                "inspector:DescribeAssessmentTargets",
+                "inspector:DescribeAssessmentTemplates",
+                "inspector:DescribeFindings",
+                "inspector:DescribeResourceGroups",
+                "inspector:DescribeRulesPackages",
+                "inspector:List*",
+                "inspector:PreviewAgents",
+                "inspector:RemoveAttributesFromFindings",
+                "inspector:SetTagsForResource",
+                "inspector:StartAssessmentRun",
+                "inspector:StopAssessmentRun",
+                "inspector:SubscribeToEvent",
+                "inspector:UnsubscribeFromEvent",
+                "inspector:UpdateAssessmentTarget"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "eks:DescribeCluster"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Action": [
+                "iam:DeletePolicy",
+                "iam:DeletePolicyVersion"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "iam:DeleteRole"
+            ],
+            "Resource": [
+                "arn:${data.aws_partition.current.partition}:iam::*:role/*-rke2-*",
+                "arn:${data.aws_partition.current.partition}:iam::*:role/*"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "iam:CreateRole"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "ssm:*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "sts:AssumeRole"
+            ],
+            "Resource": [
+                "arn:${data.aws_partition.current.partition}:iam::*:role/s3-dataRefresh"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "aws-portal:*Billing",
+                "s3:PutBucketPublicAccessBlock",
+                "s3:PutAccountPublicAccessBlock"
+            ],
+            "Resource": "*",
+            "Effect": "Deny"
+        }
+    ]
+}
+EOF
+}

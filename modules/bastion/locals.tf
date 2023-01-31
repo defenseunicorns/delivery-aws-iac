@@ -28,7 +28,7 @@ locals {
   }]
 
   # instance
-  instance_type = "t3a.small"
+  instance_type = "t3.small"
   root_volume_config = {
     volume_type = "gp3"
     volume_size = "20"
