@@ -83,24 +83,126 @@ variable "source_security_group_id" {
   type        = string
   default     = ""
 }
-variable "self_managed_node_groups_enabled" {
-  description = "do you want self managed node groups enabled"
-  type        = bool
-  default     = true
-}
-variable "managed_node_groups_enabled" {
-  description = "do you want AWS managed node groups enabled"
-  type        = bool
-  default     = false
-}
-variable "source_security_group_id_managed" {
-  description = "List of additional rules to add to cluster security group"
-  type        = string
-  default     = ""
-}
-variable "security_group_id" {
-  description = "Security group id"
+
+variable "node_group_name" {
+  description = "The name of your node groups"
   type = string
-  default = ""
+  default = "self_mg"
+}
+variable "launch_template_os" {
+  description = "The name of your launch template os"
+  default = "amazonlinux2eks"
   
 }
+variable "create_launch_template" {
+  description = "Do you want to create a launch template?"
+  type = bool
+  default = true
+}
+
+variable "custom_ami_id" {
+  description = "The ami id of your custom ami"
+  default = ""
+}
+
+variable "create_iam_role" {
+  description = "Do you want to create an iam role"
+  type = bool
+  default = false
+}
+
+variable "iam_role_arn" {
+  description = "Iam role ARN"
+  default = "aws_iam_role.self_managed_ng.arn"
+}
+variable "iam_instance_profile_name" {
+description = "Name of iam instance profile"
+default = "aws_iam_instance_profile.self_managed_ng.name"
+  
+}
+variable "format_mount_nvme_disk" {
+description = "Format the NVMe disk during the instance launch"
+type = bool
+default = true
+}
+variable "public_ip" {
+description = "Associate a public IP address with the instance"
+type = bool
+default = false
+}
+variable "enable_monitoring" {
+description = "Enable CloudWatch monitoring for the instance"
+type = bool
+default = false
+}
+variable "enable_metadata_options" {
+description = "Enable metadata options for the instance"
+type = bool
+default = false
+}
+variable "pre_userdata" {
+  type = string
+  default = <<-EOT
+    yum install -y amazon-ssm-agent
+    systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
+  EOT
+}
+variable "bootstrap_extra_args" {
+description = "Additional bootstrap arguments for the instance"
+type = string
+default = "--use-max-pods false"
+}
+variable "block_device_mappings" {
+description = "List of block device mappings for the instance"
+type = list(map(string))
+default = [
+{
+"device_name": "/dev/xvda",
+"volume_type": "gp3",
+"volume_size": 50
+},
+{
+"device_name": "/dev/xvdf",
+"volume_type": "gp3",
+"volume_size": 80,
+"iops": 3000,
+"throughput": 125
+},
+{
+"device_name": "/dev/xvdg",
+"volume_type": "gp3",
+"volume_size": 100,
+"iops": 3000,
+"throughput": 125
+}
+]
+}
+
+
+
+
+
+
+variable "instance_type" {
+description = "Instance type for the instances in the cluster"
+type = string
+default = "m5.xlarge"
+}
+variable "desired_size" {
+description = "Desired size of the cluster"
+type = number
+default = 3
+}
+
+variable "max_size" {
+description = "Maximum size of the cluster"
+type = number
+default = 10
+}
+
+variable "min_size" {
+description = "Minimum size of the cluster"
+type = number
+default = 3
+}
+
