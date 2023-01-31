@@ -83,8 +83,24 @@ variable "source_security_group_id" {
   type        = string
   default     = ""
 }
-variable "node_group_type" {
-  description = "Either Self-managed or managed"
+variable "self_managed_node_groups_enabled" {
+  description = "do you want self managed node groups enabled"
+  type        = bool
+  default     = true
+}
+variable "managed_node_groups_enabled" {
+  description = "do you want AWS managed node groups enabled"
+  type        = bool
+  default     = false
+}
+variable "source_security_group_id_managed" {
+  description = "List of additional rules to add to cluster security group"
   type        = string
-  default     = "self-managed"
+  default     = ""
+}
+variable "security_group_id" {
+  description = "Security group id"
+  type = string
+  default = ""
+  
 }
