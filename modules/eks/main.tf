@@ -97,7 +97,7 @@ module "eks_blueprints" {
   self_managed_node_groups = { # can posible add a var.node.group.type and pass up to main for choice need to check how different
     self_mg1 = {
 
-      node_group_name        = "${var.node_group_name}1"
+      node_group_name        = "${var.node_group_name}-1"
       launch_template_os     = var.launch_template_os
       subnet_ids             = var.private_subnet_ids
       create_launch_template = var.create_launch_template
@@ -245,6 +245,7 @@ module "eks_blueprints" {
 #---------------------------------------------------------------
 # Custom IAM role for Self Managed Node Group
 #---------------------------------------------------------------
+
 data "aws_iam_policy_document" "self_managed_ng_assume_role_policy" {
   statement {
     sid = "EKSWorkerAssumeRole"

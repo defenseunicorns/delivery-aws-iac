@@ -115,31 +115,36 @@ variable "iam_role_arn" {
   description = "Iam role ARN"
   default     = "aws_iam_role.self_managed_ng.arn"
 }
+
 variable "iam_instance_profile_name" {
   description = "Name of iam instance profile"
   default     = "aws_iam_instance_profile.self_managed_ng.name"
-
 }
+
 variable "format_mount_nvme_disk" {
   description = "Format the NVMe disk during the instance launch"
   type        = bool
   default     = true
 }
+
 variable "public_ip" {
   description = "Associate a public IP address with the instance"
   type        = bool
   default     = false
 }
+
 variable "enable_monitoring" {
   description = "Enable CloudWatch monitoring for the instance"
   type        = bool
   default     = false
 }
+
 variable "enable_metadata_options" {
   description = "Enable metadata options for the instance"
   type        = bool
   default     = false
 }
+
 variable "pre_userdata" {
   type    = string
   default = <<-EOT
@@ -147,11 +152,13 @@ variable "pre_userdata" {
     systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
   EOT
 }
+
 variable "bootstrap_extra_args" {
   description = "Additional bootstrap arguments for the instance"
   type        = string
   default     = "--use-max-pods false"
 }
+
 variable "block_device_mappings" {
   description = "List of block device mappings for the instance"
   type        = list(map(string))
@@ -183,6 +190,7 @@ variable "instance_type" {
   type        = string
   default     = "m5.xlarge"
 }
+
 variable "desired_size" {
   description = "Desired size of the cluster"
   type        = number
@@ -201,3 +209,44 @@ variable "min_size" {
   default     = 3
 }
 
+variable "cni_add_on" {
+  description = "enables eks cni add-on"
+  type        = bool
+  default     = true
+}
+
+variable "coredns" {
+  description = "enables eks coredns"
+  type        = bool
+  default     = true
+}
+
+variable "kube_proxy" {
+  description = "enables eks kube proxy"
+  type        = bool
+  default     = true
+}
+
+variable "metric_server" {
+  description = "enables k8 metrics server "
+  type        = bool
+  default     = true
+}
+
+variable "ebs_csi_add_on" {
+  description = "enables the ebs csi driver add-on"
+  type        = bool
+  default     = true
+}
+
+variable "aws_node_termination_handler" {
+  description = "enables k8 node termination handler"
+  type        = bool
+  default     = true
+}
+
+variable "cluster_autoscaler" {
+  description = "enables the cluster autoscaler"
+  type        = bool
+  default     = true
+}
