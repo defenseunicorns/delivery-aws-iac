@@ -25,8 +25,8 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks_blueprints"></a> [eks\_blueprints](#module\_eks\_blueprints) | git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git | v4.21.0 |
-| <a name="module_eks_blueprints_kubernetes_addons"></a> [eks\_blueprints\_kubernetes\_addons](#module\_eks\_blueprints\_kubernetes\_addons) | git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git//modules/kubernetes-addons | v4.21.0 |
+| <a name="module_eks_blueprints"></a> [eks\_blueprints](#module\_eks\_blueprints) | git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git | v4.21.1 |
+| <a name="module_eks_blueprints_kubernetes_addons"></a> [eks\_blueprints\_kubernetes\_addons](#module\_eks\_blueprints\_kubernetes\_addons) | git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git//modules/kubernetes-addons | v4.21.1 |
 
 ## Resources
 
@@ -48,6 +48,8 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 | <a name="input_aws_auth_eks_map_users"></a> [aws\_auth\_eks\_map\_users](#input\_aws\_auth\_eks\_map\_users) | List of map of users to add to aws-auth configmap | <pre>list(object({<br>    userarn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
 | <a name="input_aws_node_termination_handler"></a> [aws\_node\_termination\_handler](#input\_aws\_node\_termination\_handler) | enables k8 node termination handler | `bool` | `true` | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | n/a | `string` | `""` | no |
+| <a name="input_bastion_role_arn"></a> [bastion\_role\_arn](#input\_bastion\_role\_arn) | ARN of role authorized kubectl access | `string` | `""` | no |
+| <a name="input_bastion_role_name"></a> [bastion\_role\_name](#input\_bastion\_role\_name) | Name of role authorized kubectl access | `string` | `""` | no |
 | <a name="input_block_device_mappings"></a> [block\_device\_mappings](#input\_block\_device\_mappings) | List of block device mappings for the instance | `list(map(string))` | <pre>[<br>  {<br>    "device_name": "/dev/xvda",<br>    "volume_size": 50,<br>    "volume_type": "gp3"<br>  },<br>  {<br>    "device_name": "/dev/xvdf",<br>    "iops": 3000,<br>    "throughput": 125,<br>    "volume_size": 80,<br>    "volume_type": "gp3"<br>  },<br>  {<br>    "device_name": "/dev/xvdg",<br>    "iops": 3000,<br>    "throughput": 125,<br>    "volume_size": 100,<br>    "volume_type": "gp3"<br>  }<br>]</pre> | no |
 | <a name="input_bootstrap_extra_args"></a> [bootstrap\_extra\_args](#input\_bootstrap\_extra\_args) | Additional bootstrap arguments for the instance | `string` | `"--use-max-pods false"` | no |
 | <a name="input_cluster_autoscaler"></a> [cluster\_autoscaler](#input\_cluster\_autoscaler) | enables the cluster autoscaler | `bool` | `true` | no |
@@ -80,6 +82,7 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 | <a name="input_public_ip"></a> [public\_ip](#input\_public\_ip) | Associate a public IP address with the instance | `bool` | `false` | no |
 | <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | Public subnet IDs | `list(string)` | `[]` | no |
 | <a name="input_source_security_group_id"></a> [source\_security\_group\_id](#input\_source\_security\_group\_id) | List of additional rules to add to cluster security group | `string` | `""` | no |
+| <a name="input_tenancy"></a> [tenancy](#input\_tenancy) | Tenancy of the cluster | `string` | `"dedicated"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |
 
 ## Outputs

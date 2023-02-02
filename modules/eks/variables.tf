@@ -84,6 +84,24 @@ variable "source_security_group_id" {
   default     = ""
 }
 
+variable "bastion_role_arn" {
+  description = "ARN of role authorized kubectl access"
+  type        = string
+  default     = ""
+}
+
+variable "bastion_role_name" {
+  description = "Name of role authorized kubectl access"
+  type        = string
+  default     = ""
+}
+
+variable "tenancy" {
+  description = "Tenancy of the cluster"
+  type        = string
+  default     = "dedicated"
+}
+
 variable "node_group_name" {
   description = "The name of your node groups"
   type        = string

@@ -269,3 +269,21 @@ variable "kc_db_max_allocated_storage" {
   description = "The database allocated storage to use for Keycloak"
   type        = number
 }
+
+variable "vpc_instance_tenancy" {
+  description = "The tenancy of instances launched into the VPC"
+  type        = string
+  default     = "default"
+}
+
+variable "bastion_tenancy" {
+  description = "The tenancy of the bastion"
+  type        = string
+  default     = "default"
+}
+
+variable "eks_worker_tenancy" {
+  description = "The tenancy of the EKS worker nodes"
+  type        = string
+  default     = "default"
+}

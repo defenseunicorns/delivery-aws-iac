@@ -113,7 +113,7 @@ variable "root_volume_config" {
     volume_size = any
   })
   default = {
-    volume_type = "gp2"
+    volume_type = "gp3"
     volume_size = "20"
   }
 }
@@ -325,4 +325,10 @@ variable "vpc_endpoints_enabled" {
   description = "Create VPC Endpoints"
   type        = bool
   default     = true
+}
+
+variable "tenancy" {
+  description = "The tenancy of the instance (if the instance is running in a VPC). Valid values are 'default' or 'dedicated'."
+  type        = string
+  default     = "default"
 }

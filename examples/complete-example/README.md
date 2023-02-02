@@ -180,6 +180,7 @@ No requirements.
 | <a name="input_bastion_name"></a> [bastion\_name](#input\_bastion\_name) | The name to use for the bastion | `string` | `"my-bastion"` | no |
 | <a name="input_bastion_ssh_password"></a> [bastion\_ssh\_password](#input\_bastion\_ssh\_password) | The SSH password to use for the bastion if SSM authentication is used | `string` | `"my-password"` | no |
 | <a name="input_bastion_ssh_user"></a> [bastion\_ssh\_user](#input\_bastion\_ssh\_user) | The SSH user to use for the bastion | `string` | `"ec2-user"` | no |
+| <a name="input_bastion_tenancy"></a> [bastion\_tenancy](#input\_bastion\_tenancy) | The tenancy of the bastion | `string` | `"default"` | no |
 | <a name="input_cluster_autoscaler"></a> [cluster\_autoscaler](#input\_cluster\_autoscaler) | enables the cluster autoscaler | `bool` | `true` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name to use for the EKS cluster | `string` | `"my-eks"` | no |
 | <a name="input_cni_add_on"></a> [cni\_add\_on](#input\_cni\_add\_on) | enables eks cni add-on | `bool` | `true` | no |
@@ -192,6 +193,7 @@ No requirements.
 | <a name="input_desired_size"></a> [desired\_size](#input\_desired\_size) | Desired size of the cluster | `number` | `3` | no |
 | <a name="input_ebs_csi_add_on"></a> [ebs\_csi\_add\_on](#input\_ebs\_csi\_add\_on) | enables the ebs csi driver add-on | `bool` | `true` | no |
 | <a name="input_eks_k8s_version"></a> [eks\_k8s\_version](#input\_eks\_k8s\_version) | The Kubernetes version to use for the EKS cluster | `string` | `"1.23"` | no |
+| <a name="input_eks_worker_tenancy"></a> [eks\_worker\_tenancy](#input\_eks\_worker\_tenancy) | The tenancy of the EKS worker nodes | `string` | `"default"` | no |
 | <a name="input_enable_metadata_options"></a> [enable\_metadata\_options](#input\_enable\_metadata\_options) | Enable metadata options for the instance | `bool` | `false` | no |
 | <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring) | Enable CloudWatch monitoring for the instance | `bool` | `false` | no |
 | <a name="input_format_mount_nvme_disk"></a> [format\_mount\_nvme\_disk](#input\_format\_mount\_nvme\_disk) | Format the NVMe disk during the instance launch | `bool` | `true` | no |
@@ -214,6 +216,7 @@ No requirements.
 | <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_region2"></a> [region2](#input\_region2) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | The CIDR block for the VPC | `string` | n/a | yes |
+| <a name="input_vpc_instance_tenancy"></a> [vpc\_instance\_tenancy](#input\_vpc\_instance\_tenancy) | The tenancy of instances launched into the VPC | `string` | `"default"` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The name to use for the VPC | `string` | `"my-vpc"` | no |
 
 ## Outputs
