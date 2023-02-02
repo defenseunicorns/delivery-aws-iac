@@ -58,6 +58,7 @@ module "bastion" {
 module "eks" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v<insert tagged version>"
   source = "../../modules/eks"
+
   name                     = var.cluster_name
   vpc_id                   = module.vpc.vpc_id
   private_subnet_ids       = module.vpc.private_subnets
@@ -81,4 +82,20 @@ module "eks" {
     }
   ]
   source_security_group_id = module.bastion.security_group_ids[0]
+
+  node_group_name        = var.node_group_name
+  launch_template_os     = var.launch_template_os
+  instance_type          = var.instance_type
+  create_launch_template = var.create_launch_template
+  custom_ami_id          = var.custom_ami_id
+  create_iam_role        = var.create_iam_role
+
+  format_mount_nvme_disk = var.format_mount_nvme_disk
+  public_ip              = var.public_ip
+  enable_monitoring      = var.enable_monitoring
+
+  desired_size = var.desired_size
+  max_size     = var.max_size
+  min_size     = var.min_size
+
 }

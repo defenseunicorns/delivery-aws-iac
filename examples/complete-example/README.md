@@ -145,7 +145,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.52.0 |
 
 ## Modules
 
@@ -174,15 +174,28 @@ No requirements.
 | <a name="input_assign_public_ip"></a> [assign\_public\_ip](#input\_assign\_public\_ip) | Whether to assign a public IP to the bastion | `bool` | `false` | no |
 | <a name="input_aws_admin_1_username"></a> [aws\_admin\_1\_username](#input\_aws\_admin\_1\_username) | The AWS admin username to use for deployment | `string` | n/a | yes |
 | <a name="input_aws_admin_2_username"></a> [aws\_admin\_2\_username](#input\_aws\_admin\_2\_username) | The AWS admin username to use for deployment | `string` | n/a | yes |
+| <a name="input_aws_node_termination_handler"></a> [aws\_node\_termination\_handler](#input\_aws\_node\_termination\_handler) | enables k8 node termination handler | `bool` | `true` | no |
 | <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | The AWS profile to use for deployment | `string` | n/a | yes |
 | <a name="input_bastion_ami_id"></a> [bastion\_ami\_id](#input\_bastion\_ami\_id) | The AMI ID to use for the bastion | `string` | `"ami-000d4884381edb14c"` | no |
 | <a name="input_bastion_name"></a> [bastion\_name](#input\_bastion\_name) | The name to use for the bastion | `string` | `"my-bastion"` | no |
 | <a name="input_bastion_ssh_password"></a> [bastion\_ssh\_password](#input\_bastion\_ssh\_password) | The SSH password to use for the bastion if SSM authentication is used | `string` | `"my-password"` | no |
 | <a name="input_bastion_ssh_user"></a> [bastion\_ssh\_user](#input\_bastion\_ssh\_user) | The SSH user to use for the bastion | `string` | `"ec2-user"` | no |
+| <a name="input_cluster_autoscaler"></a> [cluster\_autoscaler](#input\_cluster\_autoscaler) | enables the cluster autoscaler | `bool` | `true` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name to use for the EKS cluster | `string` | `"my-eks"` | no |
+| <a name="input_cni_add_on"></a> [cni\_add\_on](#input\_cni\_add\_on) | enables eks cni add-on | `bool` | `true` | no |
+| <a name="input_coredns"></a> [coredns](#input\_coredns) | enables eks coredns | `bool` | `true` | no |
 | <a name="input_create_database_subnet_group"></a> [create\_database\_subnet\_group](#input\_create\_database\_subnet\_group) | Whether to create a database subnet group | `bool` | `true` | no |
 | <a name="input_create_database_subnet_route_table"></a> [create\_database\_subnet\_route\_table](#input\_create\_database\_subnet\_route\_table) | Whether to create a database subnet route table | `bool` | `true` | no |
+| <a name="input_create_iam_role"></a> [create\_iam\_role](#input\_create\_iam\_role) | Do you want to create an iam role | `bool` | `false` | no |
+| <a name="input_create_launch_template"></a> [create\_launch\_template](#input\_create\_launch\_template) | Do you want to create a launch template? | `bool` | `true` | no |
+| <a name="input_custom_ami_id"></a> [custom\_ami\_id](#input\_custom\_ami\_id) | The ami id of your custom ami | `string` | `""` | no |
+| <a name="input_desired_size"></a> [desired\_size](#input\_desired\_size) | Desired size of the cluster | `number` | `3` | no |
+| <a name="input_ebs_csi_add_on"></a> [ebs\_csi\_add\_on](#input\_ebs\_csi\_add\_on) | enables the ebs csi driver add-on | `bool` | `true` | no |
 | <a name="input_eks_k8s_version"></a> [eks\_k8s\_version](#input\_eks\_k8s\_version) | The Kubernetes version to use for the EKS cluster | `string` | `"1.23"` | no |
+| <a name="input_enable_metadata_options"></a> [enable\_metadata\_options](#input\_enable\_metadata\_options) | Enable metadata options for the instance | `bool` | `false` | no |
+| <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring) | Enable CloudWatch monitoring for the instance | `bool` | `false` | no |
+| <a name="input_format_mount_nvme_disk"></a> [format\_mount\_nvme\_disk](#input\_format\_mount\_nvme\_disk) | Format the NVMe disk during the instance launch | `bool` | `true` | no |
+| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type for the instances in the cluster | `string` | `"m5.xlarge"` | no |
 | <a name="input_kc_db_allocated_storage"></a> [kc\_db\_allocated\_storage](#input\_kc\_db\_allocated\_storage) | The database allocated storage to use for Keycloak | `number` | n/a | yes |
 | <a name="input_kc_db_engine_version"></a> [kc\_db\_engine\_version](#input\_kc\_db\_engine\_version) | The database engine to use for Keycloak | `string` | n/a | yes |
 | <a name="input_kc_db_family"></a> [kc\_db\_family](#input\_kc\_db\_family) | The database family to use for Keycloak | `string` | n/a | yes |
@@ -191,6 +204,13 @@ No requirements.
 | <a name="input_kc_db_max_allocated_storage"></a> [kc\_db\_max\_allocated\_storage](#input\_kc\_db\_max\_allocated\_storage) | The database allocated storage to use for Keycloak | `number` | n/a | yes |
 | <a name="input_keycloak_db_password"></a> [keycloak\_db\_password](#input\_keycloak\_db\_password) | The password to use for the Keycloak database | `string` | `"my-password"` | no |
 | <a name="input_keycloak_enabled"></a> [keycloak\_enabled](#input\_keycloak\_enabled) | Whether to enable Keycloak | `bool` | `false` | no |
+| <a name="input_kube_proxy"></a> [kube\_proxy](#input\_kube\_proxy) | enables eks kube proxy | `bool` | `true` | no |
+| <a name="input_launch_template_os"></a> [launch\_template\_os](#input\_launch\_template\_os) | The name of your launch template os | `string` | `"amazonlinux2eks"` | no |
+| <a name="input_max_size"></a> [max\_size](#input\_max\_size) | Maximum size of the cluster | `number` | `10` | no |
+| <a name="input_metric_server"></a> [metric\_server](#input\_metric\_server) | enables k8 metrics server | `bool` | `true` | no |
+| <a name="input_min_size"></a> [min\_size](#input\_min\_size) | Minimum size of the cluster | `number` | `3` | no |
+| <a name="input_node_group_name"></a> [node\_group\_name](#input\_node\_group\_name) | The name of your node groups | `string` | `"self_ng"` | no |
+| <a name="input_public_ip"></a> [public\_ip](#input\_public\_ip) | Associate a public IP address with the instance | `bool` | `false` | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_region2"></a> [region2](#input\_region2) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | The CIDR block for the VPC | `string` | n/a | yes |

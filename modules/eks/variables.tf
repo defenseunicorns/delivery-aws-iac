@@ -111,16 +111,6 @@ variable "create_iam_role" {
   default     = false
 }
 
-variable "iam_role_arn" {
-  description = "Iam role ARN"
-  default     = "aws_iam_role.self_managed_ng.arn"
-}
-
-variable "iam_instance_profile_name" {
-  description = "Name of iam instance profile"
-  default     = "aws_iam_instance_profile.self_managed_ng.name"
-}
-
 variable "format_mount_nvme_disk" {
   description = "Format the NVMe disk during the instance launch"
   type        = bool
@@ -188,7 +178,7 @@ variable "block_device_mappings" {
 variable "instance_type" {
   description = "Instance type for the instances in the cluster"
   type        = string
-  default     = "m5.xlarge"
+  default     = ""
 }
 
 variable "desired_size" {
