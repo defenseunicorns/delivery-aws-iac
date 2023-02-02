@@ -100,7 +100,7 @@ module "eks_blueprints" {
   # EKS Blueprints - Self Managed Node Groups
   #---------------------------------------------------------------
 
-  self_managed_node_groups = { # can posible add a var.node.group.type and pass up to main for choice need to check how different
+  self_managed_node_groups = { 
     self_mg1 = {
 
       node_group_name        = var.node_group_name
