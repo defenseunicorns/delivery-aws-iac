@@ -25,6 +25,8 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_aws_eks_managed_node_groups"></a> [aws\_eks\_managed\_node\_groups](#module\_aws\_eks\_managed\_node\_groups) | git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git//modules/aws-eks-managed-node-groups | n/a |
+| <a name="module_aws_eks_self_managed_node_groups"></a> [aws\_eks\_self\_managed\_node\_groups](#module\_aws\_eks\_self\_managed\_node\_groups) | git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git//modules/aws-eks-self-managed-node-groups | n/a |
 | <a name="module_eks_blueprints"></a> [eks\_blueprints](#module\_eks\_blueprints) | git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git | v4.21.1 |
 | <a name="module_eks_blueprints_kubernetes_addons"></a> [eks\_blueprints\_kubernetes\_addons](#module\_eks\_blueprints\_kubernetes\_addons) | git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git//modules/kubernetes-addons | v4.21.1 |
 
@@ -55,9 +57,11 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of cluster - used by Terratest for e2e test automation | `string` | `""` | no |
 | <a name="input_control_plane_subnet_ids"></a> [control\_plane\_subnet\_ids](#input\_control\_plane\_subnet\_ids) | Subnet IDs for control plane | `list(string)` | `[]` | no |
 | <a name="input_eks_k8s_version"></a> [eks\_k8s\_version](#input\_eks\_k8s\_version) | Kubernetes version to use for EKS cluster | `string` | `"1.23"` | no |
+| <a name="input_managed_node_groups"></a> [managed\_node\_groups](#input\_managed\_node\_groups) | Managed node groups configuration | `any` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | n/a | `string` | `""` | no |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnet IDs | `list(string)` | `[]` | no |
 | <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | Public subnet IDs | `list(string)` | `[]` | no |
+| <a name="input_self_managed_node_groups"></a> [self\_managed\_node\_groups](#input\_self\_managed\_node\_groups) | Self-managed node groups configuration | `any` | `{}` | no |
 | <a name="input_source_security_group_id"></a> [source\_security\_group\_id](#input\_source\_security\_group\_id) | List of additional rules to add to cluster security group | `string` | `""` | no |
 | <a name="input_tenancy"></a> [tenancy](#input\_tenancy) | Tenancy of the cluster | `string` | `"dedicated"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |

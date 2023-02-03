@@ -101,3 +101,18 @@ variable "tenancy" {
   type        = string
   default     = "dedicated"
 }
+
+#-------------------------------
+# Node Groups
+#-------------------------------
+variable "managed_node_groups" {
+  description = "Managed node groups configuration"
+  type        = any
+  default     = {}
+}
+
+variable "self_managed_node_groups" {
+  description = "Self-managed node groups configuration"
+  type        = any
+  default     = {}
+}
