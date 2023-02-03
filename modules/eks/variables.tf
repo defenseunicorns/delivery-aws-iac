@@ -102,159 +102,69 @@ variable "tenancy" {
   default     = "dedicated"
 }
 
-variable "node_group_name" {
-  description = "The name of your node groups"
-  type        = string
-  default     = "self_mg"
-}
-variable "launch_template_os" {
-  description = "The name of your launch template os"
-  default     = "amazonlinux2eks"
-
-}
-variable "create_launch_template" {
-  description = "Do you want to create a launch template?"
-  type        = bool
-  default     = true
+#-------------------------------
+# Node Groups
+#-------------------------------
+variable "managed_node_groups" {
+  description = "Managed node groups configuration"
+  type        = any
+  default     = null
 }
 
-variable "custom_ami_id" {
-  description = "The ami id of your custom ami"
-  default     = ""
+variable "self_managed_node_groups" {
+  description = "Self-managed node groups configuration"
+  type        = any
+  default     = null
 }
 
-variable "create_iam_role" {
-  description = "Do you want to create an iam role"
+#-------------------------------
+# add-ons
+#-------------------------------
+
+variable "enable_eks_vpc_cni" {
+  description = "Enable Amazon EKS VPC CNI"
   type        = bool
   default     = false
 }
 
-variable "format_mount_nvme_disk" {
-  description = "Format the NVMe disk during the instance launch"
-  type        = bool
-  default     = true
-}
-
-variable "public_ip" {
-  description = "Associate a public IP address with the instance"
+variable "enable_eks_coredns" {
+  description = "Enable Amazon EKS CoreDNS"
   type        = bool
   default     = false
 }
 
-variable "enable_monitoring" {
-  description = "Enable CloudWatch monitoring for the instance"
+variable "enable_eks_kube_proxy" {
+  description = "Enable Amazon EKS Kube Proxy"
   type        = bool
   default     = false
 }
 
-variable "enable_metadata_options" {
-  description = "Enable metadata options for the instance"
+variable "enable_eks_ebs_csi_driver" {
+  description = "Enable Amazon EKS EBS CSI Driver"
   type        = bool
   default     = false
 }
 
-variable "pre_userdata" {
-  type    = string
-  default = <<-EOT
-    yum install -y amazon-ssm-agent
-    systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
-  EOT
-}
-
-variable "bootstrap_extra_args" {
-  description = "Additional bootstrap arguments for the instance"
-  type        = string
-  default     = "--use-max-pods false"
-}
-
-variable "block_device_mappings" {
-  description = "List of block device mappings for the instance"
-  type        = list(map(string))
-  default = [
-    {
-      "device_name" : "/dev/xvda",
-      "volume_type" : "gp3",
-      "volume_size" : 50
-    },
-    {
-      "device_name" : "/dev/xvdf",
-      "volume_type" : "gp3",
-      "volume_size" : 80,
-      "iops" : 3000,
-      "throughput" : 125
-    },
-    {
-      "device_name" : "/dev/xvdg",
-      "volume_type" : "gp3",
-      "volume_size" : 100,
-      "iops" : 3000,
-      "throughput" : 125
-    }
-  ]
-}
-
-variable "instance_type" {
-  description = "Instance type for the instances in the cluster"
-  type        = string
-  default     = ""
-}
-
-variable "desired_size" {
-  description = "Desired size of the cluster"
-  type        = number
-  default     = 3
-}
-
-variable "max_size" {
-  description = "Maximum size of the cluster"
-  type        = number
-  default     = 10
-}
-
-variable "min_size" {
-  description = "Minimum size of the cluster"
-  type        = number
-  default     = 3
-}
-
-variable "cni_add_on" {
-  description = "enables eks cni add-on"
+variable "enable_eks_metrics_server" {
+  description = "Enable Amazon EKS Metrics Server"
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "coredns" {
-  description = "enables eks coredns"
+variable "enable_eks_node_termination_handler" {
+  description = "Enable Amazon EKS Node Termination Handler"
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "kube_proxy" {
-  description = "enables eks kube proxy"
+variable "enable_eks_cluster_autoscaler" {
+  description = "Enable Amazon EKS Cluster Autoscaler"
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "metric_server" {
-  description = "enables k8 metrics server "
-  type        = bool
-  default     = true
-}
-
-variable "ebs_csi_add_on" {
-  description = "enables the ebs csi driver add-on"
-  type        = bool
-  default     = true
-}
-
-variable "aws_node_termination_handler" {
-  description = "enables k8 node termination handler"
-  type        = bool
-  default     = true
-}
-
-variable "cluster_autoscaler" {
-  description = "enables the cluster autoscaler"
-  type        = bool
-  default     = true
+variable "cluster_autoscaler_helm_config" {
+  description = "Helm configuration for Amazon EKS Cluster Autoscaler"
+  type        = any
+  default     = {}
 }
