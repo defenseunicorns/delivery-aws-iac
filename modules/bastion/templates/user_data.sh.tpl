@@ -50,9 +50,10 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 curl -s https://fluxcd.io/install.sh | sudo bash
 
 # Download zarf binary and init package
-wget -O zarf https://github.com/defenseunicorns/zarf/releases/download/${zarf_version}/zarf_${zarf_version}_Linux_amd64
-chmod +x zarf
-wget https://github.com/defenseunicorns/zarf/releases/download/${zarf_version}/zarf-init-amd64-${zarf_version}.tar.zst
+wget -O /home/${ssh_user}/zarf https://github.com/defenseunicorns/zarf/releases/download/${zarf_version}/zarf_${zarf_version}_Linux_amd64
+wget -O /home/${ssh_user}/zarf-init-amd64-${zarf_version}.tar.zst https://github.com/defenseunicorns/zarf/releases/download/${zarf_version}/zarf-init-amd64-${zarf_version}.tar.zst
+chmod +x /home/${ssh_user}/zarf
+chown -R ${ssh_user}:${ssh_user} /home/${ssh_user}/zarf
 
 ##############
 # Install deps
