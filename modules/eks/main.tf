@@ -29,6 +29,9 @@ module "eks_blueprints" {
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
   control_plane_subnet_ids        = var.control_plane_subnet_ids
 
+  self_managed_node_groups = var.self_managed_node_groups
+  # managed_node_groups      = var.managed_node_groups
+
   #----------------------------------------------------------------------------------------------------------#
   # Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
   #   Upstream module implemented Security groups based on the best practices doc https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html.
@@ -97,6 +100,7 @@ module "eks_blueprints" {
     }
   ]
 }
+
 #---------------------------------------------------------------
 # Custom IAM role for Self Managed Node Group
 #---------------------------------------------------------------

@@ -108,11 +108,62 @@ variable "tenancy" {
 variable "managed_node_groups" {
   description = "Managed node groups configuration"
   type        = any
-  default     = {}
+  default     = null
 }
 
 variable "self_managed_node_groups" {
   description = "Self-managed node groups configuration"
+  type        = any
+  default     = null
+}
+
+#-------------------------------
+# Node Groups
+#-------------------------------
+variable "enable_eks_vpc_cni" {
+  description = "Enable Amazon EKS VPC CNI"
+  type        = bool
+  default     = false
+}
+
+variable "enable_eks_coredns" {
+  description = "Enable Amazon EKS CoreDNS"
+  type        = bool
+  default     = false
+}
+
+variable "enable_eks_kube_proxy" {
+  description = "Enable Amazon EKS Kube Proxy"
+  type        = bool
+  default     = false
+}
+
+variable "enable_eks_ebs_csi_driver" {
+  description = "Enable Amazon EKS EBS CSI Driver"
+  type        = bool
+  default     = false
+}
+
+variable "enable_eks_metrics_server" {
+  description = "Enable Amazon EKS Metrics Server"
+  type        = bool
+  default     = false
+}
+
+variable "enable_eks_node_termination_handler" {
+  description = "Enable Amazon EKS Node Termination Handler"
+  type        = bool
+  default     = false
+}
+
+variable "enable_eks_cluster_autoscaler" {
+  description = "Enable Amazon EKS Cluster Autoscaler"
+  type        = bool
+  default     = false
+}
+
+variable "cluster_autoscaler_helm_config" {
+  description = "Helm configuration for Amazon EKS Cluster Autoscaler"
   type        = any
   default     = {}
 }
