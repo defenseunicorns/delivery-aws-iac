@@ -34,6 +34,7 @@
   bastion_ssh_user            = "ec2-user" # local user in bastion used to ssh
   bastion_ssh_password        = "my-password"
   bastion_tenancy             = "dedicated"
+  zarf_version                = "v0.24.0-rc4"
 
 ###########################################################
 ############## Big Bang Dependencies ######################

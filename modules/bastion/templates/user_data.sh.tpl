@@ -49,6 +49,11 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 # Install flux
 curl -s https://fluxcd.io/install.sh | sudo bash
 
+# Download zarf binary and init package
+wget -O zarf https://github.com/defenseunicorns/zarf/releases/download/${zarf_version}/zarf_${zarf_version}_Linux_amd64
+chmod +x zarf
+wget https://github.com/defenseunicorns/zarf/releases/download/${zarf_version}/zarf-init-amd64-${zarf_version}.tar.zst
+
 ##############
 # Install deps
 ##############
