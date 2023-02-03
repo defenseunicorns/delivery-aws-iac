@@ -29,6 +29,26 @@ fi
 
 sudo yum update -y
 
+# Install unzip to support aws cli v2 installation
+sudo yum install unzip -y
+
+# Install newer version of aws cli
+sudo yum remove awscli -y
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+sudo chmod -R 755 /usr/local/aws-cli/
+
+# Install git
+sudo yum install git -y
+
+# Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+# Install flux
+curl -s https://fluxcd.io/install.sh | sudo bash
+
 ##############
 # Install deps
 ##############
