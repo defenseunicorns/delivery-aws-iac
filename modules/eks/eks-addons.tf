@@ -13,7 +13,7 @@ module "eks_blueprints_kubernetes_addons" {
   eks_cluster_version      = module.eks_blueprints.eks_cluster_version
   auto_scaling_group_names = module.eks_blueprints.self_managed_node_group_autoscaling_groups
 
-    # EKS Managed Add-ons
+  # EKS Managed Add-ons
   enable_amazon_eks_vpc_cni            = var.enable_eks_vpc_cni
   enable_amazon_eks_coredns            = var.enable_eks_coredns
   enable_amazon_eks_kube_proxy         = var.enable_eks_kube_proxy

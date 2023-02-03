@@ -46,41 +46,28 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 |------|-------------|------|---------|:--------:|
 | <a name="input_aws_account"></a> [aws\_account](#input\_aws\_account) | n/a | `string` | `""` | no |
 | <a name="input_aws_auth_eks_map_users"></a> [aws\_auth\_eks\_map\_users](#input\_aws\_auth\_eks\_map\_users) | List of map of users to add to aws-auth configmap | <pre>list(object({<br>    userarn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
-| <a name="input_aws_node_termination_handler"></a> [aws\_node\_termination\_handler](#input\_aws\_node\_termination\_handler) | enables k8 node termination handler | `bool` | `true` | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | n/a | `string` | `""` | no |
 | <a name="input_bastion_role_arn"></a> [bastion\_role\_arn](#input\_bastion\_role\_arn) | ARN of role authorized kubectl access | `string` | `""` | no |
 | <a name="input_bastion_role_name"></a> [bastion\_role\_name](#input\_bastion\_role\_name) | Name of role authorized kubectl access | `string` | `""` | no |
-| <a name="input_block_device_mappings"></a> [block\_device\_mappings](#input\_block\_device\_mappings) | List of block device mappings for the instance | `list(map(string))` | <pre>[<br>  {<br>    "device_name": "/dev/xvda",<br>    "volume_size": 50,<br>    "volume_type": "gp3"<br>  },<br>  {<br>    "device_name": "/dev/xvdf",<br>    "iops": 3000,<br>    "throughput": 125,<br>    "volume_size": 80,<br>    "volume_type": "gp3"<br>  },<br>  {<br>    "device_name": "/dev/xvdg",<br>    "iops": 3000,<br>    "throughput": 125,<br>    "volume_size": 100,<br>    "volume_type": "gp3"<br>  }<br>]</pre> | no |
-| <a name="input_bootstrap_extra_args"></a> [bootstrap\_extra\_args](#input\_bootstrap\_extra\_args) | Additional bootstrap arguments for the instance | `string` | `"--use-max-pods false"` | no |
-| <a name="input_cluster_autoscaler"></a> [cluster\_autoscaler](#input\_cluster\_autoscaler) | enables the cluster autoscaler | `bool` | `true` | no |
+| <a name="input_cluster_autoscaler_helm_config"></a> [cluster\_autoscaler\_helm\_config](#input\_cluster\_autoscaler\_helm\_config) | Helm configuration for Amazon EKS Cluster Autoscaler | `any` | `{}` | no |
 | <a name="input_cluster_endpoint_private_access"></a> [cluster\_endpoint\_private\_access](#input\_cluster\_endpoint\_private\_access) | Enable private access to the cluster endpoint | `bool` | `true` | no |
 | <a name="input_cluster_endpoint_public_access"></a> [cluster\_endpoint\_public\_access](#input\_cluster\_endpoint\_public\_access) | Enable public access to the cluster endpoint | `bool` | `false` | no |
 | <a name="input_cluster_kms_key_additional_admin_arns"></a> [cluster\_kms\_key\_additional\_admin\_arns](#input\_cluster\_kms\_key\_additional\_admin\_arns) | List of ARNs of additional users to add to KMS key policy | `list(string)` | `[]` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of cluster - used by Terratest for e2e test automation | `string` | `""` | no |
-| <a name="input_cni_add_on"></a> [cni\_add\_on](#input\_cni\_add\_on) | enables eks cni add-on | `bool` | `true` | no |
 | <a name="input_control_plane_subnet_ids"></a> [control\_plane\_subnet\_ids](#input\_control\_plane\_subnet\_ids) | Subnet IDs for control plane | `list(string)` | `[]` | no |
-| <a name="input_coredns"></a> [coredns](#input\_coredns) | enables eks coredns | `bool` | `true` | no |
-| <a name="input_create_iam_role"></a> [create\_iam\_role](#input\_create\_iam\_role) | Do you want to create an iam role | `bool` | `false` | no |
-| <a name="input_create_launch_template"></a> [create\_launch\_template](#input\_create\_launch\_template) | Do you want to create a launch template? | `bool` | `true` | no |
-| <a name="input_custom_ami_id"></a> [custom\_ami\_id](#input\_custom\_ami\_id) | The ami id of your custom ami | `string` | `""` | no |
-| <a name="input_desired_size"></a> [desired\_size](#input\_desired\_size) | Desired size of the cluster | `number` | `3` | no |
-| <a name="input_ebs_csi_add_on"></a> [ebs\_csi\_add\_on](#input\_ebs\_csi\_add\_on) | enables the ebs csi driver add-on | `bool` | `true` | no |
 | <a name="input_eks_k8s_version"></a> [eks\_k8s\_version](#input\_eks\_k8s\_version) | Kubernetes version to use for EKS cluster | `string` | `"1.23"` | no |
-| <a name="input_enable_metadata_options"></a> [enable\_metadata\_options](#input\_enable\_metadata\_options) | Enable metadata options for the instance | `bool` | `false` | no |
-| <a name="input_enable_monitoring"></a> [enable\_monitoring](#input\_enable\_monitoring) | Enable CloudWatch monitoring for the instance | `bool` | `false` | no |
-| <a name="input_format_mount_nvme_disk"></a> [format\_mount\_nvme\_disk](#input\_format\_mount\_nvme\_disk) | Format the NVMe disk during the instance launch | `bool` | `true` | no |
-| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type for the instances in the cluster | `string` | `""` | no |
-| <a name="input_kube_proxy"></a> [kube\_proxy](#input\_kube\_proxy) | enables eks kube proxy | `bool` | `true` | no |
-| <a name="input_launch_template_os"></a> [launch\_template\_os](#input\_launch\_template\_os) | The name of your launch template os | `string` | `"amazonlinux2eks"` | no |
-| <a name="input_max_size"></a> [max\_size](#input\_max\_size) | Maximum size of the cluster | `number` | `10` | no |
-| <a name="input_metric_server"></a> [metric\_server](#input\_metric\_server) | enables k8 metrics server | `bool` | `true` | no |
-| <a name="input_min_size"></a> [min\_size](#input\_min\_size) | Minimum size of the cluster | `number` | `3` | no |
+| <a name="input_enable_eks_cluster_autoscaler"></a> [enable\_eks\_cluster\_autoscaler](#input\_enable\_eks\_cluster\_autoscaler) | Enable Amazon EKS Cluster Autoscaler | `bool` | `false` | no |
+| <a name="input_enable_eks_coredns"></a> [enable\_eks\_coredns](#input\_enable\_eks\_coredns) | Enable Amazon EKS CoreDNS | `bool` | `false` | no |
+| <a name="input_enable_eks_ebs_csi_driver"></a> [enable\_eks\_ebs\_csi\_driver](#input\_enable\_eks\_ebs\_csi\_driver) | Enable Amazon EKS EBS CSI Driver | `bool` | `false` | no |
+| <a name="input_enable_eks_kube_proxy"></a> [enable\_eks\_kube\_proxy](#input\_enable\_eks\_kube\_proxy) | Enable Amazon EKS Kube Proxy | `bool` | `false` | no |
+| <a name="input_enable_eks_metrics_server"></a> [enable\_eks\_metrics\_server](#input\_enable\_eks\_metrics\_server) | Enable Amazon EKS Metrics Server | `bool` | `false` | no |
+| <a name="input_enable_eks_node_termination_handler"></a> [enable\_eks\_node\_termination\_handler](#input\_enable\_eks\_node\_termination\_handler) | Enable Amazon EKS Node Termination Handler | `bool` | `false` | no |
+| <a name="input_enable_eks_vpc_cni"></a> [enable\_eks\_vpc\_cni](#input\_enable\_eks\_vpc\_cni) | Enable Amazon EKS VPC CNI | `bool` | `false` | no |
+| <a name="input_managed_node_groups"></a> [managed\_node\_groups](#input\_managed\_node\_groups) | Managed node groups configuration | `any` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | n/a | `string` | `""` | no |
-| <a name="input_node_group_name"></a> [node\_group\_name](#input\_node\_group\_name) | The name of your node groups | `string` | `"self_mg"` | no |
-| <a name="input_pre_userdata"></a> [pre\_userdata](#input\_pre\_userdata) | n/a | `string` | `"yum install -y amazon-ssm-agent\nsystemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent\n"` | no |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnet IDs | `list(string)` | `[]` | no |
-| <a name="input_public_ip"></a> [public\_ip](#input\_public\_ip) | Associate a public IP address with the instance | `bool` | `false` | no |
 | <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | Public subnet IDs | `list(string)` | `[]` | no |
+| <a name="input_self_managed_node_groups"></a> [self\_managed\_node\_groups](#input\_self\_managed\_node\_groups) | Self-managed node groups configuration | `any` | `null` | no |
 | <a name="input_source_security_group_id"></a> [source\_security\_group\_id](#input\_source\_security\_group\_id) | List of additional rules to add to cluster security group | `string` | `""` | no |
 | <a name="input_tenancy"></a> [tenancy](#input\_tenancy) | Tenancy of the cluster | `string` | `"dedicated"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |
@@ -89,6 +76,8 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 
 | Name | Description |
 |------|-------------|
+| <a name="output_aws_iam_instance_profile_name"></a> [aws\_iam\_instance\_profile\_name](#output\_aws\_iam\_instance\_profile\_name) | EKS node group self managed ng instance profile name |
+| <a name="output_aws_iam_role_self_managed_role_arn"></a> [aws\_iam\_role\_self\_managed\_role\_arn](#output\_aws\_iam\_role\_self\_managed\_role\_arn) | EKS node group self managed ng IAM role ARN |
 | <a name="output_configure_kubectl"></a> [configure\_kubectl](#output\_configure\_kubectl) | Configure kubectl: make sure you're logged in with the correct AWS profile and run the following command to update your kubeconfig |
 | <a name="output_eks_cluster_certificate_authority_data"></a> [eks\_cluster\_certificate\_authority\_data](#output\_eks\_cluster\_certificate\_authority\_data) | EKS cluster certificate authority data |
 | <a name="output_eks_cluster_endpoint"></a> [eks\_cluster\_endpoint](#output\_eks\_cluster\_endpoint) | EKS cluster endpoint |

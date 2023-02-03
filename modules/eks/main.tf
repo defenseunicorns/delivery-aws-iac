@@ -10,7 +10,7 @@ data "aws_availability_zones" "available" {
 }
 
 data "aws_partition" "current" {}
- 
+
 #---------------------------------------------------------------
 # EKS Blueprints
 #---------------------------------------------------------------
@@ -29,7 +29,7 @@ module "eks_blueprints" {
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
   control_plane_subnet_ids        = var.control_plane_subnet_ids
 
-  self_managed_node_groups   = var.self_managed_node_groups
+  self_managed_node_groups = var.self_managed_node_groups
   # managed_node_groups        = var.managed_node_groups
 
 
