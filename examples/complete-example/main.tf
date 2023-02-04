@@ -14,10 +14,13 @@ module "vpc" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v<insert tagged version>"
   source = "../../modules/vpc"
 
-  region   = var.region
-  name     = var.vpc_name
-  vpc_cidr = var.vpc_cidr
-  azs      = ["${var.region}a", "${var.region}b", "${var.region}c"]
+  region           = var.region
+  name             = var.vpc_name
+  vpc_cidr         = var.vpc_cidr
+  azs              = ["${var.region}a", "${var.region}b", "${var.region}c"]
+  public_subnets   = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 8, k)]
+  private_subnets  = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 8, k + 10)]
+  database_subnets = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 8, k + 20)]
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"

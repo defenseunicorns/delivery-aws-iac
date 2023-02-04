@@ -13,6 +13,11 @@ output "vpc_cidr_block" {
   value       = module.vpc.vpc_cidr_block
 }
 
+output "azs" {
+  description = "A list of availability zones in the region"
+  value       = module.vpc.azs
+}
+
 output "default_security_group_id" {
   description = "The ID of the security group created by default on VPC creation"
   value       = module.vpc.default_security_group_id
@@ -108,26 +113,6 @@ output "public_subnets_ipv6_cidr_blocks" {
   value       = module.vpc.public_subnets_ipv6_cidr_blocks
 }
 
-# output "outpost_subnets" {
-#   description = "List of IDs of outpost subnets"
-#   value       = module.vpc.outpost_subnets
-# }
-
-# output "outpost_subnet_arns" {
-#   description = "List of ARNs of outpost subnets"
-#   value       = module.vpc.outpost_subnet_arns
-# }
-
-# output "outpost_subnets_cidr_blocks" {
-#   description = "List of cidr_blocks of outpost subnets"
-#   value       = module.vpc.outpost_subnets_cidr_blocks
-# }
-
-# output "outpost_subnets_ipv6_cidr_blocks" {
-#   description = "List of IPv6 cidr_blocks of outpost subnets in an IPv6 enabled VPC"
-#   value       = module.vpc.outpost_subnets_ipv6_cidr_blocks
-# }
-
 output "database_subnets" {
   description = "List of IDs of database subnets"
   value       = module.vpc.database_subnets
@@ -158,81 +143,6 @@ output "database_subnet_group_name" {
   value       = module.vpc.database_subnet_group_name
 }
 
-# output "redshift_subnets" {
-#   description = "List of IDs of redshift subnets"
-#   value       = module.vpc.redshift_subnets
-# }
-
-# output "redshift_subnet_arns" {
-#   description = "List of ARNs of redshift subnets"
-#   value       = module.vpc.redshift_subnet_arns
-# }
-
-# output "redshift_subnets_cidr_blocks" {
-#   description = "List of cidr_blocks of redshift subnets"
-#   value       = module.vpc.redshift_subnets_cidr_blocks
-# }
-
-# output "redshift_subnets_ipv6_cidr_blocks" {
-#   description = "List of IPv6 cidr_blocks of redshift subnets in an IPv6 enabled VPC"
-#   value       = module.vpc.redshift_subnets_ipv6_cidr_blocks
-# }
-
-# output "redshift_subnet_group" {
-#   description = "ID of redshift subnet group"
-#   value       = module.vpc.redshift_subnet_group
-# }
-
-# output "elasticache_subnets" {
-#   description = "List of IDs of elasticache subnets"
-#   value       = module.vpc.elasticache_subnets
-# }
-
-# output "elasticache_subnet_arns" {
-#   description = "List of ARNs of elasticache subnets"
-#   value       = module.vpc.elasticache_subnet_arns
-# }
-
-# output "elasticache_subnets_cidr_blocks" {
-#   description = "List of cidr_blocks of elasticache subnets"
-#   value       = module.vpc.elasticache_subnets_cidr_blocks
-# }
-
-# output "elasticache_subnets_ipv6_cidr_blocks" {
-#   description = "List of IPv6 cidr_blocks of elasticache subnets in an IPv6 enabled VPC"
-#   value       = module.vpc.elasticache_subnets_ipv6_cidr_blocks
-# }
-
-# output "intra_subnets" {
-#   description = "List of IDs of intra subnets"
-#   value       = module.vpc.intra_subnets
-# }
-
-# output "intra_subnet_arns" {
-#   description = "List of ARNs of intra subnets"
-#   value       = module.vpc.intra_subnet_arns
-# }
-
-# output "intra_subnets_cidr_blocks" {
-#   description = "List of cidr_blocks of intra subnets"
-#   value       = module.vpc.intra_subnets_cidr_blocks
-# }
-
-# output "intra_subnets_ipv6_cidr_blocks" {
-#   description = "List of IPv6 cidr_blocks of intra subnets in an IPv6 enabled VPC"
-#   value       = module.vpc.intra_subnets_ipv6_cidr_blocks
-# }
-
-# output "elasticache_subnet_group" {
-#   description = "ID of elasticache subnet group"
-#   value       = module.vpc.elasticache_subnet_group
-# }
-
-# output "elasticache_subnet_group_name" {
-#   description = "Name of elasticache subnet group"
-#   value       = module.vpc.elasticache_subnet_group_name
-# }
-
 output "public_route_table_ids" {
   description = "List of IDs of public route tables"
   value       = module.vpc.public_route_table_ids
@@ -247,21 +157,6 @@ output "database_route_table_ids" {
   description = "List of IDs of database route tables"
   value       = module.vpc.database_route_table_ids
 }
-
-# output "redshift_route_table_ids" {
-#   description = "List of IDs of redshift route tables"
-#   value       = module.vpc.redshift_route_table_ids
-# }
-
-# output "elasticache_route_table_ids" {
-#   description = "List of IDs of elasticache route tables"
-#   value       = module.vpc.elasticache_route_table_ids
-# }
-
-# output "intra_route_table_ids" {
-#   description = "List of IDs of intra route tables"
-#   value       = module.vpc.intra_route_table_ids
-# }
 
 output "public_internet_gateway_route_id" {
   description = "ID of the internet gateway route"
@@ -308,35 +203,10 @@ output "database_route_table_association_ids" {
   value       = module.vpc.database_route_table_association_ids
 }
 
-# output "redshift_route_table_association_ids" {
-#   description = "List of IDs of the redshift route table association"
-#   value       = module.vpc.redshift_route_table_association_ids
-# }
-
-# output "redshift_public_route_table_association_ids" {
-#   description = "List of IDs of the public redshift route table association"
-#   value       = module.vpc.redshift_public_route_table_association_ids
-# }
-
-# output "elasticache_route_table_association_ids" {
-#   description = "List of IDs of the elasticache route table association"
-#   value       = module.vpc.elasticache_route_table_association_ids
-# }
-
-# output "intra_route_table_association_ids" {
-#   description = "List of IDs of the intra route table association"
-#   value       = module.vpc.intra_route_table_association_ids
-# }
-
 output "public_route_table_association_ids" {
   description = "List of IDs of the public route table association"
   value       = module.vpc.public_route_table_association_ids
 }
-
-# output "dhcp_options_id" {
-#   description = "The ID of the DHCP options"
-#   value       = module.vpc.dhcp_options_id
-# }
 
 output "nat_ids" {
   description = "List of allocation ID of Elastic IPs created for AWS NAT Gateway"
@@ -534,8 +404,8 @@ output "vpc_flow_log_cloudwatch_iam_role_arn" {
   value       = module.vpc.vpc_flow_log_cloudwatch_iam_role_arn
 }
 
-# # VPC endpoints
-# output "vpc_endpoints" {
-#   description = "Array containing the full resource object and attributes for all endpoints created"
-#   value       = module.vpc_endpoints.endpoints
-# }
+# VPC endpoints
+output "vpc_endpoints" {
+  description = "Array containing the full resource object and attributes for all endpoints created"
+  value       = module.vpc_endpoints.endpoints
+}
