@@ -118,9 +118,8 @@ variable "self_managed_node_groups" {
 }
 
 #-------------------------------
-# add-ons
+# EKS Add-Ons
 #-------------------------------
-
 variable "enable_eks_vpc_cni" {
   description = "Enable Amazon EKS VPC CNI"
   type        = bool

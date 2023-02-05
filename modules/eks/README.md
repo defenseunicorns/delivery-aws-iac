@@ -76,8 +76,8 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 
 | Name | Description |
 |------|-------------|
-| <a name="output_aws_iam_instance_profile_name"></a> [aws\_iam\_instance\_profile\_name](#output\_aws\_iam\_instance\_profile\_name) | EKS node group self managed ng instance profile name |
-| <a name="output_aws_iam_role_self_managed_role_arn"></a> [aws\_iam\_role\_self\_managed\_role\_arn](#output\_aws\_iam\_role\_self\_managed\_role\_arn) | EKS node group self managed ng IAM role ARN |
+| <a name="output_aws_iam_instance_profile_self_managed_ng_name"></a> [aws\_iam\_instance\_profile\_self\_managed\_ng\_name](#output\_aws\_iam\_instance\_profile\_self\_managed\_ng\_name) | AWS IAM instance profile self managed node group name |
+| <a name="output_aws_iam_role_self_managed_ng_arn"></a> [aws\_iam\_role\_self\_managed\_ng\_arn](#output\_aws\_iam\_role\_self\_managed\_ng\_arn) | AWS IAM role self managed node group ARN |
 | <a name="output_configure_kubectl"></a> [configure\_kubectl](#output\_configure\_kubectl) | Configure kubectl: make sure you're logged in with the correct AWS profile and run the following command to update your kubeconfig |
 | <a name="output_eks_cluster_certificate_authority_data"></a> [eks\_cluster\_certificate\_authority\_data](#output\_eks\_cluster\_certificate\_authority\_data) | EKS cluster certificate authority data |
 | <a name="output_eks_cluster_endpoint"></a> [eks\_cluster\_endpoint](#output\_eks\_cluster\_endpoint) | EKS cluster endpoint |

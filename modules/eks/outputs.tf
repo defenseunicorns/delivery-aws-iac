@@ -54,12 +54,12 @@ output "eks_cluster_certificate_authority_data" {
   value       = module.eks_blueprints.eks_cluster_certificate_authority_data
 }
 
-output "aws_iam_role_self_managed_role_arn" {
-  description = "EKS node group self managed ng IAM role ARN"
+output "aws_iam_role_self_managed_ng_arn" {
+  description = "AWS IAM role self managed node group ARN"
   value       = aws_iam_role.self_managed_ng.arn
 }
 
-output "aws_iam_instance_profile_name" {
-  description = "EKS node group self managed ng instance profile name"
+output "aws_iam_instance_profile_self_managed_ng_name" {
+  description = "AWS IAM instance profile self managed node group name"
   value       = aws_iam_instance_profile.self_managed_ng.name
 }
