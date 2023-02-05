@@ -57,7 +57,6 @@ module "bastion" {
 
 ###########################################################
 ################### EKS Cluster ###########################
-
 module "eks" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v<insert tagged version>"
   source = "../../modules/eks"
@@ -95,7 +94,6 @@ module "eks" {
   self_managed_node_groups = {
     self_mg1 = {
       node_group_name        = "self_mg1"
-      launch_template_os     = "amazonlinux2eks"
       subnet_ids             = module.vpc.private_subnets
       create_launch_template = true
       launch_template_os     = "amazonlinux2eks" # amazonlinux2eks or bottlerocket or windows

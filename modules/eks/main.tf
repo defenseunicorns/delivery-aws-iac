@@ -100,7 +100,6 @@ module "eks_blueprints" {
     }
   ]
 }
-
 #---------------------------------------------------------------
 # Custom IAM role for Self Managed Node Group
 #---------------------------------------------------------------
@@ -164,4 +163,5 @@ resource "aws_iam_role" "auth_eks_role" {
     ]
 }
 EOF
+
 }
