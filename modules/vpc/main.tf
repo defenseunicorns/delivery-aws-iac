@@ -18,22 +18,12 @@ module "vpc" {
   cidr = var.vpc_cidr
 
   azs              = var.azs
-  public_subnets   = [for k, v in var.azs : cidrsubnet(var.vpc_cidr, 8, k)]
-  private_subnets  = [for k, v in var.azs : cidrsubnet(var.vpc_cidr, 8, k + 10)]
-  database_subnets = [for k, v in var.azs : cidrsubnet(var.vpc_cidr, 8, k + 20)]
-  # elasticache_subnets = ["10.0.31.0/24", "10.0.32.0/24", "10.0.33.0/24"]
-  # redshift_subnets    = ["10.0.41.0/24", "10.0.42.0/24", "10.0.43.0/24"]
-  # intra_subnets       = ["10.0.51.0/24", "10.0.52.0/24", "10.0.53.0/24"]
+  public_subnets   = var.public_subnets
+  private_subnets  = var.private_subnets
+  database_subnets = var.database_subnets
 
   private_subnet_tags = var.private_subnet_tags
   public_subnet_tags  = var.public_subnet_tags
-
-  # private_subnet_names = ["Private Subnet One", "Private Subnet Two"]
-  # public_subnet_names omitted to show default name generation for all three subnets
-  # database_subnet_names    = ["DB Subnet One"]
-  # elasticache_subnet_names = ["Elasticache Subnet One", "Elasticache Subnet Two"]
-  # redshift_subnet_names    = ["Redshift Subnet One", "Redshift Subnet Two", "Redshift Subnet Three"]
-  # intra_subnet_names       = []
 
   create_database_subnet_group = var.create_database_subnet_group
   instance_tenancy             = var.instance_tenancy

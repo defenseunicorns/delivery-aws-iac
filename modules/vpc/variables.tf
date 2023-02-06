@@ -47,3 +47,21 @@ variable "instance_tenancy" {
   type        = string
   default     = "default"
 }
+
+variable "public_subnets" {
+  description = "List of public subnets inside the VPC"
+  type        = list(string)
+  default     = []
+}
+
+variable "private_subnets" {
+  description = "List of private subnets inside the VPC"
+  type        = list(string)
+  default     = []
+}
+
+variable "database_subnets" {
+  description = "List of database subnets inside the VPC"
+  type        = list(string)
+  default     = []
+}
