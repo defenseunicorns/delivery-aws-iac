@@ -13,18 +13,6 @@ data "aws_iam_policy_document" "sops" {
     actions   = ["kms:GenerateRandom"]
     resources = ["*"]
   }
-  statement {
-    effect    = "Deny"
-    actions   = ["*"]
-    resources = ["*"]
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:SourceVpc"
-
-      values = [var.vpc_id]
-    }
-  }
 }
 
 resource "aws_kms_key" "sops" {
