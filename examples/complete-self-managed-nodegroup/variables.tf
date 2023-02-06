@@ -72,9 +72,11 @@ variable "eks_k8s_version" {
   default     = "1.23"
 }
 
-
-
-
+variable "cluster_endpoint_public_access" {
+  description = "Whether to enable private access to the EKS cluster"
+  type        = bool
+  default     = false
+}
 
 ###########################################################
 ################## Bastion Config #########################
