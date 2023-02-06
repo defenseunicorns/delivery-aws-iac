@@ -28,7 +28,7 @@ Ensure that your AWS credentials are configured. This can be done by running `aw
 ```sh
 mkdir tmp && cd tmp
 git clone https://github.com/defenseunicorns/iac.git
-cd examples/complete-self-managed-nodegroups/
+cd examples/complete-complete-self-managed-nodegroup/
 cp terraform.tfvars.example ../../../terraform.tfvars
 ```
 
@@ -50,10 +50,10 @@ terraform apply
 export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)`
 export DYNAMODB_TABLE_NAME=`(terraform output -raw tfstate_dynamodb_table_name)`
 
-cd tmp/examples/complete-self-managed-nodegroups
+cd tmp/examples/complete-complete-self-managed-nodegroup
 mv backend.example backend.tf
 tf init -backend-config="bucket=$BUCKET_ID" \
--backend-config="key=complete-self-managed-nodegroups/terraform.tfstate" \
+-backend-config="key=complete-complete-self-managed-nodegroup/terraform.tfstate" \
 -backend-config="dynamodb_table=$DYNAMODB_TABLE_NAME" \
 -backend-config="region=$AWS_DEFAULT_REGION"
 ```
@@ -93,7 +93,7 @@ In a new terminal, open an sshuttle tunnel to the bastion
 sshuttle --dns -vr ec2-user@$BASTION_INSTANCE_ID 10.200.0.0/16
 ```
 
-Navigate back to the terminal in the complete-self-managed-nodegroups directory and Provision the EKS Cluster
+Navigate back to the terminal in the complete-complete-self-managed-nodegroup directory and Provision the EKS Cluster
 
 ```sh
 terraform apply -var-file ../../../terraform.tfvars
