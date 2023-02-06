@@ -23,6 +23,12 @@ variable "name" {
   default     = ""
 }
 
+variable "instance_type" {
+  type        = string
+  description = "Instance type to use for Bastion"
+  default     = "m5.large"
+}
+
 variable "ami_id" {
   type        = string
   description = "ID of AMI to use for Bastion"

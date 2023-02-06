@@ -26,12 +26,4 @@ locals {
       description = "Allow all outbound traffic"
     }]
   }]
-
-  # instance
-  instance_type = "t3.small"
-  root_volume_config = {
-    volume_type = "gp3"
-    volume_size = "20"
-    encrypted   = true
-  }
 }
