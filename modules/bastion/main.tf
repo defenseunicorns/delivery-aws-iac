@@ -200,6 +200,7 @@ data "cloudinit_config" "config" {
         additional_user_data_script = var.additional_user_data_script
         ssm_enabled                 = var.ssm_enabled
         ssh_password                = var.ssh_password
+        zarf_version                = var.zarf_version
       }
     )
   }

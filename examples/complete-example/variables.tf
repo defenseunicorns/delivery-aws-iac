@@ -173,3 +173,9 @@ variable "eks_worker_tenancy" {
   type        = string
   default     = "default"
 }
+
+variable "zarf_version" {
+  description = "The version of Zarf to use"
+  type        = string
+  default     = ""
+}

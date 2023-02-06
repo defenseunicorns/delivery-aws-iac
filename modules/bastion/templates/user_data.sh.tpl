@@ -29,6 +29,32 @@ fi
 
 sudo yum update -y
 
+# Install unzip to support aws cli v2 installation
+sudo yum install unzip -y
+
+# Install newer version of aws cli
+sudo yum remove awscli -y
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+sudo chmod -R 755 /usr/local/aws-cli/
+
+# Install git
+sudo yum install git -y
+
+# Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+# Install flux
+curl -s https://fluxcd.io/install.sh | sudo bash
+
+# Download zarf binary and init package
+wget -O /home/${ssh_user}/zarf https://github.com/defenseunicorns/zarf/releases/download/${zarf_version}/zarf_${zarf_version}_Linux_amd64
+wget -O /home/${ssh_user}/zarf-init-amd64-${zarf_version}.tar.zst https://github.com/defenseunicorns/zarf/releases/download/${zarf_version}/zarf-init-amd64-${zarf_version}.tar.zst
+chmod +x /home/${ssh_user}/zarf
+chown -R ${ssh_user}:${ssh_user} /home/${ssh_user}/
+
 ##############
 # Install deps
 ##############

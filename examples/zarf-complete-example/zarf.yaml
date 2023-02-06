@@ -57,6 +57,8 @@ variables:
     default: 100.0
   - name: KC_DB_INSTANCE_CLASS
     default: "db.t4g.large"
+  - name: ZARF_VERSION
+    default: "v0.24.0-rc4"
 
 components:
   - name: download-dependencies

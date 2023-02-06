@@ -53,6 +53,7 @@ module "bastion" {
   enable_log_to_cloudwatch = true
   vpc_endpoints_enabled    = true
   tenancy                  = var.bastion_tenancy
+  zarf_version             = var.zarf_version
   tags = {
     Function = "bastion-ssm"
   }
