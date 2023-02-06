@@ -40,7 +40,7 @@ resource "aws_kms_alias" "a" {
 
 resource "aws_iam_policy" "sops_policy" {
   description = "IAM Policy for sops encrypting & decrypting git secrets"
-  name_prefix = "${var.cluster_name}-${var.policy_name_prefix}"
+  name_prefix = var.policy_name_prefix
   policy      = data.aws_iam_policy_document.sops.json
 }
 
