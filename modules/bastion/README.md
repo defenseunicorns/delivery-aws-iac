@@ -114,6 +114,7 @@ No modules.
 | <a name="input_enable_log_to_s3"></a> [enable\_log\_to\_s3](#input\_enable\_log\_to\_s3) | Enable Session Manager to Log to S3 | `bool` | `true` | no |
 | <a name="input_eni_attachment_config"></a> [eni\_attachment\_config](#input\_eni\_attachment\_config) | Optional list of enis to attach to instance | <pre>list(object({<br>    network_interface_id = string<br>    device_index         = string<br>  }))</pre> | `null` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error | `bool` | `true` | no |
+| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type to use for Bastion | `string` | `"m5.large"` | no |
 | <a name="input_keys_update_frequency"></a> [keys\_update\_frequency](#input\_keys\_update\_frequency) | n/a | `string` | `""` | no |
 | <a name="input_kms_key_alias"></a> [kms\_key\_alias](#input\_kms\_key\_alias) | Alias prefix of the KMS key.  Must start with alias/ followed by a name | `string` | `"alias/ssm-key"` | no |
 | <a name="input_kms_key_deletion_window"></a> [kms\_key\_deletion\_window](#input\_kms\_key\_deletion\_window) | Waiting period for scheduled KMS Key deletion.  Can be 7-30 days. | `number` | `7` | no |

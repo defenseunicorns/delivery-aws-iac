@@ -31,7 +31,7 @@ data "aws_subnet" "subnet_by_name" {
 resource "aws_instance" "application" {
   #checkov:skip=CKV2_AWS_41: IAM role is created in the module
   ami           = var.ami_id != "" ? var.ami_id : data.aws_ami.from_filter[0].id
-  instance_type = local.instance_type
+  instance_type = var.instance_type
   # key_name                    = var.ec2_key_name
   key_name                    = aws_key_pair.bastion_key.key_name
   vpc_security_group_ids      = length(local.security_group_configs) > 0 ? aws_security_group.sg.*.id : var.security_group_ids
