@@ -64,6 +64,7 @@ variable "database_subnets" {
   description = "List of database subnets inside the VPC"
   type        = list(string)
   default     = []
+}
 
 variable "map_public_ip_on_launch" {
   description = "Control whether an instance will receive a public IP address by default."

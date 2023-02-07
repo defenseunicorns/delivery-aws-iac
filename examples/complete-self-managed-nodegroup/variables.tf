@@ -196,6 +196,7 @@ variable "zarf_version" {
   description = "The version of Zarf to use"
   type        = string
   default     = ""
+}
 
 variable "rds_deletion_protection" {
   description = "Control RDS deletion protection"
