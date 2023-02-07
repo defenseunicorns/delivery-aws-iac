@@ -1,19 +1,7 @@
 exclude:
   - aws-iam-no-policy-wildcards # Wildcards required in addon IAM policies
-  - aws-vpc-no-excessive-port-access # VPC settings left up to user implementation for recommended practices
-  - aws-vpc-no-public-ingress-acl # VPC settings left up to user implementation for recommended practices
-  - aws-eks-no-public-cluster-access-to-cidr # Public access enabled for better example usability, users are recommended to disable if possible
-  - aws-eks-no-public-cluster-access # Public access enabled for better example usability, users are recommended to disable if possible
-  - aws-eks-encrypt-secrets # Module defaults to encrypting secrets with CMK, but this is not hardcoded and therefore a spurious error
-  - aws-vpc-no-public-egress-sgr # Added in v1.22
+  - aws-ec2-require-vpc-flow-logs-for-all-vpcs # Bug in tfsec. See: https://github.com/aquasecurity/tfsec/issues/1941
+  - aws-ec2-no-public-egress-sgr # cidr_blocks not exposed. See: https://github.com/ntwkninja/terraform-aws-eks-blueprints/blob/v4.21.1/main.tf#L21-L79
   - aws-s3-enable-versioning
-  - aws-ec2-add-description-to-security-group-rule
   - aws-s3-enable-bucket-logging
-  - aws-ec2-require-vpc-flow-logs-for-all-vpcs
-  - aws-rds-specify-backup-retention
-  - aws-ec2-no-public-ip-subnet
-  - aws-ec2-no-public-egress-sgr
-  - aws-ec2-no-public-ingress-acl
-  - aws-ec2-no-excessive-port-access
-  - aws-s3-encryption-customer-key
   - aws-rds-enable-deletion-protection
