@@ -79,7 +79,7 @@ resource "aws_ssm_document" "session_manager_prefs" {
   })
 }
 
-resource "aws_ssm_parameter" "example" {
+resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
   name      = "AmazonCloudWatch-linux"
   type      = "String"
   overwrite = true
@@ -94,22 +94,22 @@ resource "aws_ssm_parameter" "example" {
           "collect_list" : [
             {
               "file_path" : "/root/.bash_history",
-              "log_group_name" : "rootcommands",
+              "log_group_name" : "root user commands",
               "log_stream_name" : "{instance_id}",
               "retention_in_days" : 1
             },
             {
               "file_path" : "/home/ec2-user/.bash_history",
-              "log_group_name" : "ec2commands",
+              "log_group_name" : "ec2 user commands",
               "log_stream_name" : "{instance_id}",
-              "retention_in_days" : 1
+              "retention_in_days" : 60
             },
 
             {
               "file_path" : "/var/log/secure",
               "log_group_name" : "logins",
               "log_stream_name" : "{instance_id}",
-              "retention_in_days" : 1
+              "retention_in_days" : 60
             }
           ]
         }
@@ -180,3 +180,28 @@ resource "aws_ssm_parameter" "example" {
   })
 }
 
+resource "aws_cloudwatch_event_rule" "ssm-access" {
+  name        = "ssm-access"
+  description = "filters ssm access logs and sends usable data to a cloudwatch log group"
+
+  event_pattern = <<EOF
+  {
+  "source": ["aws.ssm"],
+  "detail-type": ["AWS API Call via CloudTrail"],
+  "detail": {
+    "eventSource": ["ssm.amazonaws.com"]
+  }
+}
+EOF
+
+}
+resource "aws_cloudwatch_log_group" "ssm-access-log-group" {
+  name              = "/aws/events/ssm-access"
+  retention_in_days = 60
+}
+resource "aws_cloudwatch_event_target" "ssm-target" {
+  rule      = aws_cloudwatch_event_rule.ssm-access.name
+  target_id = "ssm-access-target"
+  arn       = aws_cloudwatch_log_group.ssm-access-log-group.arn
+
+}
