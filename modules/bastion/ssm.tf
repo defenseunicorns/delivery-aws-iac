@@ -67,9 +67,9 @@ resource "aws_ssm_document" "session_manager_prefs" {
     sessionType   = "Standard_Stream"
     inputs = {
       s3BucketName                = var.enable_log_to_s3 ? aws_s3_bucket.session_logs_bucket.id : ""
-      s3EncryptionEnabled         = var.enable_log_to_s3 ? "true" : "false"
+      s3EncryptionEnabled         = var.enable_log_to_s3 ? true : false
       cloudWatchLogGroupName      = var.enable_log_to_cloudwatch ? aws_cloudwatch_log_group.session_manager_log_group.name : ""
-      cloudWatchEncryptionEnabled = var.enable_log_to_cloudwatch ? "true" : "false"
+      cloudWatchEncryptionEnabled = var.enable_log_to_cloudwatch ? true : false
       kmsKeyId                    = aws_kms_key.ssmkey.key_id
       shellProfile = {
         linux   = var.linux_shell_profile == "" ? var.linux_shell_profile : ""
@@ -78,7 +78,10 @@ resource "aws_ssm_document" "session_manager_prefs" {
     }
   })
 }
-
+resource "aws_cloudwatch_log_group" "ec2_cloudwatch_logs" {
+  name              = "ec2-cloudwatch-logging"
+  retention_in_days = 60
+}
 resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
   name      = "AmazonCloudWatch-linux"
   type      = "String"
@@ -94,23 +97,29 @@ resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
           "collect_list" : [
             {
               "file_path" : "/root/.bash_history",
-              "log_group_name" : "root user commands",
-              "log_stream_name" : "{instance_id}",
-              "retention_in_days" : 1
+              "log_group_name" : "ec2-cloudwatch-logging",
+              "log_stream_name" : "root-user-commands",
+              "retention_in_days" : 60
             },
             {
               "file_path" : "/home/ec2-user/.bash_history",
-              "log_group_name" : "ec2 user commands",
-              "log_stream_name" : "{instance_id}",
+              "log_group_name" : "ec2-cloudwatch-logging",
+              "log_stream_name" : "ec2-user-commands",
               "retention_in_days" : 60
             },
 
             {
               "file_path" : "/var/log/secure",
-              "log_group_name" : "logins",
-              "log_stream_name" : "{instance_id}",
+              "log_group_name" : "ec2-cloudwatch-logging",
+              "log_stream_name" : "logins",
               "retention_in_days" : 60
-            }
+            },
+            {
+              "file_path" : "/home/ssm-user/.bash_history",
+              "log_group_name" : "ec2-cloudwatch-logging",
+              "log_stream_name" : "ssm-user-commands",
+              "retention_in_days" : 60
+            },
           ]
         }
       }
