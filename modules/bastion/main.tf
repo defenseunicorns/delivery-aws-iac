@@ -189,6 +189,7 @@ data "cloudinit_config" "config" {
 
   part {
     content_type = "text/x-shellscript"
+
     content = templatefile("${path.module}/templates/user_data.sh.tpl",
       {
         s3_bucket_name              = aws_s3_bucket.access_log_bucket.id           // var.s3_bucket_name

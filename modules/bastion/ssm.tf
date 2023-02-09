@@ -78,3 +78,105 @@ resource "aws_ssm_document" "session_manager_prefs" {
     }
   })
 }
+
+resource "aws_ssm_parameter" "example" {
+  name      = "AmazonCloudWatch-linux"
+  type      = "String"
+  overwrite = true
+  value = jsonencode({
+    "agent" : {
+      "metrics_collection_interval" : 60,
+      "run_as_user" : "root"
+    },
+    "logs" : {
+      "logs_collected" : {
+        "files" : {
+          "collect_list" : [
+            {
+              "file_path" : "/root/.bash_history",
+              "log_group_name" : "rootcommands",
+              "log_stream_name" : "{instance_id}",
+              "retention_in_days" : 1
+            },
+            {
+              "file_path" : "/home/ec2-user/.bash_history",
+              "log_group_name" : "ec2commands",
+              "log_stream_name" : "{instance_id}",
+              "retention_in_days" : 1
+            },
+
+            {
+              "file_path" : "/var/log/secure",
+              "log_group_name" : "logins",
+              "log_stream_name" : "{instance_id}",
+              "retention_in_days" : 1
+            }
+          ]
+        }
+      }
+    },
+    "metrics" : {
+      "aggregation_dimensions" : [
+        [
+          "InstanceId"
+        ]
+      ],
+
+      "metrics_collected" : {
+        "collectd" : {
+          "metrics_aggregation_interval" : 60
+        },
+        "cpu" : {
+          "measurement" : [
+            "cpu_usage_idle",
+            "cpu_usage_iowait",
+            "cpu_usage_user",
+            "cpu_usage_system"
+          ],
+          "metrics_collection_interval" : 60,
+          "resources" : [
+            "*"
+          ],
+          "totalcpu" : false
+        },
+        "disk" : {
+          "measurement" : [
+            "used_percent",
+            "inodes_free"
+          ],
+          "metrics_collection_interval" : 60,
+          "resources" : [
+            "*"
+          ]
+        },
+        "diskio" : {
+          "measurement" : [
+            "io_time"
+          ],
+          "metrics_collection_interval" : 60,
+          "resources" : [
+            "*"
+          ]
+        },
+        "mem" : {
+          "measurement" : [
+            "mem_used_percent"
+          ],
+          "metrics_collection_interval" : 60
+        },
+        "statsd" : {
+          "metrics_aggregation_interval" : 60,
+          "metrics_collection_interval" : 10,
+          "service_address" : ":8125"
+        },
+        "swap" : {
+          "measurement" : [
+            "swap_used_percent"
+          ],
+          "metrics_collection_interval" : 60
+        }
+      }
+    }
+  })
+}
+

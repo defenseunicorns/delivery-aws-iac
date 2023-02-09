@@ -144,3 +144,19 @@ chown -R ${ssh_user}:${ssh_user} /home/${ssh_user}/
 
 # Append addition user-data script
 ${additional_user_data_script}
+
+#!/bin/bash
+
+# Install Amazon CloudWatch Agent
+sudo yum -y install amazon-cloudwatch-agent
+
+# Create the /usr/share/collectd directory and types.db file
+sudo mkdir -p /usr/share/collectd
+sudo touch /usr/share/collectd/types.db
+
+# Fetch the configuration from the SSM parameter store
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:AmazonCloudWatch-linux -s
+
+
+
+
