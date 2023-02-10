@@ -43,8 +43,10 @@ repos:
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
-      # TODO: Get checkov enabled based on existing configuration in github actions workflow
-      # - id: checkov
+      - id: terraform_checkov
+        verbose: true
+        args:
+          - --args=--config-file __GIT_WORKING_DIR__/.checkov.yml
 #      - id: terraform_tflint
 #      - id: terraform_tfsec
 #      - id: terraform_validate
