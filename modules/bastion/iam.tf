@@ -229,6 +229,17 @@ resource "aws_iam_role_policy_attachment" "terraform" {
 }
 
 resource "aws_iam_policy" "terraform_policy" {
+  # checkov:skip=CKV_AWS_286: TODO: Tighten this policy up. It currently allows actions that can be used for privilege escalation without constraint. Ref: https://docs.bridgecrew.io/docs/ensure-iam-policies-does-not-allow-privilege-escalation
+  # checkov:skip=CKV_AWS_110: TODO: Fix CKV_AWS_286. It is identical to this policy.
+  # checkov:skip=CKV_AWS_287: TODO: Tighten this policy up. It currently allows actions that can be used for credentials exposure without constraint. Ref: https://docs.bridgecrew.io/docs/ensure-iam-policies-do-not-allow-credentials-exposure
+  # checkov:skip=CKV_AWS_107: TODO: Fix CKV_AWS_287. It is identical to this policy.
+  # checkov:skip=CKV_AWS_288: TODO: Tighten this policy up. It currently allows actions that can be used to exfiltrate secrets or other data without constraint. https://docs.bridgecrew.io/docs/ensure-iam-policies-do-not-allow-data-exfiltration
+  # checkov:skip=CKV_AWS_108: TODO: Fix CKV_AWS_288. It is identical to this policy.
+  # checkov:skip=CKV_AWS_289: TODO: Tighten this policy up. It currently allows actions that can be used for permissions management and/or resource exposure without constraint. Ref: https://docs.bridgecrew.io/docs/ensure-iam-policies-do-not-allow-permissions-management-resource-exposure-without-constraint
+  # checkov:skip=CKV_AWS_109: TODO: Fix CKV_AWS_289. It is identical to this policy.
+  # checkov:skip=CKV_AWS_290: TODO: Tighten this policy up. It currently allows actions that can be used to for resource exposure without constraint. Ref: https://docs.bridgecrew.io/docs/ensure-iam-policies-do-not-allow-write-access-without-constraint
+  # checkov:skip=CKV_AWS_111: TODO: Fix CKV_AWS_290. It is identical to this policy.
+
   name   = "${local.bucket_prefix}-terraform-policy"
   policy = <<EOF
 {

@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '26 21 * * 5'
 
 jobs:
   run-pre-commit:
