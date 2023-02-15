@@ -44,13 +44,17 @@ To view examples for how you can leverage this VPC Module, please see the [examp
 | <a name="input_create_database_subnet_group"></a> [create\_database\_subnet\_group](#input\_create\_database\_subnet\_group) | Create database subnet group | `bool` | `true` | no |
 | <a name="input_create_database_subnet_route_table"></a> [create\_database\_subnet\_route\_table](#input\_create\_database\_subnet\_route\_table) | Create database subnet route table | `bool` | `true` | no |
 | <a name="input_database_subnets"></a> [database\_subnets](#input\_database\_subnets) | List of database subnets inside the VPC | `list(string)` | `[]` | no |
+| <a name="input_enable_nat_gateway"></a> [enable\_nat\_gateway](#input\_enable\_nat\_gateway) | Enable NAT gateway | `bool` | `false` | no |
 | <a name="input_instance_tenancy"></a> [instance\_tenancy](#input\_instance\_tenancy) | Tenancy of instances launched into the VPC | `string` | `"default"` | no |
+| <a name="input_intra_subnet_tags"></a> [intra\_subnet\_tags](#input\_intra\_subnet\_tags) | Tags to apply to intra subnets | `map(string)` | `{}` | no |
+| <a name="input_intra_subnets"></a> [intra\_subnets](#input\_intra\_subnets) | List of intra subnets inside the VPC | `list(string)` | `[]` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name to be used on all resources as identifier | `string` | n/a | yes |
 | <a name="input_private_subnet_tags"></a> [private\_subnet\_tags](#input\_private\_subnet\_tags) | Tags to apply to private subnets | `map(string)` | `{}` | no |
 | <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | List of private subnets inside the VPC | `list(string)` | `[]` | no |
 | <a name="input_public_subnet_tags"></a> [public\_subnet\_tags](#input\_public\_subnet\_tags) | Tags to apply to public subnets | `map(string)` | `{}` | no |
 | <a name="input_public_subnets"></a> [public\_subnets](#input\_public\_subnets) | List of public subnets inside the VPC | `list(string)` | `[]` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region to deploy into | `string` | n/a | yes |
+| <a name="input_single_nat_gateway"></a> [single\_nat\_gateway](#input\_single\_nat\_gateway) | Use a single NAT gateway for all private subnets | `bool` | `true` | no |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | CIDR block for the VPC | `string` | n/a | yes |
 
 ## Outputs

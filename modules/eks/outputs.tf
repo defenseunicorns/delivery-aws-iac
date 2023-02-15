@@ -56,10 +56,10 @@ output "eks_cluster_certificate_authority_data" {
 
 output "aws_iam_role_self_managed_ng_arn" {
   description = "AWS IAM role self managed node group ARN"
-  value       = aws_iam_role.self_managed_ng.arn
+  value       = aws_iam_role.self_managed_ng[0].arn
 }
 
 output "aws_iam_instance_profile_self_managed_ng_name" {
   description = "AWS IAM instance profile self managed node group name"
-  value       = aws_iam_instance_profile.self_managed_ng.name
+  value       = aws_iam_instance_profile.self_managed_ng[0].name
 }

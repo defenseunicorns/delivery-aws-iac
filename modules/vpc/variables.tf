@@ -65,3 +65,27 @@ variable "database_subnets" {
   type        = list(string)
   default     = []
 }
+
+variable "intra_subnets" {
+  description = "List of intra subnets inside the VPC"
+  type        = list(string)
+  default     = []
+}
+
+variable "intra_subnet_tags" {
+  description = "Tags to apply to intra subnets"
+  type        = map(string)
+  default     = {}
+}
+
+variable "enable_nat_gateway" {
+  description = "Enable NAT gateway"
+  type        = bool
+  default     = false
+}
+
+variable "single_nat_gateway" {
+  description = "Use a single NAT gateway for all private subnets"
+  type        = bool
+  default     = true
+}

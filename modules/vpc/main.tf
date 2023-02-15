@@ -21,9 +21,11 @@ module "vpc" {
   public_subnets   = var.public_subnets
   private_subnets  = var.private_subnets
   database_subnets = var.database_subnets
+  intra_subnets    = var.intra_subnets
 
   private_subnet_tags = var.private_subnet_tags
   public_subnet_tags  = var.public_subnet_tags
+  intra_subnet_tags   = var.intra_subnet_tags
 
   create_database_subnet_group = var.create_database_subnet_group
   instance_tenancy             = var.instance_tenancy
@@ -41,8 +43,8 @@ module "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
-  enable_nat_gateway = true
-  single_nat_gateway = true
+  enable_nat_gateway = var.enable_nat_gateway
+  single_nat_gateway = var.single_nat_gateway
 
   # customer_gateways = {
   #   IP1 = {
