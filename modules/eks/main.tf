@@ -140,7 +140,7 @@ data "aws_iam_policy_document" "self_managed_ng_assume_role_policy" {
 
 resource "aws_iam_role" "self_managed_ng" {
 
-  count = var.self_managed_node_groups != null ? 1 : 0
+  # count = var.self_managed_node_groups != null ? 1 : 0
 
   name                  = "${var.name}-self-managed-node-role"
   description           = "EKS Managed Node group IAM Role"
@@ -159,7 +159,7 @@ resource "aws_iam_role" "self_managed_ng" {
 
 resource "aws_iam_instance_profile" "self_managed_ng" {
 
-  count = var.self_managed_node_groups != null ? 1 : 0
+  # count = var.self_managed_node_groups != null ? 1 : 0
 
   name = "${var.name}-self-managed-node-instance-profile"
   role = aws_iam_role.self_managed_ng.name
