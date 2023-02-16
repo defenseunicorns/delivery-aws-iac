@@ -150,6 +150,12 @@ module "vpc_endpoints" {
       subnet_ids          = module.vpc.private_subnets
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
+    eks = {
+      service             = "eks"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
     kms = {
       service             = "kms"
       private_dns_enabled = true
