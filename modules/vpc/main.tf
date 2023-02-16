@@ -88,7 +88,7 @@ module "vpc_endpoints" {
       service         = "s3"
       service_type    = "Gateway"
       tags            = { Name = "s3-vpc-endpoint" }
-      route_table_ids = [module.vpc.private_route_table_ids]
+      route_table_ids = flatten([module.vpc.intra_route_table_ids, module.vpc.private_route_table_ids, module.vpc.public_route_table_ids])
     },
     dynamodb = {
       service            = "dynamodb"
