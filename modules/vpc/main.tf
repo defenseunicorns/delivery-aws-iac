@@ -1,3 +1,25 @@
+data "aws_iam_policy_document" "ecr" {
+  # checkov:skip=CKV_AWS_283: This policy allows EKS to access the regional ecr via a private VPC endpoint.
+
+  effect = "Allow"
+
+  actions = [
+    "ecr:GetAuthorizationToken",
+    "ecr:BatchCheckLayerAvailability",
+    "ecr:GetDownloadUrlForLayer",
+    "ecr:BatchGetImage",
+    "ecr:DescribeImages",
+    "ecr:ListImages"
+  ]
+
+  principals {
+    type        = "AWS"
+    identifiers = ["*"]
+  }
+
+  resources = ["*"]
+}
+
 locals {
 
   tags = {
@@ -142,6 +164,7 @@ module "vpc_endpoints" {
       service             = "ecr.api"
       private_dns_enabled = true
       subnet_ids          = module.vpc.private_subnets
+      policy              = data.aws_iam_policy_document.ecr.json
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     ecr_dkr = {
@@ -149,6 +172,7 @@ module "vpc_endpoints" {
       private_dns_enabled = true
       subnet_ids          = module.vpc.private_subnets
       security_group_ids  = [aws_security_group.vpc_tls.id]
+      policy              = data.aws_iam_policy_document.ecr.json
     },
     eks = {
       service             = "eks"
