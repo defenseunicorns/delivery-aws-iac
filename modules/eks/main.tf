@@ -16,7 +16,7 @@ data "aws_partition" "current" {}
 #---------------------------------------------------------------
 
 module "eks_blueprints" {
-  source = "git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git?ref=v4.21.1"
+  source = "git::https://github.com/ntwkninja/terraform-aws-eks-blueprints.git//modules/kubernetes-addons?ref=v4.21.1"
 
   cluster_name    = local.cluster_name
   cluster_version = var.eks_k8s_version
