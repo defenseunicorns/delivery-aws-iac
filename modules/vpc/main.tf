@@ -88,13 +88,13 @@ module "vpc_endpoints" {
     #       service = "s3"
     #       tags    = { Name = "s3-vpc-endpoint" }
     #     },
-    #     dynamodb = {
-    #       service         = "dynamodb"
-    #       service_type    = "Gateway"
-    #       route_table_ids = flatten([module.vpc.intra_route_table_ids, module.vpc.private_route_table_ids, module.vpc.public_route_table_ids])
-    #       policy          = data.aws_iam_policy_document.dynamodb_endpoint_policy.json
-    #       tags            = { Name = "dynamodb-vpc-endpoint" }
-    #     },
+    dynamodb = {
+      service         = "dynamodb"
+      service_type    = "Gateway"
+      route_table_ids = flatten([module.vpc.intra_route_table_ids, module.vpc.private_route_table_ids, module.vpc.public_route_table_ids])
+      policy          = data.aws_iam_policy_document.dynamodb_endpoint_policy.json
+      tags            = { Name = "dynamodb-vpc-endpoint" }
+    },
     ssm = {
       service             = "ssm"
       private_dns_enabled = true
@@ -112,17 +112,18 @@ module "vpc_endpoints" {
     #       private_dns_enabled = true
     #       subnet_ids          = module.vpc.private_subnets
     #     },
-    #     ecs = {
-    #       service             = "ecs"
-    #       private_dns_enabled = true
-    #       subnet_ids          = module.vpc.private_subnets
-    #     },
-    #     ecs_telemetry = {
-    #       create              = false
-    #       service             = "ecs-telemetry"
-    #       private_dns_enabled = true
-    #       subnet_ids          = module.vpc.private_subnets
-    #     },
+    sts = {
+      service             = "sts"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
+    logs = {
+      service             = "logs"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
     ec2 = {
       service             = "ec2"
       private_dns_enabled = true
@@ -135,18 +136,18 @@ module "vpc_endpoints" {
       subnet_ids          = module.vpc.private_subnets
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
-    #     ecr_api = {
-    #       service             = "ecr.api"
-    #       private_dns_enabled = true
-    #       subnet_ids          = module.vpc.private_subnets
-    #       policy              = data.aws_iam_policy_document.generic_endpoint_policy.json
-    #     },
-    #     ecr_dkr = {
-    #       service             = "ecr.dkr"
-    #       private_dns_enabled = true
-    #       subnet_ids          = module.vpc.private_subnets
-    #       policy              = data.aws_iam_policy_document.generic_endpoint_policy.json
-    #     },
+    ecr_api = {
+      service             = "ecr.api"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      policy              = data.aws_iam_policy_document.generic_endpoint_policy.json
+    },
+    ecr_dkr = {
+      service             = "ecr.dkr"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      policy              = data.aws_iam_policy_document.generic_endpoint_policy.json
+    },
     kms = {
       service             = "kms"
       private_dns_enabled = true
