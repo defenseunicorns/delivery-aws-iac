@@ -32,9 +32,10 @@
 ###########################################################
 #################### EKS Config ###########################
 
-  cluster_name                = "my-eks"
-  eks_k8s_version             = "1.24"
-  eks_worker_tenancy          = "dedicated"
+  cluster_name                    = "my-eks"
+  eks_k8s_version                 = "1.23"
+  eks_worker_tenancy              = "dedicated"
+  cluster_endpoint_public_access  = true
 
 ###########################################################
 ############## Big Bang Dependencies ######################

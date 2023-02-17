@@ -1,3 +1,44 @@
+data "aws_iam_policy_document" "ecr" {
+  # checkov:skip=CKV_AWS_283: This policy allows EKS to access the regional ecr via a private VPC endpoint.
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:DescribeImages",
+      "ecr:ListImages"
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    resources = ["*"]
+  }
+
+  statement {
+    effect    = "Deny"
+    actions   = ["*"]
+    resources = ["*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "StringNotEquals"
+      variable = "aws:SourceVpc"
+
+      values = [module.vpc.vpc_id]
+    }
+  }
+}
+
 locals {
 
   tags = {
@@ -21,9 +62,11 @@ module "vpc" {
   public_subnets   = var.public_subnets
   private_subnets  = var.private_subnets
   database_subnets = var.database_subnets
+  intra_subnets    = var.intra_subnets
 
   private_subnet_tags = var.private_subnet_tags
   public_subnet_tags  = var.public_subnet_tags
+  intra_subnet_tags   = var.intra_subnet_tags
 
   create_database_subnet_group = var.create_database_subnet_group
   instance_tenancy             = var.instance_tenancy
@@ -41,8 +84,8 @@ module "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
-  enable_nat_gateway = true
-  single_nat_gateway = true
+  enable_nat_gateway = var.enable_nat_gateway
+  single_nat_gateway = var.single_nat_gateway
 
   # customer_gateways = {
   #   IP1 = {
@@ -82,17 +125,19 @@ module "vpc_endpoints" {
   security_group_ids = [data.aws_security_group.default.id]
 
   endpoints = {
-    #     s3 = {
-    #       service = "s3"
-    #       tags    = { Name = "s3-vpc-endpoint" }
-    #     },
-    #     dynamodb = {
-    #       service         = "dynamodb"
-    #       service_type    = "Gateway"
-    #       route_table_ids = flatten([module.vpc.intra_route_table_ids, module.vpc.private_route_table_ids, module.vpc.public_route_table_ids])
-    #       policy          = data.aws_iam_policy_document.dynamodb_endpoint_policy.json
-    #       tags            = { Name = "dynamodb-vpc-endpoint" }
-    #     },
+    s3 = {
+      service         = "s3"
+      service_type    = "Gateway"
+      tags            = { Name = "s3-vpc-endpoint" }
+      route_table_ids = flatten([module.vpc.intra_route_table_ids, module.vpc.private_route_table_ids, module.vpc.public_route_table_ids])
+    },
+    dynamodb = {
+      service            = "dynamodb"
+      service_type       = "Gateway"
+      route_table_ids    = flatten([module.vpc.intra_route_table_ids, module.vpc.private_route_table_ids, module.vpc.public_route_table_ids])
+      security_group_ids = [aws_security_group.vpc_tls.id]
+      tags               = { Name = "dynamodb-vpc-endpoint" }
+    },
     ssm = {
       service             = "ssm"
       private_dns_enabled = true
@@ -110,17 +155,18 @@ module "vpc_endpoints" {
     #       private_dns_enabled = true
     #       subnet_ids          = module.vpc.private_subnets
     #     },
-    #     ecs = {
-    #       service             = "ecs"
-    #       private_dns_enabled = true
-    #       subnet_ids          = module.vpc.private_subnets
-    #     },
-    #     ecs_telemetry = {
-    #       create              = false
-    #       service             = "ecs-telemetry"
-    #       private_dns_enabled = true
-    #       subnet_ids          = module.vpc.private_subnets
-    #     },
+    sts = {
+      service             = "sts"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
+    logs = {
+      service             = "logs"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
     ec2 = {
       service             = "ec2"
       private_dns_enabled = true
@@ -133,20 +179,34 @@ module "vpc_endpoints" {
       subnet_ids          = module.vpc.private_subnets
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
-    #     ecr_api = {
-    #       service             = "ecr.api"
-    #       private_dns_enabled = true
-    #       subnet_ids          = module.vpc.private_subnets
-    #       policy              = data.aws_iam_policy_document.generic_endpoint_policy.json
-    #     },
-    #     ecr_dkr = {
-    #       service             = "ecr.dkr"
-    #       private_dns_enabled = true
-    #       subnet_ids          = module.vpc.private_subnets
-    #       policy              = data.aws_iam_policy_document.generic_endpoint_policy.json
-    #     },
+    ecr_api = {
+      service             = "ecr.api"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      policy              = data.aws_iam_policy_document.ecr.json
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
+    ecr_dkr = {
+      service             = "ecr.dkr"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+      policy              = data.aws_iam_policy_document.ecr.json
+    },
     kms = {
       service             = "kms"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
+    autoscaling = {
+      service             = "autoscaling"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+    },
+    elasticloadbalancing = {
+      service             = "elasticloadbalancing"
       private_dns_enabled = true
       subnet_ids          = module.vpc.private_subnets
       security_group_ids  = [aws_security_group.vpc_tls.id]
@@ -236,6 +296,14 @@ resource "aws_security_group" "vpc_tls" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [module.vpc.vpc_cidr_block]
+  }
+
+  egress {
+    description = "TLS from VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = local.tags
