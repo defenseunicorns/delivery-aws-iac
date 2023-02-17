@@ -99,6 +99,8 @@ module "eks" {
     }
   ]
 
+  enable_managed_nodegroups = true
+
   #---------------------------------------------------------------
   # EKS Blueprints - Managed Node Groups
   #---------------------------------------------------------------
@@ -127,14 +129,6 @@ module "eks" {
       format_mount_nvme_disk = true
       public_ip              = false
       enable_monitoring      = false
-
-      placement = {
-        affinity          = null
-        availability_zone = null
-        group_name        = null
-        host_id           = null
-        tenancy           = var.eks_worker_tenancy
-      }
 
       enable_metadata_options = false
 
@@ -186,12 +180,11 @@ module "eks" {
   # EKS Blueprints - EKS Add-Ons
   #---------------------------------------------------------------
 
-  enable_eks_vpc_cni                  = true
-  enable_eks_coredns                  = true
-  enable_eks_kube_proxy               = true
-  enable_eks_ebs_csi_driver           = true
-  enable_eks_metrics_server           = true
-  enable_eks_node_termination_handler = true
+  enable_eks_vpc_cni        = true
+  enable_eks_coredns        = true
+  enable_eks_kube_proxy     = true
+  enable_eks_ebs_csi_driver = true
+  enable_eks_metrics_server = true
 
   enable_eks_cluster_autoscaler = true
   cluster_autoscaler_helm_config = {

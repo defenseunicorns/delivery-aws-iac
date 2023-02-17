@@ -9,6 +9,17 @@ data "aws_availability_zones" "available" {
   }
 }
 
+data "aws_ami" "amazonlinux2eks" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amazon-eks-node-${var.eks_k8s_version}-*"]
+  }
+
+  owners = ["amazon"]
+}
+
 data "aws_partition" "current" {}
 
 #---------------------------------------------------------------
@@ -140,7 +151,7 @@ data "aws_iam_policy_document" "self_managed_ng_assume_role_policy" {
 
 resource "aws_iam_role" "self_managed_ng" {
 
-  count = var.managed_node_groups == "" ? 1 : 0
+  count = var.enable_managed_nodegroups == false ? 1 : 0
 
   name                  = "${var.name}-self-managed-node-role"
   description           = "EKS Managed Node group IAM Role"
@@ -159,7 +170,7 @@ resource "aws_iam_role" "self_managed_ng" {
 
 resource "aws_iam_instance_profile" "self_managed_ng" {
 
-  count = var.managed_node_groups == "" ? 1 : 0
+  count = var.enable_managed_nodegroups == false ? 1 : 0
 
   name = "${var.name}-self-managed-node-instance-profile"
   role = aws_iam_role.self_managed_ng[count.index].name
@@ -191,7 +202,7 @@ data "aws_iam_policy_document" "managed_ng_assume_role_policy" {
 
 resource "aws_iam_role" "managed_ng" {
 
-  count = var.self_managed_node_groups == "" ? 1 : 0
+  count = var.enable_managed_nodegroups == true ? 1 : 0
 
   name                  = "${var.name}-managed-node-role"
   description           = "EKS Managed Node group IAM Role"
@@ -210,7 +221,7 @@ resource "aws_iam_role" "managed_ng" {
 
 resource "aws_iam_instance_profile" "managed_ng" {
 
-  count = var.self_managed_node_groups == "" ? 1 : 0
+  count = var.enable_managed_nodegroups == true ? 1 : 0
 
   name = "${var.name}-managed-node-instance-profile"
   role = aws_iam_role.managed_ng[count.index].name
