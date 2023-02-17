@@ -46,3 +46,6 @@ terraform.rc
 
 # Ignore Terraform state files
 backend.*
+
+# Ignore Checkov external module downloads
+.external_modules
