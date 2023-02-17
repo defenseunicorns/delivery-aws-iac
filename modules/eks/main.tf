@@ -140,7 +140,7 @@ data "aws_iam_policy_document" "self_managed_ng_assume_role_policy" {
 
 resource "aws_iam_role" "self_managed_ng" {
 
-  count = var.self_managed_node_groups != "" ? 1 : 0
+  count = var.managed_node_groups == "" ? 1 : 0
 
   name                  = "${var.name}-self-managed-node-role"
   description           = "EKS Managed Node group IAM Role"
@@ -159,10 +159,10 @@ resource "aws_iam_role" "self_managed_ng" {
 
 resource "aws_iam_instance_profile" "self_managed_ng" {
 
-  count = var.self_managed_node_groups != "" ? 1 : 0
+  count = var.managed_node_groups == "" ? 1 : 0
 
   name = "${var.name}-self-managed-node-instance-profile"
-  role = aws_iam_role.self_managed_ng.name
+  role = aws_iam_role.self_managed_ng[count.index].name
   path = "/"
 
   lifecycle {
@@ -172,9 +172,26 @@ resource "aws_iam_instance_profile" "self_managed_ng" {
   tags = local.tags
 }
 
+#---------------------------------------------------------------
+# Custom IAM role for Managed Node Group
+#---------------------------------------------------------------
+data "aws_iam_policy_document" "managed_ng_assume_role_policy" {
+  statement {
+    sid = "EKSWorkerAssumeRole"
+
+    actions = [
+      "sts:AssumeRole",
+    ]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
 resource "aws_iam_role" "managed_ng" {
 
-  count = var.managed_node_groups != "" ? 1 : 0
+  count = var.self_managed_node_groups == "" ? 1 : 0
 
   name                  = "${var.name}-managed-node-role"
   description           = "EKS Managed Node group IAM Role"
@@ -193,10 +210,10 @@ resource "aws_iam_role" "managed_ng" {
 
 resource "aws_iam_instance_profile" "managed_ng" {
 
-  count = var.managed_node_groups != "" ? 1 : 0
+  count = var.self_managed_node_groups == "" ? 1 : 0
 
   name = "${var.name}-managed-node-instance-profile"
-  role = aws_iam_role.managed_ng.name
+  role = aws_iam_role.managed_ng[count.index].name
   path = "/"
 
   lifecycle {
