@@ -145,14 +145,14 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.53.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.55.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_bastion"></a> [bastion](#module\_bastion) | ../../modules/bastion | n/a |
-| <a name="module_eks-managed"></a> [eks-managed](#module\_eks-managed) | ../../modules/eks-managed | n/a |
+| <a name="module_eks"></a> [eks](#module\_eks) | ../../modules/eks | n/a |
 | <a name="module_flux_sops"></a> [flux\_sops](#module\_flux\_sops) | ../../modules/sops | n/a |
 | <a name="module_loki_s3_bucket"></a> [loki\_s3\_bucket](#module\_loki\_s3\_bucket) | ../../modules/s3-irsa | n/a |
 | <a name="module_rds_postgres_keycloak"></a> [rds\_postgres\_keycloak](#module\_rds\_postgres\_keycloak) | ../../modules/rds | n/a |

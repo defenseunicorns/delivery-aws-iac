@@ -1,10 +1,10 @@
 
 data "aws_eks_cluster_auth" "this" {
-  name = module.eks-managed.eks_cluster_id
+  name = module.eks.eks_cluster_id
 }
 
 data "aws_eks_cluster" "example" {
-  name = module.eks-managed.eks_cluster_id
+  name = module.eks.eks_cluster_id
 }
 
 provider "aws" {
