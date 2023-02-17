@@ -193,12 +193,6 @@ module "vpc_endpoints" {
       security_group_ids  = [aws_security_group.vpc_tls.id]
       policy              = data.aws_iam_policy_document.ecr.json
     },
-    # eks = {
-    #   service             = "eks"
-    #   private_dns_enabled = true
-    #   subnet_ids          = module.vpc.private_subnets
-    #   security_group_ids  = [aws_security_group.vpc_tls.id]
-    # },
     kms = {
       service             = "kms"
       private_dns_enabled = true
