@@ -113,6 +113,26 @@ output "public_subnets_ipv6_cidr_blocks" {
   value       = module.vpc.public_subnets_ipv6_cidr_blocks
 }
 
+output "intra_subnets" {
+  description = "List of IDs of intra subnets"
+  value       = module.vpc.intra_subnets
+}
+
+output "intra_subnet_arns" {
+  description = "List of ARNs of intra subnets"
+  value       = module.vpc.intra_subnet_arns
+}
+
+output "intra_subnets_cidr_blocks" {
+  description = "List of cidr_blocks of intra subnets"
+  value       = module.vpc.intra_subnets_cidr_blocks
+}
+
+output "intra_subnets_ipv6_cidr_blocks" {
+  description = "List of IPv6 cidr_blocks of intra subnets in an IPv6 enabled VPC"
+  value       = module.vpc.intra_subnets_ipv6_cidr_blocks
+}
+
 output "database_subnets" {
   description = "List of IDs of database subnets"
   value       = module.vpc.database_subnets

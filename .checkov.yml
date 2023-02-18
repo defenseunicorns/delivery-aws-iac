@@ -1,0 +1,8 @@
+directory:
+  - modules/
+  - examples/
+download-external-modules: false # This should ideally be true but there's a lot of findings in the upstream open source modules.
+framework: terraform
+compact: true
+quiet: false
+summary-position: bottom
