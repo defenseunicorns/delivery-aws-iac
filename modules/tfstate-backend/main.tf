@@ -1,3 +1,5 @@
+// WARNING: This module has been moved to its own repository. This directory is now deprecated and will be removed in the future. Please use [the new repository](https://github.com/defenseunicorns/terraform-aws-tfstate-backend) instead.
+
 data "aws_partition" "current" {}
 
 resource "aws_kms_key" "objects" {
