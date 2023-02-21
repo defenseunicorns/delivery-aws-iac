@@ -1,5 +1,7 @@
 # AWS tfstate-backend Module
 
+:warning: WARNING: This module has been moved to its own repository. This directory is now deprecated and will be removed in the future. Please use [the new repository](https://github.com/defenseunicorns/terraform-aws-tfstate-backend) instead.
+
 This repository contains Terraform configuration files that create various AWS resources, such as an S3 bucket, a DynamoDB table, and KMS keys. These resources are configured to hold store your terraform TFSTATE files.
 
 ## Examples
@@ -38,12 +40,12 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_bucket_prefix"></a> [bucket\_prefix](#input\_bucket\_prefix) | S3 Bucket Prefix | `string` | n/a | yes |
-| <a name="input_cluster_key_admin_arns"></a> [cluster\_key\_admin\_arns](#input\_cluster\_key\_admin\_arns) | ARNs of IAM users or roles that can administer the cluster | `list(string)` | `[]` | no |
-| <a name="input_dynamodb_table_name"></a> [dynamodb\_table\_name](#input\_dynamodb\_table\_name) | DynamoDB Table Name | `string` | n/a | yes |
-| <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | (Optional) The ARN of the policy that is used to set the permissions boundary for the role. | `string` | `""` | no |
-| <a name="input_region"></a> [region](#input\_region) | AWS Region | `string` | n/a | yes |
-| <a name="input_versioning_enabled"></a> [versioning\_enabled](#input\_versioning\_enabled) | Enable versioning on the S3 bucket | `bool` | `true` | no |
+| <a name="input_bucket_prefix"></a> [bucket\_prefix](#input\_bucket\_prefix) | DEPRECATED - S3 Bucket Prefix | `string` | n/a | yes |
+| <a name="input_cluster_key_admin_arns"></a> [cluster\_key\_admin\_arns](#input\_cluster\_key\_admin\_arns) | DEPRECATED - ARNs of IAM users or roles that can administer the cluster | `list(string)` | `[]` | no |
+| <a name="input_dynamodb_table_name"></a> [dynamodb\_table\_name](#input\_dynamodb\_table\_name) | DEPRECATED - DynamoDB Table Name | `string` | n/a | yes |
+| <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | DEPRECATED - (Optional) The ARN of the policy that is used to set the permissions boundary for the role. | `string` | `""` | no |
+| <a name="input_region"></a> [region](#input\_region) | DEPRECATED - AWS Region | `string` | n/a | yes |
+| <a name="input_versioning_enabled"></a> [versioning\_enabled](#input\_versioning\_enabled) | DEPRECATED - Enable versioning on the S3 bucket | `bool` | `true` | no |
 
 ## Outputs
 
