@@ -5,7 +5,7 @@ provider "aws" {
 data "aws_partition" "current" {}
 
 module "tfstate_backend" {
-  source = "git::https://github.com/defenseunicorns/iac.git//modules/tfstate-backend?ref=v0.0.0-alpha.2"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-tfstate-backend.git?ref=0.0.1"
 
   region              = var.region
   bucket_prefix       = "my-tfstate-backend"
