@@ -67,7 +67,7 @@ terraform apply -var-file ../../../terraform.tfvars -target=module.vpc -target=m
 # type yes to confirm or utilize the ```-auto-approve``` flag in the above command
 ```
 
-#### Step 4: Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
+#### Step 4: (Required if EKS Public Access set to False) Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
 
 Add the following to your ~/.ssh/config to connect to the Bastion via AWS SSM (create config file if it does not exist)
 
@@ -82,7 +82,7 @@ Test SSH connection to the Bastion
 ```sh
 #grab bastion instance id from terraform
 export BASTION_INSTANCE_ID=`(terraform output -raw bastion_instance_id)`
-# replace "my-password" with the variable set if changed from the default
+# replace "my-password" with the variable set (if changed from the default)
 expect -c 'spawn ssh ec2-user@$BASTION_INSTANCE_ID ; expect "assword:"; send "my-password\r"; interact'
 ```
 
@@ -125,7 +125,7 @@ This following command used to update the `kubeconfig` in your local machine whe
 
 To clean up your environment, destroy the Terraform modules in reverse order.
 
-Destroy the Kubernetes Add-ons / EKS cluster first (requires sshuttle through bastion)
+Destroy the Kubernetes Add-ons / EKS cluster first (requires sshuttle through bastion if EKS Public Access set to False)
 
 ```sh
 terraform destroy -var-file ../../../terraform.tfvars -auto-approve -target=module.eks
