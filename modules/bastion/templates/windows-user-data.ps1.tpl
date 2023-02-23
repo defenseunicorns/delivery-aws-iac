@@ -17,7 +17,8 @@ Invoke-WebRequest -Uri "https://download.microsoft.com/download/8/5/C/85C25433-A
 Expand-Archive -Path C:\Users\Public\Downloads\LGPO.zip -DestinationPath C:\Users\Public\Downloads -Force
 
 # Uninstall Internet Explorer
-Disable-WindowsOptionalFeature -FeatureName Internet-Explorer-Optional-amd64 –Online -NoRestart
+Disable-WindowsOptionalFeature -FeatureName Internet-Explorer-Optional-amd64 -Online -NoRestart
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -Name "DisableIE11" -Value 1 -Type DWord
 
 # Install Microsoft Edge
 md -Path $env:temp\edgeinstall -erroraction SilentlyContinue | Out-Null
@@ -55,11 +56,16 @@ $task = Register-ScheduledTask -TaskName "GPO Update" -Action $action -Trigger $
 Start-ScheduledTask -TaskName "GPO Update"
 Start-Sleep -Seconds 60
 
-# Disable scheduled task
-Disable-ScheduledTask -TaskName "GPO Update"
-Start-Sleep -Seconds 3
-</powershell>
+# V-205628
+auditpol /set /subcategory:"Computer Account Management" /success:enable
 
+# Add Group Policy Editor
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+Install-Module -Name GroupPolicy -Force
+
+# Make Group Policy editor match the registry so STIGs are happy
+Set-GPRegistryValue -Name "DisableIE" -Key "HKLM\SOFTWARE\Policies\Microsoft\Internet Explorer\Main" -ValueName "DisableIE11" -Type DWord -Value 1
+</powershell>
 
 
 # Create new user and add to local admin/rdp group
