@@ -45,7 +45,9 @@ terraform.rc
 .terragrunt-cache*
 
 # Ignore Terraform state files
-backend.*
+backend.tf
 
 # Ignore Checkov external module downloads
 .external_modules
+
+examples/zarf-complete-example/build

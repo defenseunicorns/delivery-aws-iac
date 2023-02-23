@@ -20,7 +20,7 @@ This example deploys the following Basic EKS Cluster with VPC
         - [local](#local)
         - [remote](#remote)
       - [Step 4: Provision VPC and Bastion](#step-4-provision-vpc-and-bastion)
-      - [Step 5: Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture](#step-5-connect-to-the-bastion-using-sshuttle-and-provision-the-remaining-infrastucture)
+      - [Step 4: (Required if EKS Public Access set to False) Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture](#step-4-required-if-eks-public-access-set-to-false-connect-to-the-bastion-using-sshuttle-and-provision-the-remaining-infrastucture)
     - [Configure `kubectl` and test cluster](#configure-kubectl-and-test-cluster)
       - [Step 6: Run the `aws eks update-kubeconfig` command](#step-6-run-the-aws-eks-update-kubeconfig-command)
       - [Step 7: List all the worker nodes by running the command below](#step-7-list-all-the-worker-nodes-by-running-the-command-below)
@@ -106,7 +106,7 @@ terraform plan -target=module.vpc -target=module.bastion
 terraform apply -target=module.vpc -target=module.bastion
 ```
 
-#### Step 5: Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
+#### Step 4: (Required if EKS Public Access set to False) Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
 
 Add the following to your ~/.ssh/config to connect to the Bastion via AWS SSM (create config file if it does not exist)
 
@@ -121,7 +121,7 @@ Test SSH connection to the Bastion
 ```sh
 # grab bastion instance id from terraform
 export BASTION_INSTANCE_ID=`(terraform output -raw bastion_instance_id)`
-# replace "my-password" with the variable set if changed from the default
+# replace "my-password" with the variable set (if changed from the default)
 expect -c 'spawn ssh ec2-user@$BASTION_INSTANCE_ID ; expect "assword:"; send "my-password\r"; interact'
 ```
 
@@ -166,7 +166,7 @@ aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name <cluster-name>
 
 To clean up your environment, destroy the Terraform modules in reverse order.
 
-Destroy the Kubernetes Add-ons / EKS cluster first (requires sshuttle through bastion)
+Destroy the Kubernetes Add-ons / EKS cluster first (requires sshuttle through bastion if EKS Public Access set to False)
 
 ```sh
 terraform destroy -auto-approve -target=module.eks
