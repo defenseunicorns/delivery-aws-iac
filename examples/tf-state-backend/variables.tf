@@ -8,13 +8,17 @@ variable "account" {
   type        = string
 }
 
-variable "aws_admin_1_username" {
-  description = "AWS username authorized to access S3 Terraform State Backend"
-  type        = string
+variable "aws_admin_usernames" {
+  description = "A list of one or more AWS usernames authorized to access S3 Terraform State Backend"
+  type        = list(string)
 }
 
-variable "aws_admin_2_username" {
-  description = "AWS username authorized to access S3 Terraform State Backend"
-  type        = string
-  default     = ""
+variable "bucket_prefix" {
+  type    = string
+  default = "my-tfstate-backend"
+}
+
+variable "dynamodb_table_name" {
+  type    = string
+  default = "my-tfstate-backend-lock"
 }
