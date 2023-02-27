@@ -8,6 +8,33 @@ This example deploys the following Basic EKS Cluster with VPC
 - Creates a Bastion host in a private subnet
 - Creates dependencies needed for BigBang
 
+---
+**Table of contents:**
+- [EKS Cluster Deployment with new VPC \& Big Bang Dependencies](#eks-cluster-deployment-with-new-vpc--big-bang-dependencies)
+  - [How to Deploy](#how-to-deploy)
+    - [Prerequisites](#prerequisites)
+    - [Deployment Steps](#deployment-steps)
+      - [Step 1: Preparation](#step-1-preparation)
+      - [Step 2: Modify terraform.tfvars (located in tmp directory) with desired values.](#step-2-modify-terraformtfvars-located-in-tmp-directory-with-desired-values)
+      - [Step 3: Terraform Init \& State](#step-3-terraform-init--state)
+        - [local](#local)
+        - [remote](#remote)
+      - [Step 4: Provision VPC and Bastion](#step-4-provision-vpc-and-bastion)
+      - [Step 5: Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture](#step-5-connect-to-the-bastion-using-sshuttle-and-provision-the-remaining-infrastucture)
+    - [Configure `kubectl` and test cluster](#configure-kubectl-and-test-cluster)
+      - [Step 6: Run the `aws eks update-kubeconfig` command](#step-6-run-the-aws-eks-update-kubeconfig-command)
+      - [Step 7: List all the worker nodes by running the command below](#step-7-list-all-the-worker-nodes-by-running-the-command-below)
+      - [Step 8: List all the pods running in `kube-system` namespace](#step-8-list-all-the-pods-running-in-kube-system-namespace)
+  - [Cleanup](#cleanup)
+  - [Requirements](#requirements)
+  - [Providers](#providers)
+  - [Modules](#modules)
+  - [Resources](#resources)
+  - [Inputs](#inputs)
+  - [Outputs](#outputs)
+
+---
+
 ## How to Deploy
 
 ### Prerequisites
@@ -16,8 +43,9 @@ Ensure that you have installed the following tools in your Mac or Windows Laptop
 
 1. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 2. [Kubectl](https://Kubernetes.io/docs/tasks/tools/)
-3. [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-4. [SSHuttle](https://github.com/sshuttle/sshuttle)
+3. [Helm](https://helm.sh/docs/intro/install/)
+4. [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+5. [SSHuttle](https://github.com/sshuttle/sshuttle)
 
 Ensure that your AWS credentials are configured. This can be done by running `aws configure`
 
@@ -26,15 +54,20 @@ Ensure that your AWS credentials are configured. This can be done by running `aw
 #### Step 1: Preparation
 
 ```sh
-mkdir tmp && cd tmp
 git clone https://github.com/defenseunicorns/iac.git
-cd examples/complete-complete-self-managed-nodegroup/
-cp terraform.tfvars.example ../../../terraform.tfvars
+cd ./iac/examples/complete-self-managed-nodegroup
+cp terraform.tfvars.example terraform.tfvars
 ```
 
-Modify terraform.tfvars (located in tmp directory) with desired values. AWS usernames must be changed to match actual usernames `aws iam get-user | jq '.[]' | jq -r '.UserName'`
+#### Step 2: Modify terraform.tfvars (located in tmp directory) with desired values.
 
-#### Step 2: Terraform Init & State
+AWS usernames must be changed to match actual usernames `aws iam get-user | jq '.[]' | jq -r '.UserName'`
+
+#### Step 3: Terraform Init & State
+
+Use remote or local state for terraform
+
+##### local
 
 Initialize a working directory with configuration files and create local terraform state file
 
@@ -42,32 +75,38 @@ Initialize a working directory with configuration files and create local terrafo
 terraform init
 ```
 
-(OPTIONAL) Alternatively, you can provision an S3 backend prior to this step using the tf-state-backend example and init via the following:
+##### remote
+
+Alternatively, you can provision an S3 backend prior to this step using the tf-state-backend example and init via the following:
 
 ```sh
-cd tmp/examples/tf-state-backend
+#from the ./iac/examples/complete-self-managed-nodegroup directory
+pushd ../tf-state-backend
+
 terraform apply
 export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)`
 export DYNAMODB_TABLE_NAME=`(terraform output -raw tfstate_dynamodb_table_name)`
+export AWS_DEFAULT_REGION=us-east-2 #set to your perferred region
 
-cd tmp/examples/complete-complete-self-managed-nodegroup
-mv backend.example backend.tf
-tf init -backend-config="bucket=$BUCKET_ID" \
--backend-config="key=complete-complete-self-managed-nodegroup/terraform.tfstate" \
--backend-config="dynamodb_table=$DYNAMODB_TABLE_NAME" \
--backend-config="region=$AWS_DEFAULT_REGION"
+popd
+
+terraform init -backend-config="bucket=$BUCKET_ID" \
+  -backend-config="key=complete-self-managed-nodegroup/terraform.tfstate" \
+  -backend-config="dynamodb_table=$DYNAMODB_TABLE_NAME" \
+  -backend-config="region=$AWS_DEFAULT_REGION"
 ```
 
-#### Step 3: Provision VPC and Bastion
+#### Step 4: Provision VPC and Bastion
 
 ```sh
-terraform plan -var-file ../../../terraform.tfvars -target=module.vpc -target=module.bastion
-# verify these changes are desired
-terraform apply -var-file ../../../terraform.tfvars -target=module.vpc -target=module.bastion
-# type yes to confirm or utilize the ```-auto-approve``` flag in the above command
+# plan deployment and verify desired outcome
+terraform plan -target=module.vpc -target=module.bastion
+
+# type yes to confirm or utilize the '-auto-approve' flag
+terraform apply -target=module.vpc -target=module.bastion
 ```
 
-#### Step 4: Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
+#### Step 5: Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
 
 Add the following to your ~/.ssh/config to connect to the Bastion via AWS SSM (create config file if it does not exist)
 
@@ -80,7 +119,7 @@ host i-* mi-*
 Test SSH connection to the Bastion
 
 ```sh
-#grab bastion instance id from terraform
+# grab bastion instance id from terraform
 export BASTION_INSTANCE_ID=`(terraform output -raw bastion_instance_id)`
 # replace "my-password" with the variable set if changed from the default
 expect -c 'spawn ssh ec2-user@$BASTION_INSTANCE_ID ; expect "assword:"; send "my-password\r"; interact'
@@ -93,10 +132,10 @@ In a new terminal, open an sshuttle tunnel to the bastion
 sshuttle --dns -vr ec2-user@$BASTION_INSTANCE_ID 10.200.0.0/16
 ```
 
-Navigate back to the terminal in the complete-complete-self-managed-nodegroup directory and Provision the EKS Cluster
+Navigate back to the terminal in the complete-self-managed-nodegroup directory and Provision the EKS Cluster
 
 ```sh
-terraform apply -var-file ../../../terraform.tfvars
+terraform apply -var-file
 # type yes to confirm or utilize the ```-auto-approve``` flag in the above command
 ```
 
@@ -107,17 +146,19 @@ Note: In this example we are using a private EKS Cluster endpoint for the contro
 EKS Cluster details can be extracted from terraform output or from AWS Console to get the name of cluster.
 This following command used to update the `kubeconfig` in your local machine where you run kubectl commands to interact with your EKS Cluster.
 
-#### Step 5: Run `update-kubeconfig` command
+#### Step 6: Run the `aws eks update-kubeconfig` command
 
 `~/.kube/config` file gets updated with cluster details and certificate from the below command
 
-    aws eks --region <enter-your-region> update-kubeconfig --name <cluster-name>
+```bash
+aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name <cluster-name>
+```
 
-#### Step 6: List all the worker nodes by running the command below
+#### Step 7: List all the worker nodes by running the command below
 
     kubectl get nodes
 
-#### Step 7: List all the pods running in `kube-system` namespace
+#### Step 8: List all the pods running in `kube-system` namespace
 
     kubectl get pods -n kube-system
 
@@ -128,13 +169,13 @@ To clean up your environment, destroy the Terraform modules in reverse order.
 Destroy the Kubernetes Add-ons / EKS cluster first (requires sshuttle through bastion)
 
 ```sh
-terraform destroy -var-file ../../../terraform.tfvars -auto-approve -target=module.eks
+terraform destroy -auto-approve -target=module.eks
 ```
 
 Destroy all other resources
 
 ```sh
-terraform destroy -var-file ../../../terraform.tfvars -auto-approve
+terraform destroy -auto-approve
 ```
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
