@@ -21,14 +21,9 @@ variable "aws_profile" {
   type        = string
 }
 
-variable "aws_admin_1_username" {
-  description = "The AWS admin username to use for deployment"
-  type        = string
-}
-
-variable "aws_admin_2_username" {
-  description = "The AWS admin username to use for deployment"
-  type        = string
+variable "aws_admin_usernames" {
+  description = "A list of one or more AWS usernames authorized to access S3 Terraform State Backend"
+  type        = list(string)
 }
 
 ###########################################################

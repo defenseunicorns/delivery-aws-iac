@@ -9,8 +9,8 @@
   region2                     = "us-east-1"  # RDS backup target AWS region
   account                     = "100008675309"  # target AWS account
   aws_profile                 = "du-dev"  # local AWS profile to be used for deployment
-  aws_admin_1_username        = "Bob.Marley" # enables eks access & ssh access to bastion
-  aws_admin_2_username        = "Jane.Doe" # enables eks access & ssh access to bastion
+  aws_admin_usernames =       ["Bob.Marley","Jane.Doe"] # list of users to be added to the AWS admin group
+
 
 ###########################################################
 #################### VPC Config ###########################
