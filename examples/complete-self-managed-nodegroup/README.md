@@ -90,6 +90,8 @@ export AWS_DEFAULT_REGION=us-east-2 #set to your perferred region
 
 popd
 
+cp backend.tf.example backend.tf
+
 terraform init -backend-config="bucket=$BUCKET_ID" \
   -backend-config="key=complete-self-managed-nodegroup/terraform.tfstate" \
   -backend-config="dynamodb_table=$DYNAMODB_TABLE_NAME" \
