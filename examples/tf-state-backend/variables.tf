@@ -9,7 +9,7 @@ variable "account" {
 }
 
 variable "aws_admin_usernames" {
-  description = "A list of one or more AWS usernames authorized to access S3 Terraform State Backend"
+  description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources"
   type        = list(string)
 }
 

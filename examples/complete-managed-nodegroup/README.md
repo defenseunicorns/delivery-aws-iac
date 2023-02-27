@@ -174,8 +174,7 @@ No requirements.
 |------|-------------|------|---------|:--------:|
 | <a name="input_account"></a> [account](#input\_account) | The AWS account to deploy into | `string` | n/a | yes |
 | <a name="input_assign_public_ip"></a> [assign\_public\_ip](#input\_assign\_public\_ip) | Whether to assign a public IP to the bastion | `bool` | `false` | no |
-| <a name="input_aws_admin_1_username"></a> [aws\_admin\_1\_username](#input\_aws\_admin\_1\_username) | The AWS admin username to use for deployment | `string` | n/a | yes |
-| <a name="input_aws_admin_2_username"></a> [aws\_admin\_2\_username](#input\_aws\_admin\_2\_username) | The AWS admin username to use for deployment | `string` | n/a | yes |
+| <a name="input_aws_admin_usernames"></a> [aws\_admin\_usernames](#input\_aws\_admin\_usernames) | A list of one or more AWS usernames with authorized access to KMS and EKS resources | `list(string)` | n/a | yes |
 | <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | The AWS profile to use for deployment | `string` | n/a | yes |
 | <a name="input_bastion_ami_id"></a> [bastion\_ami\_id](#input\_bastion\_ami\_id) | (Optional) The AMI ID to use for the bastion, will query the latest Amazon Linux 2 AMI if not provided | `string` | `""` | no |
 | <a name="input_bastion_instance_type"></a> [bastion\_instance\_type](#input\_bastion\_instance\_type) | value for the instance type of the EKS worker nodes | `string` | `"m5.xlarge"` | no |
