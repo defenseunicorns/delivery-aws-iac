@@ -99,6 +99,8 @@ module "eks" {
     }
   ]
 
+  enable_managed_nodegroups = false
+
   #---------------------------------------------------------------
   # EKS Blueprints - Self Managed Node Groups
   #---------------------------------------------------------------

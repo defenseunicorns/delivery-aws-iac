@@ -32,11 +32,15 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 
 | Name | Type |
 |------|------|
+| [aws_iam_instance_profile.managed_ng](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_instance_profile.self_managed_ng](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_role.auth_eks_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.managed_ng](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.self_managed_ng](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_ami.amazonlinux2eks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_eks_cluster_auth.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
+| [aws_iam_policy_document.managed_ng_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.self_managed_ng_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
@@ -63,6 +67,7 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 | <a name="input_enable_eks_metrics_server"></a> [enable\_eks\_metrics\_server](#input\_enable\_eks\_metrics\_server) | Enable Amazon EKS Metrics Server | `bool` | `false` | no |
 | <a name="input_enable_eks_node_termination_handler"></a> [enable\_eks\_node\_termination\_handler](#input\_enable\_eks\_node\_termination\_handler) | Enable Amazon EKS Node Termination Handler | `bool` | `false` | no |
 | <a name="input_enable_eks_vpc_cni"></a> [enable\_eks\_vpc\_cni](#input\_enable\_eks\_vpc\_cni) | Enable Amazon EKS VPC CNI | `bool` | `false` | no |
+| <a name="input_enable_managed_nodegroups"></a> [enable\_managed\_nodegroups](#input\_enable\_managed\_nodegroups) | Enable managed node groups. If false, self managed node groups will be used. | `bool` | n/a | yes |
 | <a name="input_managed_node_groups"></a> [managed\_node\_groups](#input\_managed\_node\_groups) | Managed node groups configuration | `any` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | n/a | `string` | `""` | no |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnet IDs | `list(string)` | `[]` | no |
@@ -76,7 +81,9 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 
 | Name | Description |
 |------|-------------|
+| <a name="output_aws_iam_instance_profile_managed_ng_name"></a> [aws\_iam\_instance\_profile\_managed\_ng\_name](#output\_aws\_iam\_instance\_profile\_managed\_ng\_name) | AWS IAM instance profile managed node group name |
 | <a name="output_aws_iam_instance_profile_self_managed_ng_name"></a> [aws\_iam\_instance\_profile\_self\_managed\_ng\_name](#output\_aws\_iam\_instance\_profile\_self\_managed\_ng\_name) | AWS IAM instance profile self managed node group name |
+| <a name="output_aws_iam_role_managed_ng_arn"></a> [aws\_iam\_role\_managed\_ng\_arn](#output\_aws\_iam\_role\_managed\_ng\_arn) | AWS IAM role managed node group ARN |
 | <a name="output_aws_iam_role_self_managed_ng_arn"></a> [aws\_iam\_role\_self\_managed\_ng\_arn](#output\_aws\_iam\_role\_self\_managed\_ng\_arn) | AWS IAM role self managed node group ARN |
 | <a name="output_configure_kubectl"></a> [configure\_kubectl](#output\_configure\_kubectl) | Configure kubectl: make sure you're logged in with the correct AWS profile and run the following command to update your kubeconfig |
 | <a name="output_eks_cluster_certificate_authority_data"></a> [eks\_cluster\_certificate\_authority\_data](#output\_eks\_cluster\_certificate\_authority\_data) | EKS cluster certificate authority data |

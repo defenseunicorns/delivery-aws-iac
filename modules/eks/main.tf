@@ -1,16 +1,3 @@
-data "aws_eks_cluster_auth" "this" {
-  name = module.eks_blueprints.eks_cluster_id
-}
-
-data "aws_availability_zones" "available" {
-  filter {
-    name   = "opt-in-status"
-    values = ["opt-in-not-required"]
-  }
-}
-
-data "aws_partition" "current" {}
-
 #---------------------------------------------------------------
 # EKS Blueprints
 #---------------------------------------------------------------
@@ -124,23 +111,10 @@ EOF
 #---------------------------------------------------------------
 # Custom IAM role for Self Managed Node Group
 #---------------------------------------------------------------
-data "aws_iam_policy_document" "self_managed_ng_assume_role_policy" {
-  statement {
-    sid = "EKSWorkerAssumeRole"
-
-    actions = [
-      "sts:AssumeRole",
-    ]
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
 
 resource "aws_iam_role" "self_managed_ng" {
 
-  # count = var.self_managed_node_groups != null ? 1 : 0
+  count = var.enable_managed_nodegroups == false ? 1 : 0
 
   name                  = "${var.name}-self-managed-node-role"
   description           = "EKS Managed Node group IAM Role"
@@ -159,10 +133,48 @@ resource "aws_iam_role" "self_managed_ng" {
 
 resource "aws_iam_instance_profile" "self_managed_ng" {
 
-  # count = var.self_managed_node_groups != null ? 1 : 0
+  count = var.enable_managed_nodegroups == false ? 1 : 0
 
   name = "${var.name}-self-managed-node-instance-profile"
-  role = aws_iam_role.self_managed_ng.name
+  role = aws_iam_role.self_managed_ng[count.index].name
+  path = "/"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = local.tags
+}
+
+#---------------------------------------------------------------
+# Custom IAM role for Managed Node Group
+#---------------------------------------------------------------
+
+resource "aws_iam_role" "managed_ng" {
+
+  count = var.enable_managed_nodegroups == true ? 1 : 0
+
+  name                  = "${var.name}-managed-node-role"
+  description           = "EKS Managed Node group IAM Role"
+  assume_role_policy    = data.aws_iam_policy_document.managed_ng_assume_role_policy.json
+  path                  = "/"
+  force_detach_policies = true
+  managed_policy_arns = [
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKS_CNI_Policy",
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  ]
+
+  tags = local.tags
+}
+
+resource "aws_iam_instance_profile" "managed_ng" {
+
+  count = var.enable_managed_nodegroups == true ? 1 : 0
+
+  name = "${var.name}-managed-node-instance-profile"
+  role = aws_iam_role.managed_ng[count.index].name
   path = "/"
 
   lifecycle {
