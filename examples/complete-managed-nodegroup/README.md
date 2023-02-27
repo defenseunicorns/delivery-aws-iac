@@ -51,7 +51,8 @@ export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)`
 export DYNAMODB_TABLE_NAME=`(terraform output -raw tfstate_dynamodb_table_name)`
 
 cd tmp/examples/complete-complete-self-managed-nodegroup
-mv backend.example backend.tf
+cp backend.tf.example backend.tf
+
 tf init -backend-config="bucket=$BUCKET_ID" \
 -backend-config="key=complete-complete-self-managed-nodegroup/terraform.tfstate" \
 -backend-config="dynamodb_table=$DYNAMODB_TABLE_NAME" \
