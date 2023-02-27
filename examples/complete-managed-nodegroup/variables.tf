@@ -78,6 +78,12 @@ variable "cluster_endpoint_public_access" {
   default     = false
 }
 
+variable "instance_type" {
+  description = "value for the instance type of the EKS worker nodes"
+  type        = string
+  default     = "m5.xlarge"
+}
+
 ###########################################################
 ################## Bastion Config #########################
 
@@ -85,6 +91,12 @@ variable "bastion_name" {
   description = "The name to use for the bastion"
   type        = string
   default     = "my-bastion"
+}
+
+variable "bastion_instance_type" {
+  description = "value for the instance type of the EKS worker nodes"
+  type        = string
+  default     = "m5.xlarge"
 }
 
 variable "assign_public_ip" {
