@@ -94,11 +94,10 @@ variable "assign_public_ip" {
 }
 
 variable "bastion_ami_id" {
-  description = "The AMI ID to use for the bastion"
+  description = "(Optional) The AMI ID to use for the bastion, will query the latest Amazon Linux 2 AMI if not provided"
   type        = string
-  default     = "ami-000d4884381edb14c"
+  default     = ""
 }
-
 variable "bastion_ssh_user" {
   description = "The SSH user to use for the bastion"
   type        = string

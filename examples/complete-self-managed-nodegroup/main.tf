@@ -7,6 +7,17 @@ locals {
   }
 }
 
+data "aws_ami" "amazonlinux2" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm*x86_64-gp2"]
+  }
+
+  owners = ["amazon"]
+}
+
 ###########################################################
 ####################### VPC ###############################
 
@@ -41,7 +52,7 @@ module "bastion" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=v<insert tagged version>"
   source = "../../modules/bastion"
 
-  ami_id        = var.bastion_ami_id
+  ami_id        = coalesce(var.bastion_ami_id, data.aws_ami.amazonlinux2.id) #use var.bastion_ami_id if set, otherwise use the latest Amazon Linux 2 AMI
   instance_type = "m5.large"
   root_volume_config = {
     volume_type = "gp3"
@@ -162,7 +173,7 @@ module "eks" {
         }
       ]
 
-      instance_type = "m5.xlarge"
+      instance_type = var.instance_type
       desired_size  = 3
       max_size      = 10
       min_size      = 3
