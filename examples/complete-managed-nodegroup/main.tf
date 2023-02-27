@@ -53,7 +53,7 @@ module "bastion" {
   source = "../../modules/bastion"
 
   ami_id        = var.bastion_ami_id
-  instance_type = "m5.large"
+  instance_type = var.bastion_instance_type
   root_volume_config = {
     volume_type = "gp3"
     volume_size = "20"
