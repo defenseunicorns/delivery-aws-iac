@@ -16,4 +16,5 @@ variable "aws_admin_1_username" {
 variable "aws_admin_2_username" {
   description = "AWS username authorized to access S3 Terraform State Backend"
   type        = string
+  default     = ""
 }
