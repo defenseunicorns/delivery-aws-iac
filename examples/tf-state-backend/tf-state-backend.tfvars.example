@@ -5,6 +5,8 @@
   region                      = "us-east-2"  # target AWS region
   account                     = "008675309"  # target AWS account
   aws_admin_usernames         = [
-    "Bob.Marley",
+    "Bob.Marley"
     "Jane.Doe"
   ]
+  bucket_prefix = "my-tfstate-backend"
+  dynamodb_table_name = "my-tfstate-backend-lock"
