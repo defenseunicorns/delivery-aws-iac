@@ -92,7 +92,8 @@ popd
 
 cp backend.tf.example backend.tf
 
-terraform init -backend-config="bucket=$BUCKET_ID" \
+#copy init and copy state if it exists
+terraform init -force-copy -backend-config="bucket=$BUCKET_ID" \
   -backend-config="key=complete-self-managed-nodegroup/terraform.tfstate" \
   -backend-config="dynamodb_table=$DYNAMODB_TABLE_NAME" \
   -backend-config="region=$AWS_DEFAULT_REGION"
