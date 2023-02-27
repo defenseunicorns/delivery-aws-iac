@@ -78,6 +78,12 @@ variable "cluster_endpoint_public_access" {
   default     = false
 }
 
+variable "instance_type" {
+  description = "value for the instance type of the EKS worker nodes"
+  type        = string
+  default     = "m5.xlarge"
+}
+
 ###########################################################
 ################## Bastion Config #########################
 
@@ -87,6 +93,12 @@ variable "bastion_name" {
   default     = "my-bastion"
 }
 
+variable "bastion_instance_type" {
+  description = "value for the instance type of the EKS worker nodes"
+  type        = string
+  default     = "m5.xlarge"
+}
+
 variable "assign_public_ip" {
   description = "Whether to assign a public IP to the bastion"
   type        = bool
@@ -94,9 +106,9 @@ variable "assign_public_ip" {
 }
 
 variable "bastion_ami_id" {
-  description = "The AMI ID to use for the bastion"
+  description = "(Optional) The AMI ID to use for the bastion, will query the latest Amazon Linux 2 AMI if not provided"
   type        = string
-  default     = "ami-000d4884381edb14c"
+  default     = ""
 }
 
 variable "bastion_ssh_user" {
