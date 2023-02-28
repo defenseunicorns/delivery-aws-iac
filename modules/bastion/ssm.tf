@@ -79,12 +79,13 @@ resource "aws_ssm_document" "session_manager_prefs" {
   })
 }
 resource "aws_cloudwatch_log_group" "ec2_cloudwatch_logs" {
-  name              = "ec2-cloudwatch-logging"
+  name              = "ec2-cloudwatch-logging-${var.name}"
   retention_in_days = 60
+  kms_key_id        = aws_kms_key.ssmkey.arn
 }
 resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
-  name      = "AmazonCloudWatch-linux"
-  type      = "String"
+  name      = "AmazonCloudWatch-linux-${var.name}"
+  type      = "SecureString"
   overwrite = true
   value = jsonencode({
     "agent" : {
@@ -97,26 +98,26 @@ resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
           "collect_list" : [
             {
               "file_path" : "/root/.bash_history",
-              "log_group_name" : "ec2-cloudwatch-logging",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
               "log_stream_name" : "root-user-commands",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/home/ec2-user/.bash_history",
-              "log_group_name" : "ec2-cloudwatch-logging",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
               "log_stream_name" : "ec2-user-commands",
               "retention_in_days" : 60
             },
 
             {
               "file_path" : "/var/log/secure",
-              "log_group_name" : "ec2-cloudwatch-logging",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
               "log_stream_name" : "logins",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/home/ssm-user/.bash_history",
-              "log_group_name" : "ec2-cloudwatch-logging",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
               "log_stream_name" : "ssm-user-commands",
               "retention_in_days" : 60
             },
@@ -207,10 +208,10 @@ EOF
 resource "aws_cloudwatch_log_group" "ssm-access-log-group" {
   name              = "/aws/events/ssm-access"
   retention_in_days = 60
+  kms_key_id        = aws_kms_key.ssmkey.arn
 }
 resource "aws_cloudwatch_event_target" "ssm-target" {
   rule      = aws_cloudwatch_event_rule.ssm-access.name
   target_id = "ssm-access-target"
   arn       = aws_cloudwatch_log_group.ssm-access-log-group.arn
-
 }
