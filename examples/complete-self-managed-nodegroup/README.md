@@ -15,7 +15,7 @@ This example deploys the following Basic EKS Cluster with VPC
     - [Prerequisites](#prerequisites)
     - [Deployment Steps](#deployment-steps)
       - [Step 1: Preparation](#step-1-preparation)
-      - [Step 2: Modify terraform.tfvars (located in tmp directory) with desired values.](#step-2-modify-terraformtfvars-located-in-tmp-directory-with-desired-values)
+      - [Step 2: Modify terraform.tfvars (located in tmp directory) with desired values](#step-2-modify-terraformtfvars-located-in-tmp-directory-with-desired-values)
       - [Step 3: Terraform Init \& State](#step-3-terraform-init--state)
         - [local](#local)
         - [remote](#remote)
@@ -59,7 +59,7 @@ cd ./iac/examples/complete-self-managed-nodegroup
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-#### Step 2: Modify terraform.tfvars (located in tmp directory) with desired values.
+#### Step 2: Modify terraform.tfvars (located in tmp directory) with desired values
 
 AWS usernames must be changed to match actual usernames `aws iam get-user | jq '.[]' | jq -r '.UserName'`
 
@@ -137,7 +137,7 @@ In a new terminal, open an sshuttle tunnel to the bastion
 sshuttle --dns -vr ec2-user@$BASTION_INSTANCE_ID 10.200.0.0/16
 ```
 
-Navigate back to the terminal in the complete-self-managed-nodegroup directory and Provision the EKS Cluster
+Navigate back to the terminal in the `complete-self-managed-nodegroup` directory and Provision the EKS Cluster
 
 ```sh
 terraform apply -var-file
