@@ -86,7 +86,7 @@ pushd ../tf-state-backend
 terraform apply
 export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)`
 export DYNAMODB_TABLE_NAME=`(terraform output -raw tfstate_dynamodb_table_name)`
-export AWS_DEFAULT_REGION=us-east-2 #set to your perferred region
+export AWS_DEFAULT_REGION=$(grep 'region' terraform.tfvars | grep -v 'region2' |cut -d'=' -f2 | cut -d'#' -f1 | tr -d '[:space:]' | sed 's/"//g')
 
 popd
 
@@ -232,7 +232,6 @@ No requirements.
 | <a name="input_create_database_subnet_route_table"></a> [create\_database\_subnet\_route\_table](#input\_create\_database\_subnet\_route\_table) | Whether to create a database subnet route table | `bool` | `true` | no |
 | <a name="input_eks_k8s_version"></a> [eks\_k8s\_version](#input\_eks\_k8s\_version) | The Kubernetes version to use for the EKS cluster | `string` | `"1.23"` | no |
 | <a name="input_eks_worker_tenancy"></a> [eks\_worker\_tenancy](#input\_eks\_worker\_tenancy) | The tenancy of the EKS worker nodes | `string` | `"default"` | no |
-| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | value for the instance type of the EKS worker nodes | `string` | `"m5.xlarge"` | no |
 | <a name="input_kc_db_allocated_storage"></a> [kc\_db\_allocated\_storage](#input\_kc\_db\_allocated\_storage) | The database allocated storage to use for Keycloak | `number` | n/a | yes |
 | <a name="input_kc_db_engine_version"></a> [kc\_db\_engine\_version](#input\_kc\_db\_engine\_version) | The database engine to use for Keycloak | `string` | n/a | yes |
 | <a name="input_kc_db_family"></a> [kc\_db\_family](#input\_kc\_db\_family) | The database family to use for Keycloak | `string` | n/a | yes |
