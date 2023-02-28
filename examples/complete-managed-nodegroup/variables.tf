@@ -73,12 +73,6 @@ variable "cluster_endpoint_public_access" {
   default     = false
 }
 
-variable "instance_type" {
-  description = "value for the instance type of the EKS worker nodes"
-  type        = string
-  default     = "m5.xlarge"
-}
-
 ###########################################################
 ################## Bastion Config #########################
 

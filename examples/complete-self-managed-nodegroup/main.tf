@@ -169,7 +169,7 @@ module "eks" {
         }
       ]
 
-      instance_type = var.instance_type
+      instance_type = "m5.xlarge"
       desired_size  = 3
       max_size      = 10
       min_size      = 3
