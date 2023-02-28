@@ -16,11 +16,8 @@ variables:
   - name: AWS_PROFILE
     description: "local AWS profile to be used for deployment"
     prompt: true
-  - name: AWS_ADMIN_1_USERNAME
-    description: "AWS username for admin, ex. Bob.Marley"
-    prompt: true
-  - name: AWS_ADMIN_2_USERNAME
-    description: "AWS username for additional admin, ex. Jane.Doe"
+  - name: AWS_ADMIN_USERNAMES
+    description: "AWS username for admin, ex. Bob.Marley, ENTER AS A LIST ex [\"Bob.Marley\",\"Jane.Doe\"]"
     prompt: true
   - name: VPC_CIDR
     default: "10.200.0.0/16"
@@ -29,7 +26,7 @@ variables:
   - name: CLUSTER_NAME
     default: "my-eks"
   - name: EKS_K8S_VERSION
-    default: "1.23"
+    default: "1.24"
   - name: BASTION_NAME
     default: "my-bastion"
   - name: BASTION_SSH_USER
@@ -38,8 +35,8 @@ variables:
   - name: BASTION_SSH_PASSWORD
     description: "Bastion password for ssh"
     prompt: true
-  - name: BASTION_AMI_ID
-    default: "ami-000d4884381edb14c"
+  # - name: BASTION_AMI_ID
+  #   default: "ami-000d4884381edb14c"
   - name: KEYCLOAK_ENABLED
     default: "true"
   - name: KEYCLOAK_DB_PASSWORD
@@ -52,13 +49,14 @@ variables:
   - name: KC_DB_MAJOR_ENGINE_VERSION
     default: "14"
   - name: KC_DB_ALLOCATED_STORAGE
-    default: 20.0
+    default: 20
   - name: KC_DB_MAX_ALLOCATED_STORAGE
-    default: 100.0
+    default: 100
   - name: KC_DB_INSTANCE_CLASS
     default: "db.t4g.large"
+    # used in bastion userdata to download zarf binary
   - name: ZARF_VERSION
-    default: "v0.24.0-rc4"
+    default: "v0.24.2"
 
 components:
   - name: download-dependencies
@@ -74,7 +72,7 @@ components:
           # - "./zarf tools archiver decompress tmp/awscliv2.zip ."
           # - "rm -rf tmp/"
     files:
-      # terraform binary
+      # terraform binary into zarf package
       - source: https://releases.hashicorp.com/terraform/###ZARF_PKG_VAR_TF_VERSION###/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip
         target: tmp/terraform_###ZARF_PKG_VAR_TF_VERSION###_###ZARF_PKG_VAR_ARCH_NAME###_###ZARF_PKG_VAR_ARCH_PROC###.zip
       # aws cli binary
@@ -90,9 +88,11 @@ components:
           maxTotalSeconds: 300
           maxRetries: 3
         before:
+            #just used to build the .terraform folder and modules for airgapping
           - cmd: "terraform init -backend=false"
             dir: "###ZARF_PKG_VAR_TF_ENV_DIR###"
-          - cmd: "terraform init"
+            #just used to build the .terraform folder and modules for airgapping
+          - cmd: "terraform init -backend=false"
             dir: "###ZARF_PKG_VAR_TF_ENV_STATE_DIR###"
     files:
       - source: "###ZARF_PKG_VAR_TF_ENV_DIR###"
@@ -102,13 +102,14 @@ components:
       - source: "###ZARF_PKG_VAR_TF_MODULES_DIR###"
         target: "tmp/modules"
 
+  # one-time backend configuraion module for s3
   - name: terraform-s3-bucket
     actions:
       onDeploy:
         defaults:
           maxTotalSeconds: 300
           maxRetries: 3
-          dir: "tmp/###ZARF_PKG_VAR_TF_ENV_STATE###"
+          dir: "tmp/examples/###ZARF_PKG_VAR_TF_ENV_STATE###"
         before:
           - cmd: "terraform apply -auto-approve"
           - cmd: "terraform output -raw tfstate_bucket_id"
@@ -122,7 +123,7 @@ components:
       onDeploy:
         defaults:
           maxRetries: 3
-          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+          dir: tmp/examples/###ZARF_PKG_VAR_TF_ENV###
         before:
           - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
           - cmd: "terraform apply -target=module.vpc -target=module.bastion -auto-approve"
@@ -138,21 +139,21 @@ components:
         defaults:
           maxTotalSeconds: 300
           maxRetries: 3
-          dir: "tmp/###ZARF_PKG_VAR_TF_ENV_STATE###"
+          dir: "tmp/examples/###ZARF_PKG_VAR_TF_ENV_STATE###"
         before:
           - cmd: "terraform output -raw tfstate_bucket_id"
             setVariable: BUCKET_ID
           - cmd: "terraform output -raw tfstate_dynamodb_table_name"
             setVariable: DYNAMODB_TABLE_NAME
           - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
-            dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+            dir: tmp/examples/###ZARF_PKG_VAR_TF_ENV###
 
   - name: terraform-apply-eks
     actions:
       onDeploy:
         defaults:
           maxRetries: 3
-          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+          dir: tmp/examples/###ZARF_PKG_VAR_TF_ENV###
         before:
           - cmd: "terraform apply -target=module.eks -auto-approve"
 
@@ -161,7 +162,7 @@ components:
       onDeploy:
         defaults:
           maxRetries: 3
-          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+          dir: tmp/examples/###ZARF_PKG_VAR_TF_ENV###
         before:
           - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
           - cmd: "terraform apply -target=module.flux_sops -target=module.loki_s3_bucket -target=module.rds_postgres_keycloak -auto-approve"
@@ -171,7 +172,7 @@ components:
       onDeploy:
         defaults:
           maxRetries: 3
-          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+          dir: tmp/examples/###ZARF_PKG_VAR_TF_ENV###
         before:
           - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
           - cmd: "terraform apply -destroy -target=module.rds_postgres_keycloak -target=module.loki_s3_bucket -target=module.flux_sops -auto-approve"
@@ -181,7 +182,7 @@ components:
       onDeploy:
         defaults:
           maxRetries: 3
-          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+          dir: tmp/examples/###ZARF_PKG_VAR_TF_ENV###
         before:
           - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
           - cmd: "terraform apply -destroy -target=module.eks -auto-approve"
@@ -191,7 +192,7 @@ components:
       onDeploy:
         defaults:
           maxRetries: 3
-          dir: tmp/###ZARF_PKG_VAR_TF_ENV###
+          dir: tmp/examples/###ZARF_PKG_VAR_TF_ENV###
         before:
           - cmd: terraform init -backend-config="bucket=$ZARF_VAR_BUCKET_ID" -backend-config="key=###ZARF_PKG_VAR_TF_ENV###/terraform.tfstate" -backend-config="dynamodb_table=$ZARF_VAR_DYNAMODB_TABLE_NAME" -backend-config="region=$ZARF_VAR_REGION"
           - cmd: "terraform apply -destroy -auto-approve"
