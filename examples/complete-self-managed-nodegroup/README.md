@@ -86,13 +86,15 @@ pushd ../tf-state-backend
 terraform apply
 export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)`
 export DYNAMODB_TABLE_NAME=`(terraform output -raw tfstate_dynamodb_table_name)`
-export AWS_DEFAULT_REGION=$(grep 'region' terraform.tfvars | grep -v 'region2' |cut -d'=' -f2 | cut -d'#' -f1 | tr -d '[:space:]' | sed 's/"//g')
 
 popd
 
+export AWS_DEFAULT_REGION=$(grep 'region' terraform.tfvars | grep -v 'region2' |cut -d'=' -f2 | cut -d'#' -f1 | tr -d '[:space:]' | sed 's/"//g')
+
+#make backend file
 cp backend.tf.example backend.tf
 
-#copy init and copy state if it exists
+#init and copy state if it exists
 terraform init -force-copy -backend-config="bucket=$BUCKET_ID" \
   -backend-config="key=complete-self-managed-nodegroup/terraform.tfstate" \
   -backend-config="dynamodb_table=$DYNAMODB_TABLE_NAME" \
