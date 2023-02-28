@@ -154,7 +154,8 @@ This following command used to update the `kubeconfig` in your local machine whe
 `~/.kube/config` file gets updated with cluster details and certificate from the below command
 
 ```bash
-aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name <cluster-name>
+CLUSTER_NAME=$(grep 'cluster_name' terraform.tfvars | cut -d'=' -f2 | tr -d '[:space:]' | sed 's/"//g')
+aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME
 ```
 
 #### Step 7: List all the worker nodes by running the command below
