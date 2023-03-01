@@ -20,7 +20,7 @@ This example deploys the following Basic Self-Managed EKS Cluster with VPC
         - [local](#local)
         - [remote](#remote)
       - [Step 4: Provision VPC and Bastion](#step-4-provision-vpc-and-bastion)
-      - [Step 4: (Required if EKS Public Access set to False) Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture](#step-4-required-if-eks-public-access-set-to-false-connect-to-the-bastion-using-sshuttle-and-provision-the-remaining-infrastucture)
+      - [Step 5: (Required if EKS Public Access set to False) Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture](#step-5-required-if-eks-public-access-set-to-false-connect-to-the-bastion-using-sshuttle-and-provision-the-remaining-infrastucture)
     - [Configure `kubectl` and test cluster](#configure-kubectl-and-test-cluster)
       - [Step 6: Run the `aws eks update-kubeconfig` command](#step-6-run-the-aws-eks-update-kubeconfig-command)
       - [Step 7: List all the worker nodes by running the command below](#step-7-list-all-the-worker-nodes-by-running-the-command-below)
@@ -111,7 +111,7 @@ terraform plan -target=module.vpc -target=module.bastion
 terraform apply -target=module.vpc -target=module.bastion
 ```
 
-#### Step 4: (Required if EKS Public Access set to False) Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
+#### Step 5: (Required if EKS Public Access set to False) Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
 
 Add the following to your ~/.ssh/config to connect to the Bastion via AWS SSM (create config file if it does not exist)
 
