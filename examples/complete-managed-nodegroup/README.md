@@ -1,12 +1,39 @@
 # EKS Cluster Deployment with new VPC & Big Bang Dependencies
 
-This example deploys the following Basic EKS Cluster with VPC
+This example deploys the following Basic Managed EKS Cluster with VPC
 
 - Creates a new sample VPC, 3 Private Subnets and 3 Public Subnets
 - Creates Internet gateway for Public Subnets and NAT Gateway for Private Subnets
 - Creates EKS Cluster Control plane with one managed node group
 - Creates a Bastion host in a private subnet
 - Creates dependencies needed for BigBang
+
+---
+**Table of contents:**
+- [EKS Cluster Deployment with new VPC \& Big Bang Dependencies](#eks-cluster-deployment-with-new-vpc--big-bang-dependencies)
+  - [How to Deploy](#how-to-deploy)
+    - [Prerequisites](#prerequisites)
+    - [Deployment Steps](#deployment-steps)
+      - [Step 1: Preparation](#step-1-preparation)
+      - [Step 2: Modify terraform.tfvars (located in tmp directory) with desired values](#step-2-modify-terraformtfvars-located-in-tmp-directory-with-desired-values)
+      - [Step 3: Terraform Init \& State](#step-3-terraform-init--state)
+        - [local](#local)
+        - [remote](#remote)
+      - [Step 4: Provision VPC and Bastion](#step-4-provision-vpc-and-bastion)
+      - [Step 5: (Required if EKS Public Access set to False) Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture](#step-5-required-if-eks-public-access-set-to-false-connect-to-the-bastion-using-sshuttle-and-provision-the-remaining-infrastucture)
+    - [Configure `kubectl` and test cluster](#configure-kubectl-and-test-cluster)
+      - [Step 6: Run the `aws eks update-kubeconfig` command](#step-6-run-the-aws-eks-update-kubeconfig-command)
+      - [Step 7: List all the worker nodes by running the command below](#step-7-list-all-the-worker-nodes-by-running-the-command-below)
+      - [Step 8: List all the pods running in `kube-system` namespace](#step-8-list-all-the-pods-running-in-kube-system-namespace)
+  - [Cleanup](#cleanup)
+  - [Requirements](#requirements)
+  - [Providers](#providers)
+  - [Modules](#modules)
+  - [Resources](#resources)
+  - [Inputs](#inputs)
+  - [Outputs](#outputs)
+
+---
 
 ## How to Deploy
 
@@ -16,8 +43,9 @@ Ensure that you have installed the following tools in your Mac or Windows Laptop
 
 1. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 2. [Kubectl](https://Kubernetes.io/docs/tasks/tools/)
-3. [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-4. [SSHuttle](https://github.com/sshuttle/sshuttle)
+3. [Helm](https://helm.sh/docs/intro/install/)
+4. [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+5. [SSHuttle](https://github.com/sshuttle/sshuttle)
 
 Ensure that your AWS credentials are configured. This can be done by running `aws configure`
 
@@ -26,15 +54,20 @@ Ensure that your AWS credentials are configured. This can be done by running `aw
 #### Step 1: Preparation
 
 ```sh
-mkdir tmp && cd tmp
 git clone https://github.com/defenseunicorns/iac.git
-cd examples/complete-complete-self-managed-nodegroup/
-cp terraform.tfvars.example ../../../terraform.tfvars
+cd ./iac/examples/complete-managed-nodegroup
+cp terraform.tfvars.example terraform.tfvars
 ```
 
-Modify terraform.tfvars (located in tmp directory) with desired values. AWS usernames must be changed to match actual usernames `aws iam get-user | jq '.[]' | jq -r '.UserName'`
+#### Step 2: Modify terraform.tfvars (located in tmp directory) with desired values
 
-#### Step 2: Terraform Init & State
+AWS usernames must be changed to match actual usernames `aws iam get-user | jq '.[]' | jq -r '.UserName'`
+
+#### Step 3: Terraform Init & State
+
+Use remote or local state for terraform
+
+##### local
 
 Initialize a working directory with configuration files and create local terraform state file
 
@@ -42,32 +75,43 @@ Initialize a working directory with configuration files and create local terrafo
 terraform init
 ```
 
-(OPTIONAL) Alternatively, you can provision an S3 backend prior to this step using the tf-state-backend example and init via the following:
+##### remote
+
+Alternatively, you can provision an S3 backend prior to this step using the tf-state-backend example and init via the following:
 
 ```sh
-cd tmp/examples/tf-state-backend
+#from the ./iac/examples/complete-self-managed-nodegroup directory
+pushd ../tf-state-backend
+
 terraform apply
 export BUCKET_ID=`(terraform output -raw tfstate_bucket_id)`
 export DYNAMODB_TABLE_NAME=`(terraform output -raw tfstate_dynamodb_table_name)`
 
-cd tmp/examples/complete-complete-self-managed-nodegroup
-mv backend.example backend.tf
-tf init -backend-config="bucket=$BUCKET_ID" \
--backend-config="key=complete-complete-self-managed-nodegroup/terraform.tfstate" \
--backend-config="dynamodb_table=$DYNAMODB_TABLE_NAME" \
--backend-config="region=$AWS_DEFAULT_REGION"
+popd
+
+export AWS_DEFAULT_REGION=$(grep 'region' terraform.tfvars | grep -v 'region2' |cut -d'=' -f2 | cut -d'#' -f1 | tr -d '[:space:]' | sed 's/"//g')
+
+#make backend file
+cp backend.tf.example backend.tf
+
+#init and copy state if it exists
+terraform init -force-copy -backend-config="bucket=$BUCKET_ID" \
+  -backend-config="key=complete-self-managed-nodegroup/terraform.tfstate" \
+  -backend-config="dynamodb_table=$DYNAMODB_TABLE_NAME" \
+  -backend-config="region=$AWS_DEFAULT_REGION"
 ```
 
-#### Step 3: Provision VPC and Bastion
+#### Step 4: Provision VPC and Bastion
 
 ```sh
-terraform plan -var-file ../../../terraform.tfvars -target=module.vpc -target=module.bastion
-# verify these changes are desired
-terraform apply -var-file ../../../terraform.tfvars -target=module.vpc -target=module.bastion
-# type yes to confirm or utilize the ```-auto-approve``` flag in the above command
+# plan deployment and verify desired outcome
+terraform plan -target=module.vpc -target=module.bastion
+
+# type yes to confirm or utilize the '-auto-approve' flag
+terraform apply -target=module.vpc -target=module.bastion
 ```
 
-#### Step 4: Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
+#### Step 5: (Required if EKS Public Access set to False) Connect to the Bastion using SSHuttle and Provision the remaining Infrastucture
 
 Add the following to your ~/.ssh/config to connect to the Bastion via AWS SSM (create config file if it does not exist)
 
@@ -80,9 +124,9 @@ host i-* mi-*
 Test SSH connection to the Bastion
 
 ```sh
-#grab bastion instance id from terraform
+# grab bastion instance id from terraform
 export BASTION_INSTANCE_ID=`(terraform output -raw bastion_instance_id)`
-# replace "my-password" with the variable set if changed from the default
+# replace "my-password" with the variable set (if changed from the default)
 expect -c 'spawn ssh ec2-user@$BASTION_INSTANCE_ID ; expect "assword:"; send "my-password\r"; interact'
 ```
 
@@ -93,10 +137,10 @@ In a new terminal, open an sshuttle tunnel to the bastion
 sshuttle --dns -vr ec2-user@$BASTION_INSTANCE_ID 10.200.0.0/16
 ```
 
-Navigate back to the terminal in the complete-complete-self-managed-nodegroup directory and Provision the EKS Cluster
+Navigate back to the terminal in the `complete-managed-nodegroup` directory and Provision the EKS Cluster
 
 ```sh
-terraform apply -var-file ../../../terraform.tfvars
+terraform apply -var-file
 # type yes to confirm or utilize the ```-auto-approve``` flag in the above command
 ```
 
@@ -107,17 +151,20 @@ Note: In this example we are using a private EKS Cluster endpoint for the contro
 EKS Cluster details can be extracted from terraform output or from AWS Console to get the name of cluster.
 This following command used to update the `kubeconfig` in your local machine where you run kubectl commands to interact with your EKS Cluster.
 
-#### Step 5: Run `update-kubeconfig` command
+#### Step 6: Run the `aws eks update-kubeconfig` command
 
 `~/.kube/config` file gets updated with cluster details and certificate from the below command
 
-    aws eks --region <enter-your-region> update-kubeconfig --name <cluster-name>
+```bash
+CLUSTER_NAME=$(grep 'cluster_name' terraform.tfvars | cut -d'=' -f2 | tr -d '[:space:]' | sed 's/"//g')
+aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME
+```
 
-#### Step 6: List all the worker nodes by running the command below
+#### Step 7: List all the worker nodes by running the command below
 
     kubectl get nodes
 
-#### Step 7: List all the pods running in `kube-system` namespace
+#### Step 8: List all the pods running in `kube-system` namespace
 
     kubectl get pods -n kube-system
 
@@ -125,16 +172,16 @@ This following command used to update the `kubeconfig` in your local machine whe
 
 To clean up your environment, destroy the Terraform modules in reverse order.
 
-Destroy the Kubernetes Add-ons / EKS cluster first (requires sshuttle through bastion)
+Destroy the Kubernetes Add-ons / EKS cluster first (requires sshuttle through bastion if EKS Public Access set to False)
 
 ```sh
-terraform destroy -var-file ../../../terraform.tfvars -auto-approve -target=module.eks
+terraform destroy -auto-approve -target=module.eks
 ```
 
 Destroy all other resources
 
 ```sh
-terraform destroy -var-file ../../../terraform.tfvars -auto-approve
+terraform destroy -auto-approve
 ```
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -173,10 +220,10 @@ No requirements.
 |------|-------------|------|---------|:--------:|
 | <a name="input_account"></a> [account](#input\_account) | The AWS account to deploy into | `string` | n/a | yes |
 | <a name="input_assign_public_ip"></a> [assign\_public\_ip](#input\_assign\_public\_ip) | Whether to assign a public IP to the bastion | `bool` | `false` | no |
-| <a name="input_aws_admin_1_username"></a> [aws\_admin\_1\_username](#input\_aws\_admin\_1\_username) | The AWS admin username to use for deployment | `string` | n/a | yes |
-| <a name="input_aws_admin_2_username"></a> [aws\_admin\_2\_username](#input\_aws\_admin\_2\_username) | The AWS admin username to use for deployment | `string` | n/a | yes |
+| <a name="input_aws_admin_usernames"></a> [aws\_admin\_usernames](#input\_aws\_admin\_usernames) | A list of one or more AWS usernames with authorized access to KMS and EKS resources | `list(string)` | n/a | yes |
 | <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | The AWS profile to use for deployment | `string` | n/a | yes |
-| <a name="input_bastion_ami_id"></a> [bastion\_ami\_id](#input\_bastion\_ami\_id) | The AMI ID to use for the bastion | `string` | `"ami-000d4884381edb14c"` | no |
+| <a name="input_bastion_ami_id"></a> [bastion\_ami\_id](#input\_bastion\_ami\_id) | (Optional) The AMI ID to use for the bastion, will query the latest Amazon Linux 2 AMI if not provided | `string` | `""` | no |
+| <a name="input_bastion_instance_type"></a> [bastion\_instance\_type](#input\_bastion\_instance\_type) | value for the instance type of the EKS worker nodes | `string` | `"m5.xlarge"` | no |
 | <a name="input_bastion_name"></a> [bastion\_name](#input\_bastion\_name) | The name to use for the bastion | `string` | `"my-bastion"` | no |
 | <a name="input_bastion_ssh_password"></a> [bastion\_ssh\_password](#input\_bastion\_ssh\_password) | The SSH password to use for the bastion if SSM authentication is used | `string` | `"my-password"` | no |
 | <a name="input_bastion_ssh_user"></a> [bastion\_ssh\_user](#input\_bastion\_ssh\_user) | The SSH user to use for the bastion | `string` | `"ec2-user"` | no |
