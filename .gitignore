@@ -24,6 +24,10 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 
+# Except ones that we do want to commit because they are used for automated tests
+!examples/complete/fixtures.common.tfvars
+!examples/complete/fixtures.insecure.tfvars
+
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in
 override.tf
