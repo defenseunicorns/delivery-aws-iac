@@ -4,5 +4,9 @@
 
   region                      = "us-east-2"  # target AWS region
   account                     = "008675309"  # target AWS account
-  aws_admin_1_username        = "Bob.Marley" # enables eks access & ssh access to bastion
-  aws_admin_2_username        = "Jane.Doe" # enables eks access & ssh access to bastion
+  aws_admin_usernames         = [
+    "Bob.Marley"
+    "Jane.Doe"
+  ]
+  bucket_prefix = "my-tfstate-backend"
+  dynamodb_table_name = "my-tfstate-backend-lock"

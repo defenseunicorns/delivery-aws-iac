@@ -21,14 +21,9 @@ variable "aws_profile" {
   type        = string
 }
 
-variable "aws_admin_1_username" {
-  description = "The AWS admin username to use for deployment"
-  type        = string
-}
-
-variable "aws_admin_2_username" {
-  description = "The AWS admin username to use for deployment"
-  type        = string
+variable "aws_admin_usernames" {
+  description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources"
+  type        = list(string)
 }
 
 ###########################################################
@@ -87,6 +82,12 @@ variable "bastion_name" {
   default     = "my-bastion"
 }
 
+variable "bastion_instance_type" {
+  description = "value for the instance type of the EKS worker nodes"
+  type        = string
+  default     = "m5.xlarge"
+}
+
 variable "assign_public_ip" {
   description = "Whether to assign a public IP to the bastion"
   type        = bool
@@ -94,11 +95,10 @@ variable "assign_public_ip" {
 }
 
 variable "bastion_ami_id" {
-  description = "The AMI ID to use for the bastion"
+  description = "(Optional) The AMI ID to use for the bastion, will query the latest Amazon Linux 2 AMI if not provided"
   type        = string
-  default     = "ami-000d4884381edb14c"
+  default     = ""
 }
-
 variable "bastion_ssh_user" {
   description = "The SSH user to use for the bastion"
   type        = string
