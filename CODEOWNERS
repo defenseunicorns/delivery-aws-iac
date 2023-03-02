@@ -1,16 +1,17 @@
 * @defenseunicorns/iac
 
 # Docs & Examples
-*.md @brianrexrode @ntwkninja @RothAndrew @jeff-mccoy
+*.md @defenseunicorns/iac
 
 # Terraform Modules & Examples
-/modules/ @brianrexrode @ntwkninja @RothAndrew @UncleGedd
-/examples/ @brianrexrode @ntwkninja @RothAndrew @UncleGedd
+/modules/ @defenseunicorns/iac
+/examples/ @defenseunicorns/iac
 
 # Privileged Files
-/CODEOWNERS @brianrexrode @ntwkninja @RothAndrew @UncleGedd
-/LICENSE @jeff-mccoy @runyontr
-/.github/ @jeff-mccoy @brianrexrode @ntwkninja @RothAndrew
-/.gitignore @jeff-mccoy @brianrexrode @ntwkninja @RothAndrew
-/renovate.json @jeff-mccoy @brianrexrode @ntwkninja @RothAndrew
-/Makefile @jeff-mccoy @brianrexrode @ntwkninja @RothAndrew
+/CODEOWNERS @defenseunicorns/iac-admin
+/LICENSE @defenseunicorns/iac-admin
+/.github/ @defenseunicorns/iac-admin
+/.gitignore @defenseunicorns/iac-admin
+/renovate.json @defenseunicorns/iac-admin
+/renovate.json5 @defenseunicorns/iac-admin
+/Makefile @defenseunicorns/iac-admin
