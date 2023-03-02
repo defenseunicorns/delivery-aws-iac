@@ -3,8 +3,6 @@
 
 region              = "us-east-2"    # target AWS region
 region2             = "us-east-1"    # RDS backup target AWS region
-account             = "1234567890"   # target AWS account
-aws_profile         = "foo"          # local AWS profile to be used for deployment
 aws_admin_usernames = ["John.Smith"] # list of users to be added to the AWS admin group
 
 

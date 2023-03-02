@@ -1,5 +1,7 @@
 data "aws_partition" "current" {}
 
+data "aws_caller_identity" "current" {}
+
 data "aws_ami" "amazonlinux2eks" {
   most_recent = true
 
@@ -12,13 +14,15 @@ data "aws_ami" "amazonlinux2eks" {
 }
 
 locals {
+  account = data.aws_caller_identity.current.account_id
+
   tags = {
     Blueprint  = "${replace(basename(path.cwd), "_", "-")}" # tag names based on the directory name
     GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
   }
-  admin_arns = [for admin_user in var.aws_admin_usernames : "arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${admin_user}"]
+  admin_arns = [for admin_user in var.aws_admin_usernames : "arn:${data.aws_partition.current.partition}:iam::${local.account}:user/${admin_user}"]
   aws_auth_eks_map_users = [for admin_user in var.aws_admin_usernames : {
-    userarn  = "arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${admin_user}"
+    userarn  = "arn:${data.aws_partition.current.partition}:iam::${local.account}:user/${admin_user}"
     username = "${admin_user}"
     groups   = ["system:masters"]
     }
@@ -375,7 +379,7 @@ module "eks" {
 
   name                                  = var.cluster_name
   aws_region                            = var.region
-  aws_account                           = var.account
+  aws_account                           = local.account
   vpc_id                                = module.vpc.vpc_id
   private_subnet_ids                    = module.vpc.private_subnets
   control_plane_subnet_ids              = module.vpc.private_subnets
