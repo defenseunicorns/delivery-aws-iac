@@ -192,31 +192,18 @@ module "eks" {
   # EKS Blueprints - EKS Add-Ons
   #---------------------------------------------------------------
 
-  enable_eks_vpc_cni                  = true
-  enable_eks_coredns                  = true
-  enable_eks_kube_proxy               = true
-  enable_eks_ebs_csi_driver           = true
-  enable_eks_metrics_server           = true
-  enable_eks_node_termination_handler = true
+  #---------------------------------------------------------------
+  # EKS Blueprints - EKS Add-Ons - VPC CNI
+  # https://github.com/aws-ia/terraform-aws-eks-blueprints/blob/main/modules/kubernetes-addons/aws-vpc-cni/README.md
+  #---------------------------------------------------------------
+  enable_amazon_eks_vpc_cni = var.enable_amazon_eks_vpc_cni
+  amazon_eks_vpc_cni_config = var.amazon_eks_vpc_cni_config
 
-  enable_eks_cluster_autoscaler = true
-  cluster_autoscaler_helm_config = {
-    set = [
-      {
-        name  = "extraArgs.expander"
-        value = "priority"
-      },
-      {
-        name  = "expanderPriorities"
-        value = <<-EOT
-                  100:
-                    - .*-spot-2vcpu-8mem.*
-                  90:
-                    - .*-spot-4vcpu-16mem.*
-                  10:
-                    - .*
-                EOT
-      }
-    ]
-  }
+  enable_amazon_eks_coredns            = true
+  enable_amazon_eks_kube_proxy         = true
+  enable_amazon_eks_aws_ebs_csi_driver = true
+  enable_metrics_server                = true
+  enable_aws_node_termination_handler  = true
+
+  enable_cluster_autoscaler = true
 }

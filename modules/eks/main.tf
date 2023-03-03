@@ -18,6 +18,8 @@ module "eks_blueprints" {
   self_managed_node_groups = var.self_managed_node_groups
   managed_node_groups      = var.managed_node_groups
 
+  cluster_addons = local.cluster_addons
+
   #----------------------------------------------------------------------------------------------------------#
   # Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
   #   Upstream module implemented Security groups based on the best practices doc https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html.
@@ -97,7 +99,7 @@ resource "aws_iam_role" "auth_eks_role" {
         {
             "Action": "sts:AssumeRole",
             "Principal": {
-               "AWS": ${var.cluster_kms_key_additional_admin_arns == [] ? "[]" : jsonencode(var.cluster_kms_key_additional_admin_arns)}
+              "AWS": ${length(var.cluster_kms_key_additional_admin_arns) == 0 ? "[]" : jsonencode(var.cluster_kms_key_additional_admin_arns)}
             },
             "Effect": "Allow",
             "Sid": ""

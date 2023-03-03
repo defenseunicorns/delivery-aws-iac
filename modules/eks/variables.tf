@@ -123,53 +123,140 @@ variable "self_managed_node_groups" {
   default     = {}
 }
 
-#-------------------------------
-# EKS Add-Ons
-#-------------------------------
-variable "enable_eks_vpc_cni" {
-  description = "Enable Amazon EKS VPC CNI"
+###########################################################
+################## EKS Addons Config ######################
+
+#----------------AWS EKS VPC CNI-------------------------
+variable "enable_amazon_eks_vpc_cni" {
+  description = "HANDLED by EKS module, not blueprints: Enable VPC CNI add-on"
   type        = bool
-  default     = false
+  default     = true
 }
 
-variable "enable_eks_coredns" {
-  description = "Enable Amazon EKS CoreDNS"
+variable "amazon_eks_vpc_cni_before_compute" {
+  description = "HANDLED by EKS module, not blueprints: Deploy VPC CNI add-on before compute nodes"
   type        = bool
-  default     = false
+  default     = true
 }
 
-variable "enable_eks_kube_proxy" {
-  description = "Enable Amazon EKS Kube Proxy"
+variable "amazon_eks_vpc_cni_most_recent" {
+  description = "HANDLED by EKS module, not blueprints: Deploy most recent VPC CNI add-on"
   type        = bool
-  default     = false
+  default     = true
 }
 
-variable "enable_eks_ebs_csi_driver" {
-  description = "Enable Amazon EKS EBS CSI Driver"
-  type        = bool
-  default     = false
+variable "amazon_eks_vpc_cni_resolve_conflict" {
+  description = "HANDLED by EKS module, not blueprints: Conflict resolution strategy of VPC CNI add-on deployment via eks module"
+  type        = string
+  default     = "OVERWRITE"
 }
 
-variable "enable_eks_metrics_server" {
-  description = "Enable Amazon EKS Metrics Server"
-  type        = bool
-  default     = false
+variable "amazon_eks_vpc_cni_configuration_values" {
+  description = "HANDLED by EKS module, not blueprints: ConfigMap of Amazon EKS VPC CNI add-on"
+  type        = any
+  default = {
+    # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
+    AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
+    ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone"
+
+    # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
+    ENABLE_PREFIX_DELEGATION = "true"
+    WARM_PREFIX_TARGET       = "1"
+  }
 }
 
-variable "enable_eks_node_termination_handler" {
-  description = "Enable Amazon EKS Node Termination Handler"
+#----------------AWS CoreDNS-------------------------
+variable "enable_amazon_eks_coredns" {
+  description = "Enable Amazon EKS CoreDNS add-on"
   type        = bool
-  default     = false
+  default     = true
 }
 
-variable "enable_eks_cluster_autoscaler" {
-  description = "Enable Amazon EKS Cluster Autoscaler"
+variable "amazon_eks_coredns_config" {
+  description = "Configuration for Amazon CoreDNS EKS add-on"
+  type        = any
+  default     = {}
+}
+
+#----------------AWS Kube Proxy-------------------------
+variable "enable_amazon_eks_kube_proxy" {
+  description = "Enable Kube Proxy add-on"
   type        = bool
-  default     = false
+  default     = true
+}
+
+variable "amazon_eks_kube_proxy_config" {
+  description = "ConfigMap for Amazon EKS Kube-Proxy add-on"
+  type        = any
+  default     = {}
+}
+
+#----------------AWS EBS CSI Driver-------------------------
+variable "enable_amazon_eks_aws_ebs_csi_driver" {
+  description = "Enable EKS Managed AWS EBS CSI Driver add-on; enable_amazon_eks_aws_ebs_csi_driver and enable_self_managed_aws_ebs_csi_driver are mutually exclusive"
+  type        = bool
+  default     = true
+}
+
+variable "amazon_eks_aws_ebs_csi_driver_config" {
+  description = "configMap for AWS EBS CSI Driver add-on"
+  type        = any
+  default     = {}
+}
+
+#----------------Metrics Server-------------------------
+variable "enable_metrics_server" {
+  description = "Enable metrics server add-on"
+  type        = bool
+  default     = true
+}
+
+variable "metrics_server_helm_config" {
+  description = "Metrics Server Helm Chart config"
+  type        = any
+  default     = {}
+}
+
+#----------------AWS Node Termination Handler-------------------------
+variable "enable_aws_node_termination_handler" {
+  description = "Enable AWS Node Termination Handler add-on"
+  type        = bool
+  default     = true
+}
+
+variable "aws_node_termination_handler_helm_config" {
+  description = "AWS Node Termination Handler Helm Chart config"
+  type        = any
+  default     = {}
+}
+
+#----------------Cluster Autoscaler-------------------------
+variable "enable_cluster_autoscaler" {
+  description = "Enable Cluster autoscaler add-on"
+  type        = bool
+  default     = true
 }
 
 variable "cluster_autoscaler_helm_config" {
-  description = "Helm configuration for Amazon EKS Cluster Autoscaler"
+  description = "Cluster Autoscaler Helm Chart config"
   type        = any
-  default     = {}
+  default = {
+    set = [
+      {
+        name  = "extraArgs.expander"
+        value = "priority"
+      },
+      {
+        name  = "expanderPriorities"
+        value = <<-EOT
+                  100:
+                    - .*-spot-2vcpu-8mem.*
+                  90:
+                    - .*-spot-4vcpu-16mem.*
+                  10:
+                    - .*
+                EOT
+      }
+    ]
+  }
 }
