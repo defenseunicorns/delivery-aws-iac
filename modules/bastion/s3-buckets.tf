@@ -4,18 +4,81 @@
 # Create S3 bucket for access logs with versioning, encryption, blocked public acess enabled
 resource "aws_s3_bucket" "access_log_bucket" {
   # checkov:skip=CKV_AWS_144: Cross region replication is overkill
-  bucket_prefix = "${var.access_log_bucket_name}-"
+
+  bucket        = var.access_log_bucket_name
   force_destroy = true
+  tags          = var.tags
+}
+data "aws_iam_policy_document" "cloudwatch-policy" {
+  statement {
+    sid    = "AWSCloudTrailAclCheck"
+    effect = "Allow"
 
-  tags = var.tags
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:GetBucketAcl",
+    ]
+
+    resources = [
+      "arn:aws:s3:::${var.access_log_bucket_name}",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+
+      values = [
+        "arn:aws:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/ssm-access-1",
+      ]
+    }
+  }
+
+  statement {
+    sid    = "AWSCloudTrailWrite"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:PutObject",
+    ]
+
+    resources = [
+      "arn:aws:s3:::${var.access_log_bucket_name}/*",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+
+      values = [
+        "bucket-owner-full-control",
+      ]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+
+      values = [
+        "arn:aws:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/ssm-access-1",
+      ]
+    }
+  }
 }
 
-resource "aws_s3_bucket_acl" "access_log_bucket" {
-  bucket = aws_s3_bucket.access_log_bucket.id
+resource "aws_s3_bucket_policy" "cloudwatch-s3-policy" {
+  bucket = aws_s3_bucket.access_log_bucket.bucket
+  policy = data.aws_iam_policy_document.cloudwatch-policy.json
 
-  acl = "log-delivery-write"
 }
-
 resource "aws_s3_bucket_versioning" "access_log_bucket" {
   bucket = aws_s3_bucket.access_log_bucket.id
 

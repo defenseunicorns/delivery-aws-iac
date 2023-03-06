@@ -12,7 +12,6 @@ data "aws_iam_policy_document" "kms_access" {
     ]
 
     resources = ["*"]
-
   }
 
   statement {
@@ -55,11 +54,18 @@ resource "aws_cloudwatch_log_group" "session_manager_log_group" {
   tags = var.tags
 }
 
+resource "aws_cloudwatch_log_group" "ec2_cloudwatch_logs" {
+  name              = "ec2-cloudwatch-logging-${var.name}"
+  retention_in_days = 60
+  kms_key_id        = aws_kms_key.ssmkey.arn
+}
+
 resource "aws_ssm_document" "session_manager_prefs" {
   name            = "${var.name}-SSM-SessionManagerRunShell"
   document_type   = "Session"
   document_format = "JSON"
   tags            = var.tags
+
 
   content = jsonencode({
     schemaVersion = "1.0"
@@ -78,11 +84,7 @@ resource "aws_ssm_document" "session_manager_prefs" {
     }
   })
 }
-resource "aws_cloudwatch_log_group" "ec2_cloudwatch_logs" {
-  name              = "ec2-cloudwatch-logging-${var.name}"
-  retention_in_days = 60
-  kms_key_id        = aws_kms_key.ssmkey.arn
-}
+
 resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
   name      = "AmazonCloudWatch-linux-${var.name}"
   type      = "SecureString"
@@ -190,6 +192,33 @@ resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
   })
 }
 
+
+
+### SSM-Access Logging ###
+
+
+
+
+resource "aws_cloudtrail" "ssm-access" {
+  name           = "ssm-access-1"
+  s3_bucket_name = var.access_log_bucket_name
+  # kms_key_id                 = aws_kms_key.ssmkey.arn
+  is_multi_region_trail      = true
+  enable_log_file_validation = true
+  event_selector {
+    read_write_type           = "All"
+    include_management_events = true
+  }
+  depends_on = [
+    aws_s3_bucket_policy.cloudwatch-s3-policy
+  ]
+}
+resource "aws_cloudwatch_log_group" "ssm-access-log-group" {
+  name              = "/aws/events/ssm-access"
+  retention_in_days = 60
+  kms_key_id        = aws_kms_key.ssmkey.arn
+}
+
 resource "aws_cloudwatch_event_rule" "ssm-access" {
   name        = "ssm-access"
   description = "filters ssm access logs and sends usable data to a cloudwatch log group"
@@ -199,17 +228,13 @@ resource "aws_cloudwatch_event_rule" "ssm-access" {
   "source": ["aws.ssm"],
   "detail-type": ["AWS API Call via CloudTrail"],
   "detail": {
-    "eventSource": ["ssm.amazonaws.com"]
+  "eventSource": ["ssm.amazonaws.com"],
+  "eventName": ["IAMUser","StartSession"]
   }
 }
 EOF
+}
 
-}
-resource "aws_cloudwatch_log_group" "ssm-access-log-group" {
-  name              = "/aws/events/ssm-access"
-  retention_in_days = 60
-  kms_key_id        = aws_kms_key.ssmkey.arn
-}
 resource "aws_cloudwatch_event_target" "ssm-target" {
   rule      = aws_cloudwatch_event_rule.ssm-access.name
   target_id = "ssm-access-target"

@@ -145,6 +145,7 @@ chown -R ${ssh_user}:${ssh_user} /home/${ssh_user}/
 # Append addition user-data script
 ${additional_user_data_script}
 
+
 #!/bin/bash
 
 # Install Amazon CloudWatch Agent
@@ -156,3 +157,270 @@ sudo touch /usr/share/collectd/types.db
 
 # Fetch the configuration from the SSM parameter store
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:AmazonCloudWatch-linux-${ssm_parameter_name} -s
+
+# Wait for metadata response
+# ############
+sudo yum -y install jq
+sudo yum -y install aws-cli
+sudo yum -y install wget
+
+
+ ###StartUpScript###
+
+sudo cat << '_EOF_' > /etc/profile.d/startupscript.sh
+#!/bin/bash
+
+
+# export TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+{
+    trap '' 2  #disable ctrl+c
+
+    ###Script to check if exceeded maximum Session Manager Sessions and takes action
+    {
+        ###Configuration Options
+        MAX_SESSIONS=1  #Number of maximum sessions allowed
+        TERMINATE_SESSIONS=true #This will terminate the sessions starting from the oldest; if set to false, it will list out the sessions IDs, but not terminate them
+        TERMINATE_OLDEST=true #true/false - if true, script will terminate the oldest session first. if false, the newest session will be terminated.
+        #Terminating the newest session may result in poor experiance as there will be no message provided to the user.
+
+
+        ###Logic
+        MESSAGE="" #clears out message variable (mainly for debugging purposes in case script is run multiple times)
+
+        ##Configure Reverse Logic
+        REVERSE_LOGIC='| reverse'
+        if [[ "$TERMINATE_OLDEST" = false ]]
+        then
+            REVERSE_LOGIC=''
+        fi
+
+        ##Get Instance details and configure aws region
+
+        EC2_INSTANCE_ID=$(TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" )
+curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id )
+
+        REGION=$(TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" )
+curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region )
+        aws configure set default.region $REGION
+
+
+        ##Get All sessions for the instance and group by owner
+
+        SESSION_INFO=$(aws ssm describe-sessions --state "Active" --filter "key=Target,value=$EC2_INSTANCE_ID" 2>&1)
+
+        if [[ $? -gt 0 ]]  #An error has occured
+        then
+            MESSAGE="An Error has occured; ExitCode: $?, Details: $SESSION_INFO"
+        else
+            SESSIONS=$(jq '.Sessions | group_by(.Owner)' <<< $SESSION_INFO)
+            SESSIONS_GROUP=$(jq 'length' <<< $SESSIONS)
+
+            if [[ $SESSIONS_GROUP -gt 0 ]]
+            then
+                COUNTER=0
+                MESSAGE_HEADER="Too many sessions found:"
+                while [ $COUNTER -lt $SESSIONS_GROUP ]
+                do
+                    SESSION_COUNT=$(jq ".[$COUNTER] | length" <<< $SESSIONS)
+                    if [ $SESSION_COUNT -gt $MAX_SESSIONS ]
+                    then
+                        SORTED=$(jq ".[$COUNTER] | sort_by(.StartDate) $REVERSE_LOGIC" <<< $SESSIONS)
+                        while [ $SESSION_COUNT -gt $MAX_SESSIONS ]
+                        do
+                            TERMINATE_ROW=$(($SESSION_COUNT-1))
+                            TERMINATE_SESSION=$(jq -r ".[$TERMINATE_ROW].SessionId" <<< $SORTED)
+
+                            if [[ "$TERMINATE_SESSIONS" = true ]]
+                            then
+                                TERMINATOR=$(aws ssm terminate-session --session-id $TERMINATE_SESSION 2>&1)
+                                if [[ $? -gt 0 ]]  #An error has occured
+                                then
+                                    MESSAGE="An Error has occured; ExitCode: $?, Details: $TERMINATOR"
+                                    break 2
+                                fi
+                                MESSAGE="$MESSAGE\n Terminated Session $TERMINATE_SESSION"
+                            else
+                                MESSAGE="$MESSAGE\n$TERMINATE_SESSION"
+                            fi
+
+
+                            SESSION_COUNT=$(($SESSION_COUNT-1))
+                        done
+                    fi
+                    COUNTER=$((COUNTER+1))
+                done
+                if [[ ! -z "$MESSAGE" ]]
+                then
+                    MESSAGE=$MESSAGE_HEADER$MESSAGE
+                fi
+            else
+                MESSAGE="No active sessions for this instance"
+            fi
+        fi
+    }
+    trap 2  #enable ctrl+c
+    clear && echo -e $MESSAGE
+
+
+}
+
+
+
+_EOF_
+sudo chmod +x /etc/profile.d/startupscript.sh
+
+##########
+sudo cat << '_EOF_' > /etc/ssh/sshd_config
+#     $OpenBSD: sshd_config,v 1.100 2016/08/15 12:32:04 naddy Exp $
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# This sshd was compiled with PATH=/usr/local/bin:/usr/bin
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+# If you want to change the port on a SELinux system, you have to tell
+# SELinux about this change.
+# semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
+#
+#Port 22
+#AddressFamily any
+#ListenAddress 0.0.0.0
+#ListenAddress ::
+
+HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_dsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+# HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Ciphers and keying
+#RekeyLimit default none
+
+# Logging
+#SyslogFacility AUTH
+SyslogFacility AUTHPRIV
+#LogLevel INFO
+
+# Authentication:
+
+LoginGraceTime 15m
+#PermitRootLogin yes
+StrictModes yes
+MaxAuthTries 3
+MaxSessions 1
+MaxStartups 1:100:100
+#PubkeyAuthentication yes
+
+# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
+# but this is overridden so installations will only check .ssh/authorized_keys
+AuthorizedKeysFile .ssh/authorized_keys
+
+#AuthorizedPrincipalsFile none
+
+
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+#HostbasedAuthentication no
+# Change to yes if you don't trust ~/.ssh/known_hosts for
+# HostbasedAuthentication
+IgnoreUserKnownHosts yes
+# Don't read the user's ~/.rhosts and ~/.shosts files
+#IgnoreRhosts yes
+
+# To disable tunneled clear text passwords, change to no here!
+PasswordAuthentication yes
+#PermitEmptyPasswords no
+#PasswordAuthentication no
+
+# Change to no to disable s/key passwords
+#ChallengeResponseAuthentication yes
+ChallengeResponseAuthentication no
+
+# Kerberos options
+KerberosAuthentication no
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+#KerberosGetAFSToken no
+#KerberosUseKuserok yes
+
+# GSSAPI options
+GSSAPIAuthentication no
+GSSAPICleanupCredentials no
+#GSSAPIStrictAcceptorCheck yes
+#GSSAPIKeyExchange no
+#GSSAPIEnablek5users no
+
+# Set this to 'yes' to enable PAM authentication, account processing,
+# and session processing. If this is enabled, PAM authentication will
+# be allowed through the ChallengeResponseAuthentication and
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication via ChallengeResponseAuthentication may bypass
+# the setting of "PermitRootLogin without-password".
+# If you just want the PAM account and session checks to run without
+# PAM authentication, then enable this but set PasswordAuthentication
+# and ChallengeResponseAuthentication to 'no'.
+# WARNING: 'UsePAM no' is not supported in Red Hat Enterprise Linux and may cause several
+# problems.
+UsePAM yes
+
+#AllowAgentForwarding yes
+#AllowTcpForwarding yes
+#GatewayPorts no
+X11Forwarding no
+#X11DisplayOffset 10
+#X11UseLocalhost yes
+#PermitTTY yes
+#PrintMotd yes
+PrintLastLog yes
+#TCPKeepAlive yes
+#UseLogin no
+UsePrivilegeSeparation sandbox
+#PermitUserEnvironment no
+#Compression delayed
+#ClientAliveInterval 0
+#ClientAliveCountMax 3
+#ShowPatchLevel no
+#UseDNS yes
+#PidFile /var/run/sshd.pid
+#MaxStartups 10:30:100
+#PermitTunnel no
+#ChrootDirectory none
+#VersionAddendum none
+
+# no default banner path
+#Banner none
+
+# Accept locale-related environment variables
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv XMODIFIERS
+
+# override default of no subsystems
+Subsystem sftp  /usr/libexec/openssh/sftp-server
+
+# Example of overriding settings on a per-user basis
+#Match User anoncvs
+#       X11Forwarding no
+#       AllowTcpForwarding no
+#       PermitTTY no
+#       ForceCommand cvs server
+
+AuthorizedKeysCommand /opt/aws/bin/eic_run_authorized_keys %u %f
+AuthorizedKeysCommandUser ec2-instance-connect
+Ciphers aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
+# RhostsRSAAuthentication no
+Compression no
+X11UseLocalhost yes
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
+ClientAliveInterval 14400
+ClientAliveCountMax 0
+
+
+_EOF_
+
+sudo service sshd restart

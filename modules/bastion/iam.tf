@@ -32,6 +32,7 @@ data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
   arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+
 resource "aws_iam_role_policy_attachment" "bastion-ssm-amazon-policy-attach" {
   role       = aws_iam_role.bastion_ssm_role.name
   policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
