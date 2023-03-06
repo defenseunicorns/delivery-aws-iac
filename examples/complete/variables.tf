@@ -24,7 +24,7 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "vpc_name" {
+variable "vpc_name_prefix" {
   description = "The name to use for the VPC"
   type        = string
   default     = "my-vpc"
@@ -45,7 +45,7 @@ variable "create_database_subnet_route_table" {
 ###########################################################
 #################### EKS Config ###########################
 
-variable "cluster_name" {
+variable "cluster_name_prefix" {
   description = "The name to use for the EKS cluster"
   type        = string
   default     = "my-eks"
@@ -71,7 +71,7 @@ variable "enable_managed_nodegroups" {
 ###########################################################
 ################## Bastion Config #########################
 
-variable "bastion_name" {
+variable "bastion_name_prefix" {
   description = "The name to use for the bastion"
   type        = string
   default     = "my-bastion"

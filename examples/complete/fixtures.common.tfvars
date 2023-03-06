@@ -1,22 +1,22 @@
 ###########################################################
 ################## Global Settings ########################
 
-region              = "us-east-2"    # target AWS region
-region2             = "us-east-1"    # RDS backup target AWS region
-aws_admin_usernames = ["John.Smith"] # list of users to be added to the AWS admin group
+region              = "us-east-1" # target AWS region
+region2             = "us-east-2" # RDS backup target AWS region
+aws_admin_usernames = ["Andy"]    # list of users to be added to the AWS admin group
 
 
 ###########################################################
 #################### VPC Config ###########################
 
-vpc_cidr = "10.200.0.0/16"
-vpc_name = "my-vpc"
+vpc_cidr        = "10.200.0.0/16"
+vpc_name_prefix = "ex-complete-vpc"
 # vpc_instance_tenancy                = "dedicated" #does not currently work with EKS
 
 ###########################################################
 ################## Bastion Config #########################
 
-bastion_name         = "my-bastion"
+bastion_name_prefix  = "ex-complete-bastion"
 bastion_ami_id       = "ami-04afd6ecf73c0a579" # AWS linux 2 CIS STIG // "ami-000d4884381edb14c" # AWS linux 2
 bastion_ssh_user     = "ec2-user"              # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
@@ -25,8 +25,8 @@ zarf_version         = "v0.24.0-rc4"
 ###########################################################
 #################### EKS Config ###########################
 
-cluster_name    = "my-eks"
-eks_k8s_version = "1.23"
+cluster_name_prefix = "ex-complete-eks"
+eks_k8s_version     = "1.23"
 
 ###########################################################
 ############## Big Bang Dependencies ######################
