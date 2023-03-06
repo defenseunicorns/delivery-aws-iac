@@ -16,28 +16,23 @@ data "aws_ami" "amazonlinux2eks" {
 resource "random_id" "vpc_name" {
   byte_length = 4
   prefix      = var.vpc_name_prefix
-  keepers = {
-    prefix = var.vpc_name_prefix
-  }
 }
 
 resource "random_id" "cluster_name" {
   byte_length = 4
   prefix      = var.cluster_name_prefix
-  keepers = {
-    prefix = var.cluster_name_prefix
-  }
 }
 
 resource "random_id" "bastion_name" {
   byte_length = 4
   prefix      = var.bastion_name_prefix
-  keepers = {
-    prefix = var.bastion_name_prefix
-  }
 }
 
 locals {
+  vpc_name     = lower(random_id.vpc_name.hex)
+  cluster_name = lower(random_id.cluster_name.hex)
+  bastion_name = lower(random_id.bastion_name.hex)
+
   account = data.aws_caller_identity.current.account_id
 
   tags = {
@@ -343,7 +338,7 @@ module "vpc" {
   source = "../../modules/vpc"
 
   region             = var.region
-  name               = random_id.vpc_name.keepers.prefix
+  name               = local.vpc_name
   vpc_cidr           = var.vpc_cidr
   azs                = ["${var.region}a", "${var.region}b", "${var.region}c"]
   public_subnets     = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k)]
@@ -353,8 +348,8 @@ module "vpc" {
   enable_nat_gateway = true
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${random_id.cluster_name.keepers.prefix}" = "shared"
-    "kubernetes.io/role/internal-elb"                                = 1
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"             = 1
   }
   create_database_subnet_group       = true
   create_database_subnet_route_table = true
@@ -376,12 +371,12 @@ module "bastion" {
     volume_size = "20"
     encrypted   = true
   }
-  name                     = random_id.bastion_name.keepers.prefix
+  name                     = local.bastion_name
   vpc_id                   = module.vpc.vpc_id
   subnet_id                = module.vpc.private_subnets[0]
   aws_region               = var.region
-  access_log_bucket_name   = "${random_id.bastion_name.keepers.prefix}-access-logs"
-  bucket_name              = "${random_id.bastion_name.keepers.prefix}-session-logs"
+  access_log_bucket_name   = "${local.bastion_name}-access-logs"
+  bucket_name              = "${local.bastion_name}-session-logs"
   ssh_user                 = var.bastion_ssh_user
   ssh_password             = var.bastion_ssh_password
   assign_public_ip         = false # var.assign_public_ip
@@ -401,7 +396,7 @@ module "eks" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v<insert tagged version>"
   source = "../../modules/eks"
 
-  name                                  = random_id.cluster_name.keepers.prefix
+  name                                  = local.cluster_name
   aws_region                            = var.region
   aws_account                           = local.account
   vpc_id                                = module.vpc.vpc_id
