@@ -69,7 +69,7 @@ module "rds_postgres_keycloak" {
   family                     = var.kc_db_family
   major_engine_version       = var.kc_db_major_engine_version
   instance_class             = var.kc_db_instance_class
-  identifier                 = "${var.cluster_name}-keycloak"
+  identifier                 = "${random_id.cluster_name.keepers.prefix}-keycloak"
   db_name                    = "keycloak" # Can only be alphanumeric, no hyphens or underscores
   username                   = "kcadmin"
   create_random_password     = false
