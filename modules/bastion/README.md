@@ -122,7 +122,7 @@ No modules.
 | <a name="input_log_archive_days"></a> [log\_archive\_days](#input\_log\_archive\_days) | Number of days to wait before archiving to Glacier | `number` | `30` | no |
 | <a name="input_log_expire_days"></a> [log\_expire\_days](#input\_log\_expire\_days) | Number of days to wait before deleting | `number` | `365` | no |
 | <a name="input_logging"></a> [logging](#input\_logging) | Map containing access bucket logging configuration. | `map(string)` | `{}` | no |
-| <a name="input_name"></a> [name](#input\_name) | Name of Bastion | `string` | `""` | no |
+| <a name="input_name"></a> [name](#input\_name) | Name of Bastion | `string` | n/a | yes |
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | (Optional) The ARN of the policy that is used to set the permissions boundary for the role. | `string` | `null` | no |
 | <a name="input_policy_arns"></a> [policy\_arns](#input\_policy\_arns) | List of IAM policy ARNs to attach to the instance profile | `list(string)` | `[]` | no |
 | <a name="input_policy_content"></a> [policy\_content](#input\_policy\_content) | Policy body. Use this to add a custom policy to your instance profile (Optional) | `string` | `""` | no |

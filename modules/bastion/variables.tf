@@ -20,7 +20,6 @@ variable "vpc_id" {
 variable "name" {
   type        = string
   description = "Name of Bastion"
-  default     = ""
 }
 
 variable "instance_type" {
