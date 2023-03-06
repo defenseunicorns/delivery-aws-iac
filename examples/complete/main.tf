@@ -14,17 +14,17 @@ data "aws_ami" "amazonlinux2eks" {
 }
 
 resource "random_id" "vpc_name" {
-  byte_length = 4
+  byte_length = 2
   prefix      = var.vpc_name_prefix
 }
 
 resource "random_id" "cluster_name" {
-  byte_length = 4
+  byte_length = 2
   prefix      = var.cluster_name_prefix
 }
 
 resource "random_id" "bastion_name" {
-  byte_length = 4
+  byte_length = 2
   prefix      = var.bastion_name_prefix
 }
 
