@@ -158,8 +158,7 @@ sudo touch /usr/share/collectd/types.db
 # Fetch the configuration from the SSM parameter store
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:AmazonCloudWatch-linux-${ssm_parameter_name} -s
 
-# Wait for metadata response
-# ############
+# Install required add-ons
 sudo yum -y install jq
 sudo yum -y install aws-cli
 sudo yum -y install wget
@@ -170,8 +169,6 @@ sudo yum -y install wget
 sudo cat << '_EOF_' > /etc/profile.d/startupscript.sh
 #!/bin/bash
 
-
-# export TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 {
     trap '' 2  #disable ctrl+c
 
@@ -269,7 +266,8 @@ curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta
 _EOF_
 sudo chmod +x /etc/profile.d/startupscript.sh
 
-##########
+#Adjusting SSHD Config
+
 sudo cat << '_EOF_' > /etc/ssh/sshd_config
 #     $OpenBSD: sshd_config,v 1.100 2016/08/15 12:32:04 naddy Exp $
 
@@ -422,5 +420,7 @@ ClientAliveCountMax 0
 
 
 _EOF_
+
+#Restart SSHD
 
 sudo service sshd restart

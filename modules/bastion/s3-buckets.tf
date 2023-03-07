@@ -10,6 +10,7 @@ resource "aws_s3_bucket" "access_log_bucket" {
   tags          = var.tags
 }
 data "aws_iam_policy_document" "cloudwatch-policy" {
+
   statement {
     sid    = "AWSCloudTrailAclCheck"
     effect = "Allow"
@@ -32,7 +33,7 @@ data "aws_iam_policy_document" "cloudwatch-policy" {
       variable = "AWS:SourceArn"
 
       values = [
-        "arn:aws:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/ssm-access-1",
+        "arn:aws:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/ssh-access",
       ]
     }
   }
@@ -68,7 +69,7 @@ data "aws_iam_policy_document" "cloudwatch-policy" {
       variable = "AWS:SourceArn"
 
       values = [
-        "arn:aws:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/ssm-access-1",
+        "arn:aws:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/ssh-access",
       ]
     }
   }

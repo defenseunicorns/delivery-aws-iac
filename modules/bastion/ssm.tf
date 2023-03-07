@@ -4,9 +4,14 @@ data "aws_iam_policy_document" "kms_access" {
   statement {
     sid = "KMS Key Default"
     principals {
-      type        = "AWS"
-      identifiers = ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root"]
+      type = "AWS"
+      identifiers = [
+        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root",
+        "*"
+
+      ]
     }
+
     actions = [
       "kms:*",
     ]
@@ -44,6 +49,7 @@ resource "aws_kms_key" "ssmkey" {
 resource "aws_kms_alias" "ssmkey" {
   name_prefix   = "${var.kms_key_alias}-"
   target_key_id = aws_kms_key.ssmkey.key_id
+
 }
 
 resource "aws_cloudwatch_log_group" "session_manager_log_group" {
@@ -194,15 +200,15 @@ resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
 
 
 
-### SSM-Access Logging ###
+### ssh-access Logging ###
 
 
 
 
-resource "aws_cloudtrail" "ssm-access" {
-  name           = "ssm-access-1"
-  s3_bucket_name = var.access_log_bucket_name
-  # kms_key_id                 = aws_kms_key.ssmkey.arn
+resource "aws_cloudtrail" "ssh-access" {
+  name                       = "ssh-access"
+  s3_bucket_name             = var.access_log_bucket_name
+  kms_key_id                 = aws_kms_key.ssmkey.arn
   is_multi_region_trail      = true
   enable_log_file_validation = true
   event_selector {
@@ -210,17 +216,18 @@ resource "aws_cloudtrail" "ssm-access" {
     include_management_events = true
   }
   depends_on = [
-    aws_s3_bucket_policy.cloudwatch-s3-policy
+    aws_s3_bucket_policy.cloudwatch-s3-policy,
+    aws_kms_key.ssmkey
   ]
 }
-resource "aws_cloudwatch_log_group" "ssm-access-log-group" {
-  name              = "/aws/events/ssm-access"
+resource "aws_cloudwatch_log_group" "ssh-access-log-group" {
+  name              = "/aws/events/ssh-access"
   retention_in_days = 60
   kms_key_id        = aws_kms_key.ssmkey.arn
 }
 
-resource "aws_cloudwatch_event_rule" "ssm-access" {
-  name        = "ssm-access"
+resource "aws_cloudwatch_event_rule" "ssh-access" {
+  name        = "ssh-access"
   description = "filters ssm access logs and sends usable data to a cloudwatch log group"
 
   event_pattern = <<EOF
@@ -236,7 +243,7 @@ EOF
 }
 
 resource "aws_cloudwatch_event_target" "ssm-target" {
-  rule      = aws_cloudwatch_event_rule.ssm-access.name
-  target_id = "ssm-access-target"
-  arn       = aws_cloudwatch_log_group.ssm-access-log-group.arn
+  rule      = aws_cloudwatch_event_rule.ssh-access.name
+  target_id = "ssh-access-target"
+  arn       = aws_cloudwatch_log_group.ssh-access-log-group.arn
 }
