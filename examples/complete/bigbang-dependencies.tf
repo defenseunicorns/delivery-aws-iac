@@ -32,10 +32,10 @@ module "loki_s3_bucket" {
 
   region                     = var.region
   cluster_name               = module.eks.eks_cluster_id
-  policy_name_prefix         = "loki-s3-policy"
-  bucket_prefix              = "loki-s3"
-  kms_key_alias              = "loki-s3"
-  kubernetes_service_account = "logging-loki-s3-sa"
+  policy_name_prefix         = "${local.loki_s3_bucket_name}-policy"
+  bucket_prefix              = local.loki_s3_bucket_name
+  kms_key_alias              = local.loki_s3_bucket_name
+  kubernetes_service_account = "logging-${local.loki_s3_bucket_name}-sa"
   kubernetes_namespace       = "logging"
   irsa_iam_role_name         = "${module.eks.eks_cluster_id}-logging-loki-sa-role"
   eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn

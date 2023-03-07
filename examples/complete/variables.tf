@@ -28,6 +28,10 @@ variable "vpc_name_prefix" {
   description = "The name to use for the VPC"
   type        = string
   default     = "my-vpc"
+  validation {
+    condition     = length(var.vpc_name_prefix) <= 20
+    error_message = "The VPC name prefix cannot be more than 20 characters"
+  }
 }
 
 variable "create_database_subnet_group" {
@@ -49,6 +53,10 @@ variable "cluster_name_prefix" {
   description = "The name to use for the EKS cluster"
   type        = string
   default     = "my-eks"
+  validation {
+    condition     = length(var.cluster_name_prefix) <= 20
+    error_message = "The EKS cluster name prefix cannot be more than 20 characters"
+  }
 }
 
 variable "eks_k8s_version" {
@@ -75,6 +83,10 @@ variable "bastion_name_prefix" {
   description = "The name to use for the bastion"
   type        = string
   default     = "my-bastion"
+  validation {
+    condition     = length(var.bastion_name_prefix) <= 20
+    error_message = "The Bastion name prefix cannot be more than 20 characters"
+  }
 }
 
 variable "bastion_instance_type" {
@@ -113,6 +125,16 @@ variable "keycloak_enabled" {
   description = "Whether to enable Keycloak"
   type        = bool
   default     = false
+}
+
+variable "loki_s3_bucket_prefix" {
+  description = "The name to use for the S3 bucket for Loki"
+  type        = string
+  default     = "loki-s3"
+  validation {
+    condition     = length(var.loki_s3_bucket_prefix) <= 20
+    error_message = "The Loki S3 bucket prefix cannot be more than 20 characters"
+  }
 }
 
 #################### Keycloak ###########################

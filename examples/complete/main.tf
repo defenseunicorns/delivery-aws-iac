@@ -28,10 +28,16 @@ resource "random_id" "bastion_name" {
   prefix      = var.bastion_name_prefix
 }
 
+resource "random_id" "loki_s3_bucket" {
+  byte_length = 2
+  prefix      = var.loki_s3_bucket_prefix
+}
+
 locals {
-  vpc_name     = lower(random_id.vpc_name.hex)
-  cluster_name = lower(random_id.cluster_name.hex)
-  bastion_name = lower(random_id.bastion_name.hex)
+  vpc_name            = lower(random_id.vpc_name.hex)
+  cluster_name        = lower(random_id.cluster_name.hex)
+  bastion_name        = lower(random_id.bastion_name.hex)
+  loki_s3_bucket_name = lower(random_id.loki_s3_bucket.hex)
 
   account = data.aws_caller_identity.current.account_id
 
