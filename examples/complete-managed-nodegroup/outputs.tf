@@ -3,9 +3,9 @@ output "loki_s3_bucket" {
   value       = module.loki_s3_bucket.s3_bucket
 }
 
-output "keycloak_db_instance_endpoint" {
-  description = "The connection endpoint"
-  value       = module.rds_postgres_keycloak[0].db_instance_endpoint
+output "keycloak_db_instance_address" {
+  description = "The address of the RDS instance"
+  value       = module.rds_postgres_keycloak[0].db_instance_address
 }
 
 output "keycloak_db_instance_name" {
