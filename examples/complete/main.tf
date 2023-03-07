@@ -361,11 +361,22 @@ module "vpc" {
 ###########################################################
 ##################### Bastion #############################
 
+data "aws_ami" "amazonlinux2" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm*x86_64-gp2"]
+  }
+
+  owners = ["amazon"]
+}
+
 module "bastion" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=v<insert tagged version>"
   source = "../../modules/bastion"
 
-  ami_id        = var.bastion_ami_id
+  ami_id        = data.aws_ami.amazonlinux2.id
   instance_type = var.bastion_instance_type
   root_volume_config = {
     volume_type = "gp3"
