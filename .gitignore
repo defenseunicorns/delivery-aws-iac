@@ -6,9 +6,6 @@
 .terraform/
 *.terraform.*
 
-# except .terraform.lock.hcl
-!.terraform.lock.hcl
-
 # .tfstate files
 *.tfstate
 *.tfstate.*

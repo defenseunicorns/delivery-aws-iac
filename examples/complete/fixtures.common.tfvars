@@ -17,8 +17,7 @@ vpc_name_prefix = "ex-complete-vpc-"
 ################## Bastion Config #########################
 
 bastion_name_prefix  = "ex-complete-bastion-"
-bastion_ami_id       = "ami-04afd6ecf73c0a579" # AWS linux 2 CIS STIG // "ami-000d4884381edb14c" # AWS linux 2
-bastion_ssh_user     = "ec2-user"              # local user in bastion used to ssh
+bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
 zarf_version         = "v0.24.0-rc4"
 
