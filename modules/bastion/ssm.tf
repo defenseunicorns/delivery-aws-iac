@@ -203,7 +203,11 @@ resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
 ### ssh-access Logging ###
 
 
-
+resource "aws_cloudwatch_log_group" "ssh-access-log-group" {
+  name              = "/aws/events/ssh-access"
+  retention_in_days = 60
+  kms_key_id        = aws_kms_key.ssmkey.arn
+}
 
 resource "aws_cloudtrail" "ssh-access" {
   name                       = "ssh-access"
@@ -217,14 +221,11 @@ resource "aws_cloudtrail" "ssh-access" {
   }
   depends_on = [
     aws_s3_bucket_policy.cloudwatch-s3-policy,
-    aws_kms_key.ssmkey
+    aws_kms_key.ssmkey,
+    aws_cloudwatch_log_group.ssh-access-log-group
   ]
 }
-resource "aws_cloudwatch_log_group" "ssh-access-log-group" {
-  name              = "/aws/events/ssh-access"
-  retention_in_days = 60
-  kms_key_id        = aws_kms_key.ssmkey.arn
-}
+
 
 resource "aws_cloudwatch_event_rule" "ssh-access" {
   name        = "ssh-access"
