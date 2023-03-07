@@ -146,9 +146,13 @@ variable "permissions_boundary" {
 
 #### S3 Bucket
 
-variable "bucket_name" {
+variable "session_log_bucket_name_prefix" {
   description = "Name prefix of S3 bucket to store session logs"
   type        = string
+  validation {
+    condition     = length(var.session_log_bucket_name_prefix) <= 37
+    error_message = "Bucket name prefixes may not be longer than 37 characters."
+  }
 }
 
 variable "log_archive_days" {
@@ -163,9 +167,13 @@ variable "log_expire_days" {
   default     = 365
 }
 
-variable "access_log_bucket_name" {
+variable "access_log_bucket_name_prefix" {
   description = "Name prefix of S3 bucket to store access logs from session logs bucket"
   type        = string
+  validation {
+    condition     = length(var.access_log_bucket_name_prefix) <= 37
+    error_message = "Bucket name prefixes may not be longer than 37 characters."
+  }
 }
 
 variable "access_log_expire_days" {

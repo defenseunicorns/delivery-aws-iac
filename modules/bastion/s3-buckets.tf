@@ -4,7 +4,7 @@
 # Create S3 bucket for access logs with versioning, encryption, blocked public acess enabled
 resource "aws_s3_bucket" "access_log_bucket" {
   # checkov:skip=CKV_AWS_144: Cross region replication is overkill
-  bucket_prefix = "${var.access_log_bucket_name}-"
+  bucket_prefix = "${var.access_log_bucket_name_prefix}-"
   force_destroy = true
 
   tags = var.tags
@@ -76,7 +76,7 @@ resource "aws_s3_bucket_notification" "access_log_bucket_notification" {
 # Create S3 bucket for session logs with versioning, encryption, blocked public acess enabled
 resource "aws_s3_bucket" "session_logs_bucket" {
   # checkov:skip=CKV_AWS_144: Cross region replication overkill
-  bucket_prefix = "${var.bucket_name}-"
+  bucket_prefix = "${var.session_log_bucket_name_prefix}-"
   force_destroy = true
   tags          = var.tags
 

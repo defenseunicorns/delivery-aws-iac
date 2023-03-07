@@ -10,7 +10,7 @@ aws_admin_usernames = ["Andy"]    # list of users to be added to the AWS admin g
 #################### VPC Config ###########################
 
 vpc_cidr        = "10.200.0.0/16"
-vpc_name_prefix = "ex-complete0000-vpc-"
+vpc_name_prefix = "ex-complete-vpc-"
 # vpc_instance_tenancy                = "dedicated" #does not currently work with EKS
 
 ###########################################################
@@ -25,14 +25,13 @@ zarf_version         = "v0.24.0-rc4"
 ###########################################################
 #################### EKS Config ###########################
 
-cluster_name_prefix = "ex-complete0000-eks-"
+cluster_name_prefix = "ex-complete-eks-"
 eks_k8s_version     = "1.23"
 
 ###########################################################
 ############## Big Bang Dependencies ######################
 
-keycloak_enabled      = true
-loki_s3_bucket_prefix = "ex-complete-loki-s3-"
+keycloak_enabled = true
 # other_addon_enabled = true
 
 

@@ -127,16 +127,6 @@ variable "keycloak_enabled" {
   default     = false
 }
 
-variable "loki_s3_bucket_prefix" {
-  description = "The name to use for the S3 bucket for Loki"
-  type        = string
-  default     = "loki-s3"
-  validation {
-    condition     = length(var.loki_s3_bucket_prefix) <= 20
-    error_message = "The Loki S3 bucket prefix cannot be more than 20 characters"
-  }
-}
-
 #################### Keycloak ###########################
 
 variable "keycloak_db_password" {
