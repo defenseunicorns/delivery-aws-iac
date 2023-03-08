@@ -177,7 +177,7 @@ sudo cat << '_EOF_' > /etc/profile.d/startupscript.sh
         ###Configuration Options
         MAX_SESSIONS=1  #Number of maximum sessions allowed
         TERMINATE_SESSIONS=true #This will terminate the sessions starting from the oldest; if set to false, it will list out the sessions IDs, but not terminate them
-        TERMINATE_OLDEST=true #true/false - if true, script will terminate the oldest session first. if false, the newest session will be terminated.
+        TERMINATE_OLDEST=false #true/false - if true, script will terminate the oldest session first. if false, the newest session will be terminated.
         #Terminating the newest session may result in poor experiance as there will be no message provided to the user.
 
 
@@ -230,6 +230,7 @@ curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta
                             if [[ "$TERMINATE_SESSIONS" = true ]]
                             then
                                 TERMINATOR=$(aws ssm terminate-session --session-id $TERMINATE_SESSION 2>&1)
+                                echo "new line 233"
                                 if [[ $? -gt 0 ]]  #An error has occured
                                 then
                                     MESSAGE="An Error has occured; ExitCode: $?, Details: $TERMINATOR"
