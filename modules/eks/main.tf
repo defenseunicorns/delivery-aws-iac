@@ -2,21 +2,22 @@
 # EKS Blueprints
 #---------------------------------------------------------------
 
-module "eks_blueprints" {
-  source = "git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git?ref=v4.24.0"
+module "aws_eks" {
+  # module "eks_blueprints" {
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v19.10.0"
 
   cluster_name    = local.cluster_name
-  cluster_version = var.eks_k8s_version
+  cluster_version = var.cluster_version
 
-  vpc_id             = var.vpc_id
-  private_subnet_ids = var.private_subnet_ids
+  vpc_id     = var.vpc_id
+  subnet_ids = var.private_subnet_ids
   # public_subnet_ids  = var.public_subnet_ids
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
-  control_plane_subnet_ids        = var.control_plane_subnet_ids
+  # control_plane_subnet_ids        = var.control_plane_subnet_ids #uses subnet_ids if not set
 
   self_managed_node_groups = var.self_managed_node_groups
-  managed_node_groups      = var.managed_node_groups
+  eks_managed_node_groups  = var.eks_managed_node_groups
 
   cluster_addons = local.cluster_addons
 
@@ -30,7 +31,7 @@ module "eks_blueprints" {
     ingress_bastion_to_cluster = {
       # name        = "allow bastion ingress to cluster"
       description              = "Bastion SG to Cluster"
-      security_group_id        = module.eks_blueprints.cluster_security_group_id
+      security_group_id        = module.aws_eks.cluster_security_group_id
       from_port                = 443
       to_port                  = 443
       protocol                 = "tcp"
@@ -72,10 +73,13 @@ module "eks_blueprints" {
     }
   }
 
-  cluster_kms_key_additional_admin_arns = var.cluster_kms_key_additional_admin_arns
+  #AWS_AUTH things
+  manage_aws_auth_configmap = var.manage_aws_auth_configmap
+  create_aws_auth_configmap = var.create_aws_auth_configmap
 
-  map_users = var.aws_auth_eks_map_users
-  map_roles = [
+  kms_key_administrators = var.kms_key_administrators
+  aws_auth_users         = var.aws_auth_users
+  aws_auth_roles = [
     {
       rolearn  = aws_iam_role.auth_eks_role.arn
       username = aws_iam_role.auth_eks_role.name
@@ -99,7 +103,7 @@ resource "aws_iam_role" "auth_eks_role" {
         {
             "Action": "sts:AssumeRole",
             "Principal": {
-              "AWS": ${length(var.cluster_kms_key_additional_admin_arns) == 0 ? "[]" : jsonencode(var.cluster_kms_key_additional_admin_arns)}
+              "AWS": ${length(var.kms_key_administrators) == 0 ? "[]" : jsonencode(var.kms_key_administrators)}
             },
             "Effect": "Allow",
             "Sid": ""

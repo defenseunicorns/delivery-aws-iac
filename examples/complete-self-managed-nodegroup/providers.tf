@@ -1,19 +1,25 @@
 
 data "aws_eks_cluster_auth" "this" {
-  name = module.eks.eks_cluster_id
+  name = module.eks.cluster_name
 }
 
 data "aws_eks_cluster" "example" {
-  name = module.eks.eks_cluster_id
+  name = module.eks.cluster_name
 }
 
 provider "aws" {
   region = var.region
+  default_tags {
+    tags = var.default_tags
+  }
 }
 
 provider "aws" {
   alias  = "region2"
   region = var.region2
+  default_tags {
+    tags = var.default_tags
+  }
 }
 
 provider "kubernetes" {

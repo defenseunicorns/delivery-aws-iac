@@ -22,3 +22,14 @@ variable "dynamodb_table_name" {
   type    = string
   default = "my-tfstate-backend-lock"
 }
+
+variable "force_destroy" {
+  type    = bool
+  default = false
+}
+
+variable "default_tags" {
+  description = "A map of default tags to apply to all resources"
+  type        = map(string)
+  default     = {}
+}

@@ -5,7 +5,7 @@ variable "cluster_name" {
   default     = ""
 }
 
-variable "eks_k8s_version" {
+variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
   default     = "1.23"
@@ -44,7 +44,7 @@ variable "name" {
   default = ""
 }
 
-variable "aws_auth_eks_map_users" {
+variable "aws_auth_users" {
   description = "List of map of users to add to aws-auth configmap"
   type = list(object({
     userarn  = string
@@ -54,10 +54,22 @@ variable "aws_auth_eks_map_users" {
   default = []
 }
 
-variable "cluster_kms_key_additional_admin_arns" {
-  description = "List of ARNs of additional users to add to KMS key policy"
+variable "kms_key_administrators" {
+  description = "List of ARNs of additional administrator users to add to KMS key policy"
   type        = list(string)
   default     = []
+}
+
+variable "manage_aws_auth_configmap" {
+  description = "Determines whether to manage the aws-auth configmap"
+  type        = bool
+  default     = false
+}
+
+variable "create_aws_auth_configmap" {
+  description = "Determines whether to create the aws-auth configmap. NOTE - this is only intended for scenarios where the configmap does not exist (i.e. - when using only self-managed node groups). Most users should use `manage_aws_auth_configmap`"
+  type        = bool
+  default     = false
 }
 
 variable "cluster_endpoint_private_access" {
@@ -74,6 +86,12 @@ variable "cluster_endpoint_public_access" {
 
 variable "control_plane_subnet_ids" {
   description = "Subnet IDs for control plane"
+  type        = list(string)
+  default     = []
+}
+
+variable "vpc_cni_custom_subnet" {
+  description = "Subnet to put pod ENIs in"
   type        = list(string)
   default     = []
 }
@@ -111,7 +129,7 @@ variable "enable_managed_nodegroups" {
   type        = bool
 }
 
-variable "managed_node_groups" {
+variable "eks_managed_node_groups" {
   description = "Managed node groups configuration"
   type        = any
   default     = {}
@@ -169,7 +187,7 @@ variable "amazon_eks_vpc_cni_configuration_values" {
 variable "enable_amazon_eks_coredns" {
   description = "Enable Amazon EKS CoreDNS add-on"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "amazon_eks_coredns_config" {
@@ -182,7 +200,7 @@ variable "amazon_eks_coredns_config" {
 variable "enable_amazon_eks_kube_proxy" {
   description = "Enable Kube Proxy add-on"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "amazon_eks_kube_proxy_config" {
@@ -195,7 +213,7 @@ variable "amazon_eks_kube_proxy_config" {
 variable "enable_amazon_eks_aws_ebs_csi_driver" {
   description = "Enable EKS Managed AWS EBS CSI Driver add-on; enable_amazon_eks_aws_ebs_csi_driver and enable_self_managed_aws_ebs_csi_driver are mutually exclusive"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "amazon_eks_aws_ebs_csi_driver_config" {
@@ -208,7 +226,7 @@ variable "amazon_eks_aws_ebs_csi_driver_config" {
 variable "enable_metrics_server" {
   description = "Enable metrics server add-on"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "metrics_server_helm_config" {
@@ -221,7 +239,7 @@ variable "metrics_server_helm_config" {
 variable "enable_aws_node_termination_handler" {
   description = "Enable AWS Node Termination Handler add-on"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "aws_node_termination_handler_helm_config" {
@@ -234,7 +252,7 @@ variable "aws_node_termination_handler_helm_config" {
 variable "enable_cluster_autoscaler" {
   description = "Enable Cluster autoscaler add-on"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "cluster_autoscaler_helm_config" {

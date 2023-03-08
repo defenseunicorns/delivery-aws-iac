@@ -11,13 +11,13 @@ module "flux_sops" {
   source = "../../modules/sops"
 
   region                     = var.region
-  cluster_name               = module.eks.eks_cluster_id
+  cluster_name               = module.eks.cluster_name
   vpc_id                     = module.vpc.vpc_id
-  policy_name_prefix         = "${module.eks.eks_cluster_id}-flux-sops"
-  kms_key_alias              = "${module.eks.eks_cluster_id}-flux-sops"
+  policy_name_prefix         = "${module.eks.cluster_name}-flux-sops"
+  kms_key_alias              = "${module.eks.cluster_name}-flux-sops"
   kubernetes_service_account = "flux-system-sops-sa"
   kubernetes_namespace       = "flux-system"
-  irsa_sops_iam_role_name    = "${module.eks.eks_cluster_id}-flux-system-sa-role"
+  irsa_sops_iam_role_name    = "${module.eks.cluster_name}-flux-system-sa-role"
   eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn
   tags                       = local.tags
   role_name                  = module.bastion.bastion_role_name
@@ -31,13 +31,13 @@ module "loki_s3_bucket" {
   source = "../../modules/s3-irsa"
 
   region                     = var.region
-  cluster_name               = module.eks.eks_cluster_id
+  cluster_name               = module.eks.cluster_name
   policy_name_prefix         = "loki-s3-policy"
   bucket_prefix              = "loki-s3"
   kms_key_alias              = "loki-s3"
   kubernetes_service_account = "logging-loki-s3-sa"
   kubernetes_namespace       = "logging"
-  irsa_iam_role_name         = "${module.eks.eks_cluster_id}-logging-loki-sa-role"
+  irsa_iam_role_name         = "${module.eks.cluster_name}-logging-loki-sa-role"
   eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn
   tags                       = local.tags
   dynamodb_enabled           = true

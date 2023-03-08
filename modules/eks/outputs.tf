@@ -1,37 +1,34 @@
-output "eks_cluster_id" {
-  description = "EKS cluster ID"
-  value       = module.eks_blueprints.eks_cluster_id
+output "aws_eks" {
+  #https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/outputs.tf
+  description = "all EKS cluster outputs, just for debugging"
+  value       = module.aws_eks
 }
 
-output "eks_managed_nodegroups" {
+output "cluster_name" {
+  description = "The name of the EKS cluster"
+  value       = module.aws_eks.cluster_name
+}
+
+output "managed_nodegroups" {
   description = "EKS managed node groups"
-  value       = module.eks_blueprints.managed_node_groups
+  value       = module.aws_eks.eks_managed_node_groups
 }
 
-output "eks_managed_nodegroup_ids" {
-  description = "EKS managed node group ids"
-  value       = module.eks_blueprints.managed_node_groups_id
-}
+#you'd need to build some logic around extracting these outputs around module.eks_managed_node_groups which passes all outputs from the child module
+# output "eks_managed_nodegroup_ids" {
+#   description = "EKS managed node group ids"
+#   value       = module.aws_eks.node_group_id
+# }
 
-output "eks_managed_nodegroup_arns" {
-  description = "EKS managed node group arns"
-  value       = module.eks_blueprints.managed_node_group_arn
-}
+# output "eks_managed_nodegroup_arns" {
+#   description = "EKS managed node group arns"
+#   value       = module.aws_eks.managed_node_group_arn
+# }
 
-output "eks_managed_nodegroup_role_name" {
-  description = "EKS managed node group role name"
-  value       = module.eks_blueprints.managed_node_group_iam_role_names
-}
-
-output "eks_managed_nodegroup_status" {
-  description = "EKS managed node group status"
-  value       = module.eks_blueprints.managed_node_groups_status
-}
-
-output "configure_kubectl" {
-  description = "Configure kubectl: make sure you're logged in with the correct AWS profile and run the following command to update your kubeconfig"
-  value       = module.eks_blueprints.configure_kubectl
-}
+# output "eks_managed_nodegroup_role_name" {
+#   description = "EKS managed node group role name"
+#   value       = module.aws_eks.managed_node_group_iam_role_names
+# }
 
 # Region used for Terratest
 output "region" {
@@ -39,19 +36,24 @@ output "region" {
   value       = var.aws_region
 }
 
-output "eks_oidc_provider_arn" {
+output "oidc_provider" {
+  description = "The OpenID Connect identity provider (issuer URL without leading `https://`)"
+  value       = module.aws_eks.oidc_provider
+}
+
+output "oidc_provider_arn" {
   description = "EKS OIDC provider ARN"
-  value       = module.eks_blueprints.eks_oidc_provider_arn
+  value       = module.aws_eks.oidc_provider_arn
 }
 
-output "eks_cluster_endpoint" {
+output "cluster_endpoint" {
   description = "EKS cluster endpoint"
-  value       = module.eks_blueprints.eks_cluster_endpoint
+  value       = module.aws_eks.cluster_endpoint
 }
 
-output "eks_cluster_certificate_authority_data" {
+output "cluster_certificate_authority_data" {
   description = "EKS cluster certificate authority data"
-  value       = module.eks_blueprints.eks_cluster_certificate_authority_data
+  value       = module.aws_eks.cluster_certificate_authority_data
 }
 
 output "aws_iam_role_self_managed_ng_arn" {

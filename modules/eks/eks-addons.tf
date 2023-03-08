@@ -5,13 +5,13 @@
 module "eks_blueprints_kubernetes_addons" {
   source = "git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git//modules/kubernetes-addons?ref=v4.24.0"
 
-  depends_on = [module.eks_blueprints]
+  depends_on = [module.aws_eks]
 
-  eks_cluster_id           = module.eks_blueprints.eks_cluster_id
-  eks_cluster_endpoint     = module.eks_blueprints.eks_cluster_endpoint
-  eks_oidc_provider        = module.eks_blueprints.oidc_provider
-  eks_cluster_version      = module.eks_blueprints.eks_cluster_version
-  auto_scaling_group_names = module.eks_blueprints.self_managed_node_group_autoscaling_groups
+  eks_cluster_id           = module.aws_eks.cluster_name
+  eks_cluster_endpoint     = module.aws_eks.cluster_endpoint
+  eks_oidc_provider        = module.aws_eks.oidc_provider
+  eks_cluster_version      = module.aws_eks.cluster_version
+  auto_scaling_group_names = lookup(module.aws_eks.self_managed_node_groups, "autoscaling_group_name", [])
 
   # EKS Managed Add-ons
   # VPC CNI - This needs to be done outside of the blueprints module

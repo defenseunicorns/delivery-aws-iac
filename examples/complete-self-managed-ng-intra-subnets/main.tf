@@ -2,13 +2,13 @@ data "aws_partition" "current" {}
 
 locals {
   tags = {
-    Blueprint  = "${replace(basename(path.cwd), "_", "-")}" # tag names based on the directory name
+    Blueprint  = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
     GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
   }
   admin_arns = [for admin_user in var.aws_admin_usernames : "arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${admin_user}"]
-  aws_auth_eks_map_users = [for admin_user in var.aws_admin_usernames : {
+  aws_auth_users = [for admin_user in var.aws_admin_usernames : {
     userarn  = "arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${admin_user}"
-    username = "${admin_user}"
+    username = admin_user
     groups   = ["system:masters"]
     }
   ]
@@ -39,7 +39,7 @@ module "vpc" {
   public_subnets     = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k)]
   private_subnets    = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 4)]
   database_subnets   = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 8)]
-  intra_subnets      = var.intra_subnets
+  intra_subnets      = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 12)]
   single_nat_gateway = true
   enable_nat_gateway = true
 
@@ -84,6 +84,9 @@ module "bastion" {
   tags = {
     Function = "bastion-ssm"
   }
+  depends_on = [
+    module.vpc
+  ]
 }
 
 ###########################################################
@@ -92,26 +95,27 @@ module "eks" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v<insert tagged version>"
   source = "../../modules/eks"
 
-  name                                  = var.cluster_name
-  aws_region                            = var.region
-  aws_account                           = var.account
-  vpc_id                                = module.vpc.vpc_id
-  private_subnet_ids                    = module.vpc.private_subnets
-  control_plane_subnet_ids              = module.vpc.private_subnets
-  source_security_group_id              = module.bastion.security_group_ids[0]
-  cluster_endpoint_public_access        = var.cluster_endpoint_public_access
-  cluster_endpoint_private_access       = true
-  cluster_kms_key_additional_admin_arns = local.admin_arns
-  eks_k8s_version                       = var.eks_k8s_version
-  bastion_role_arn                      = module.bastion.bastion_role_arn
-  bastion_role_name                     = module.bastion.bastion_role_name
-  aws_auth_eks_map_users                = local.aws_auth_eks_map_users
+  name                  = var.cluster_name
+  aws_region            = var.region
+  aws_account           = var.account
+  vpc_id                = module.vpc.vpc_id
+  private_subnet_ids    = module.vpc.private_subnets
+  vpc_cni_custom_subnet = module.vpc.intra_subnets
+  # control_plane_subnet_ids              = module.vpc.private_subnets #uses subnet_ids if not set
+  source_security_group_id        = module.bastion.security_group_ids[0]
+  cluster_endpoint_public_access  = var.cluster_endpoint_public_access
+  cluster_endpoint_private_access = true
+  kms_key_administrators          = local.admin_arns
+  cluster_version                 = var.cluster_version
+  bastion_role_arn                = module.bastion.bastion_role_arn
+  bastion_role_name               = module.bastion.bastion_role_name
+
+  #AWS_AUTH
+  manage_aws_auth_configmap = var.manage_aws_auth_configmap
+  create_aws_auth_configmap = var.create_aws_auth_configmap
+  aws_auth_users            = local.aws_auth_users
 
   enable_managed_nodegroups = false
-
-  #---------------------------------------------------------------
-  # EKS Blueprints - Self Managed Node Groups
-  #---------------------------------------------------------------
 
   self_managed_node_groups = {
     self_mg1 = {
@@ -190,12 +194,19 @@ module "eks" {
   }
 
   #---------------------------------------------------------------
-  # EKS Blueprints - EKS Add-Ons
+  #"native" EKS Add-Ons
   #---------------------------------------------------------------
 
   # VPC CNI
-  enable_amazon_eks_vpc_cni = var.enable_amazon_eks_vpc_cni
-  amazon_eks_vpc_cni_config = var.amazon_eks_vpc_cni_config
+  enable_amazon_eks_vpc_cni               = var.enable_amazon_eks_vpc_cni
+  amazon_eks_vpc_cni_before_compute       = var.amazon_eks_vpc_cni_before_compute
+  amazon_eks_vpc_cni_most_recent          = var.amazon_eks_vpc_cni_most_recent
+  amazon_eks_vpc_cni_resolve_conflict     = var.amazon_eks_vpc_cni_resolve_conflict
+  amazon_eks_vpc_cni_configuration_values = var.amazon_eks_vpc_cni_configuration_values
+
+  #---------------------------------------------------------------
+  # EKS Blueprints - EKS Add-Ons
+  #---------------------------------------------------------------
 
   # EKS CoreDNS
   enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
@@ -220,4 +231,8 @@ module "eks" {
   # EKS Cluster Autoscaler
   enable_cluster_autoscaler      = var.enable_cluster_autoscaler
   cluster_autoscaler_helm_config = var.cluster_autoscaler_helm_config
+
+  depends_on = [
+    module.vpc
+  ]
 }

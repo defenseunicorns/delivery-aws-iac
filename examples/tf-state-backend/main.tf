@@ -1,5 +1,8 @@
 provider "aws" {
   region = var.region
+  default_tags {
+    tags = var.default_tags
+  }
 }
 
 data "aws_partition" "current" {}
@@ -9,14 +12,16 @@ locals {
 }
 
 module "tfstate_backend" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-tfstate-backend.git?ref=0.0.1"
+  # source = "git::https://github.com/defenseunicorns/terraform-aws-tfstate-backend.git?ref=main"
+  source = "/Users/zack/git-repos/Defense_Unicorns/projects/DU_oss/terraform-aws-tfstate-backend"
 
   region              = var.region
   bucket_prefix       = var.bucket_prefix
   dynamodb_table_name = var.dynamodb_table_name
+  force_destroy       = var.force_destroy
 
   # list of admin's AWS account arn to allow control of KMS keys
-  cluster_key_admin_arns = local.admin_arns
+  admin_arns = local.admin_arns
 }
 
 output "tfstate_bucket_id" {

@@ -25,6 +25,25 @@ variable "aws_admin_usernames" {
   description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources"
   type        = list(string)
 }
+
+variable "manage_aws_auth_configmap" {
+  description = "Determines whether to manage the aws-auth configmap"
+  type        = bool
+  default     = false
+}
+
+variable "create_aws_auth_configmap" {
+  description = "Determines whether to create the aws-auth configmap. NOTE - this is only intended for scenarios where the configmap does not exist (i.e. - when using only self-managed node groups). Most users should use `manage_aws_auth_configmap`"
+  type        = bool
+  default     = false
+}
+
+variable "default_tags" {
+  description = "A map of default tags to apply to all resources"
+  type        = map(string)
+  default     = {}
+}
+
 ###########################################################
 #################### VPC Config ###########################
 
@@ -66,7 +85,7 @@ variable "cluster_name" {
   default     = "my-eks"
 }
 
-variable "eks_k8s_version" {
+variable "cluster_version" {
   description = "The Kubernetes version to use for the EKS cluster"
   type        = string
   default     = "1.23"
@@ -83,22 +102,48 @@ variable "cluster_endpoint_public_access" {
 
 #----------------AWS EKS VPC CNI-------------------------
 variable "enable_amazon_eks_vpc_cni" {
-  description = "Enable VPC CNI add-on"
+  description = "HANDLED by EKS module, not blueprints: Enable VPC CNI add-on"
   type        = bool
   default     = true
 }
 
-variable "amazon_eks_vpc_cni_config" {
-  description = "ConfigMap of Amazon EKS VPC CNI add-on"
+variable "amazon_eks_vpc_cni_before_compute" {
+  description = "HANDLED by EKS module, not blueprints: Deploy VPC CNI add-on before compute nodes"
+  type        = bool
+  default     = true
+}
+
+variable "amazon_eks_vpc_cni_most_recent" {
+  description = "HANDLED by EKS module, not blueprints: Deploy most recent VPC CNI add-on"
+  type        = bool
+  default     = true
+}
+
+variable "amazon_eks_vpc_cni_resolve_conflict" {
+  description = "HANDLED by EKS module, not blueprints: Conflict resolution strategy of VPC CNI add-on deployment via eks module"
+  type        = string
+  default     = "OVERWRITE"
+}
+
+variable "amazon_eks_vpc_cni_configuration_values" {
+  description = "HANDLED by EKS module, not blueprints: ConfigMap of Amazon EKS VPC CNI add-on"
   type        = any
-  default     = {}
+  default = {
+    # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
+    AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
+    ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone"
+
+    # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
+    ENABLE_PREFIX_DELEGATION = "true"
+    WARM_PREFIX_TARGET       = "1"
+  }
 }
 
 #----------------AWS CoreDNS-------------------------
 variable "enable_amazon_eks_coredns" {
   description = "Enable Amazon EKS CoreDNS add-on"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "amazon_eks_coredns_config" {
@@ -111,7 +156,7 @@ variable "amazon_eks_coredns_config" {
 variable "enable_amazon_eks_kube_proxy" {
   description = "Enable Kube Proxy add-on"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "amazon_eks_kube_proxy_config" {
@@ -124,7 +169,7 @@ variable "amazon_eks_kube_proxy_config" {
 variable "enable_amazon_eks_aws_ebs_csi_driver" {
   description = "Enable EKS Managed AWS EBS CSI Driver add-on; enable_amazon_eks_aws_ebs_csi_driver and enable_self_managed_aws_ebs_csi_driver are mutually exclusive"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "amazon_eks_aws_ebs_csi_driver_config" {
@@ -137,7 +182,7 @@ variable "amazon_eks_aws_ebs_csi_driver_config" {
 variable "enable_metrics_server" {
   description = "Enable metrics server add-on"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "metrics_server_helm_config" {
@@ -150,7 +195,7 @@ variable "metrics_server_helm_config" {
 variable "enable_aws_node_termination_handler" {
   description = "Enable AWS Node Termination Handler add-on"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "aws_node_termination_handler_helm_config" {
@@ -163,7 +208,7 @@ variable "aws_node_termination_handler_helm_config" {
 variable "enable_cluster_autoscaler" {
   description = "Enable Cluster autoscaler add-on"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "cluster_autoscaler_helm_config" {
@@ -171,7 +216,6 @@ variable "cluster_autoscaler_helm_config" {
   type        = any
   default     = {}
 }
-
 
 ###########################################################
 ################## Bastion Config #########################
