@@ -80,6 +80,7 @@ resource "aws_s3_bucket_policy" "cloudwatch-s3-policy" {
   policy = data.aws_iam_policy_document.cloudwatch-policy.json
 
 }
+
 resource "aws_s3_bucket_versioning" "access_log_bucket" {
   bucket = aws_s3_bucket.access_log_bucket.id
 
