@@ -176,7 +176,7 @@ sudo cat << '_EOF_' > /etc/profile.d/startupscript.sh
     {
         ###Configuration Options
         MAX_SESSIONS=1  #Number of maximum sessions allowed
-        TERMINATE_SESSIONS=true #This will terminate the sessions starting from the oldest; if set to false, it will list out the sessions IDs, but not terminate them
+        TERMINATE_SESSIONS=false #This will terminate the sessions starting from the oldest; if set to false, it will list out the sessions IDs, but not terminate them
         TERMINATE_OLDEST=false #true/false - if true, script will terminate the oldest session first. if false, the newest session will be terminated.
         #Terminating the newest session may result in poor experiance as there will be no message provided to the user.
 
