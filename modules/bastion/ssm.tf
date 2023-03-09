@@ -6,9 +6,7 @@ data "aws_iam_policy_document" "kms_access" {
     principals {
       type = "AWS"
       identifiers = [
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root",
-        "*"
-
+        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root"
       ]
     }
 
@@ -18,7 +16,6 @@ data "aws_iam_policy_document" "kms_access" {
 
     resources = ["*"]
   }
-
   statement {
     sid = "CloudWatchLogsEncryption"
     principals {
@@ -35,6 +32,23 @@ data "aws_iam_policy_document" "kms_access" {
 
     resources = ["*"]
   }
+  statement {
+    sid = "Cloudtrail KMS permissions"
+    principals {
+      type = "Service"
+      identifiers = [
+        "cloudtrail.amazonaws.com"
+      ]
+    }
+    actions = [
+      "kms:Encrypt*",
+      "kms:Decrypt*",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:Describe*",
+    ]
+    resources = ["*"]
+  }
 
 }
 
@@ -44,6 +58,7 @@ resource "aws_kms_key" "ssmkey" {
   enable_key_rotation     = true
   policy                  = data.aws_iam_policy_document.kms_access.json
   tags                    = var.tags
+  multi_region            = true
 }
 
 resource "aws_kms_alias" "ssmkey" {
@@ -210,6 +225,8 @@ resource "aws_cloudwatch_log_group" "ssh-access-log-group" {
 }
 
 resource "aws_cloudtrail" "ssh-access" {
+  # checkov:skip=CKV_AWS_252: SNS not currently needed
+  # checkov:skip=CKV2_AWS_10: Cloudwatch logs already being used with cloudtrail
   name                       = "ssh-access"
   s3_bucket_name             = var.access_log_bucket_name
   kms_key_id                 = aws_kms_key.ssmkey.arn
