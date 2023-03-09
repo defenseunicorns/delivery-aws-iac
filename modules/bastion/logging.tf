@@ -30,12 +30,12 @@ resource "aws_cloudwatch_event_rule" "ssh-access" {
   description = "filters ssm access logs and sends usable data to a cloudwatch log group"
 
   event_pattern = <<EOF
-  {
+{
   "source": ["aws.ssm"],
   "detail-type": ["AWS API Call via CloudTrail"],
   "detail": {
-  "eventSource": ["ssm.amazonaws.com"],
-  "eventName": ["IAMUser","StartSession"]
+    "eventSource": ["ssm.amazonaws.com"],
+    "eventName": ["IAMUser","StartSession"]
   }
 }
 EOF
