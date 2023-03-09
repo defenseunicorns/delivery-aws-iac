@@ -47,7 +47,7 @@ resource "aws_cloudwatch_event_target" "ssm-target" {
   arn       = aws_cloudwatch_log_group.ssh-access-log-group.arn
 }
 
-# Create a cloudwatch agent configuration file and log group 
+# Create a cloudwatch agent configuration file and log group
 resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
   name      = "AmazonCloudWatch-linux-${var.name}"
   type      = "SecureString"
