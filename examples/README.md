@@ -35,6 +35,6 @@ make <TheTargetYouWantToRun>
 unset SKIP_TEARDOWN
 export SKIP_SETUP=1
 export SKIP_TEST=1
-make test-complete-insecure
+make <TheTargetYouWantToRun>
 ```
 > Since we're tearing down this time, we don't want `SKIP_TEARDOWN` to be set. Instead, we are setting `SKIP_SETUP` and `SKIP_TEST` to skip the setup and test stages.
