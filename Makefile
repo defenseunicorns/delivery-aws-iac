@@ -40,6 +40,11 @@ test: ## Run all automated tests. Requires access to an AWS account. Costs real 
 test-complete-insecure: ## Run one test (TestExamplesCompleteInsecure). Requires access to an AWS account. Costs real money.
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompleteInsecure"
 
+.PHONY: test-complete-secure
+test-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires access to an AWS account. Costs real money.
+	#$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompleteSecure"
+	echo "TestExamplesCompleteSecure is still being worked on. For now feel free to use the complete-self-managed-nodegroup example."
+
 .PHONY: docker-save-build-harness
 docker-save-build-harness: ## Pulls the build harness docker image and saves it to a tarball
 	mkdir -p .cache/docker
