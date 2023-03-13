@@ -5,8 +5,6 @@
 resource "aws_s3_bucket" "access_log_bucket" {
   # checkov:skip=CKV_AWS_144: Cross region replication is overkill
   bucket_prefix = "${var.access_log_bucket_name_prefix}-"
-
-  bucket        = var.access_log_bucket_name
   force_destroy = true
   tags          = var.tags
 }
@@ -26,7 +24,7 @@ data "aws_iam_policy_document" "cloudwatch-policy" {
     ]
 
     resources = [
-      "arn:aws:s3:::${var.access_log_bucket_name}",
+      "arn:aws:s3:::${aws_s3_bucket.access_log_bucket.id}",
     ]
 
     condition {
@@ -53,7 +51,7 @@ data "aws_iam_policy_document" "cloudwatch-policy" {
     ]
 
     resources = [
-      "arn:aws:s3:::${var.access_log_bucket_name}/*",
+      "arn:aws:s3:::${aws_s3_bucket.access_log_bucket.id}/*",
     ]
 
     condition {
