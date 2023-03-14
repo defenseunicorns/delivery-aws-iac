@@ -8,6 +8,7 @@ locals {
 # using lookup function below to deal with terraform's "for_each not existing.." race condition errors.
 # We fail on purpose looking up "NOTHING" in an empty map.
 # lookup() is considered a "non-eager" terraform function allowing you to work around this issue.
+# see: https://github.com/clowdhaus/terraform-for-each-unknown
 resource "kubectl_manifest" "vpc_cni_eni_config" {
   for_each = local.vpc_cni_custom_subnet_map
 
