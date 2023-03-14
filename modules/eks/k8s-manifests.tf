@@ -5,7 +5,9 @@ locals {
   vpc_cni_custom_subnet_map = { for key, value in var.vpc_cni_custom_subnet : key => value }
 }
 
-#using lookup function below to deal with terraform for_each not existing errors, race condition. We default on purpose.
+# using lookup function below to deal with terraform's "for_each not existing.." race condition errors.
+# We fail on purpose looking up "NOTHING" in an empty map.
+# lookup() is considered a "non-eager" terraform function allowing you to work around this issue.
 resource "kubectl_manifest" "vpc_cni_eni_config" {
   for_each = local.vpc_cni_custom_subnet_map
 
