@@ -131,7 +131,7 @@ No modules.
 | <a name="input_name"></a> [name](#input\_name) | Name of Bastion | `string` | n/a | yes |
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | (Optional) The ARN of the policy that is used to set the permissions boundary for the role. | `string` | `null` | no |
 | <a name="input_policy_arns"></a> [policy\_arns](#input\_policy\_arns) | List of IAM policy ARNs to attach to the instance profile | `list(string)` | `[]` | no |
-| <a name="input_policy_content"></a> [policy\_content](#input\_policy\_content) | Policy body. Use this to add a custom policy to your instance profile (Optional) | `string` | `""` | no |
+| <a name="input_policy_content"></a> [policy\_content](#input\_policy\_content) | JSON IAM Policy body. Use this to add a custom policy to your instance profile (Optional) | `string` | `null` | no |
 | <a name="input_requires_eip"></a> [requires\_eip](#input\_requires\_eip) | Whether or not the instance should have an Elastic IP associated to it | `bool` | `false` | no |
 | <a name="input_role_name"></a> [role\_name](#input\_role\_name) | Name to give IAM role created for instance profile | `string` | `""` | no |
 | <a name="input_root_volume_config"></a> [root\_volume\_config](#input\_root\_volume\_config) | n/a | <pre>object({<br>    volume_type = any<br>    volume_size = any<br>  })</pre> | <pre>{<br>  "volume_size": "20",<br>  "volume_type": "gp3"<br>}</pre> | no |

@@ -108,8 +108,12 @@ variable "policy_arns" {
 
 variable "policy_content" {
   type        = string
-  description = "Policy body. Use this to add a custom policy to your instance profile (Optional)"
-  default     = ""
+  description = "JSON IAM Policy body. Use this to add a custom policy to your instance profile (Optional)"
+  default     = null
+  validation {
+    condition     = var.policy_content == null || try(jsondecode(var.policy_content), null) != null
+    error_message = "The policy_content variable must be valid JSON."
+  }
 }
 
 variable "root_volume_config" {
