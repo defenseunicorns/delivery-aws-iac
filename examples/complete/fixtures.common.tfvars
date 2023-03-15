@@ -1,8 +1,8 @@
 ###########################################################
 ################## Global Settings ########################
 
-region              = "us-east-1"     # target AWS region
-region2             = "us-east-2"     # RDS backup target AWS region
+region              = "us-east-2"     # target AWS region
+region2             = "us-east-1"     # RDS backup target AWS region
 aws_admin_usernames = ["Placeholder"] # list of users to be added to the AWS admin group
 
 

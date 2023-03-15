@@ -24,6 +24,9 @@ crash.*.log
 # Except ones that we do want to commit because they are used for automated tests
 !examples/complete/fixtures.common.tfvars
 !examples/complete/fixtures.insecure.tfvars
+!examples/complete/fixtures.secure.tfvars
+!examples/complete/fixtures.eks-public-endpoint-off.tfvars
+!examples/complete/fixtures.eks-public-endpoint-on.tfvars
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in

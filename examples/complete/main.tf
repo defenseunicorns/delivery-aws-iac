@@ -48,7 +48,8 @@ locals {
     }
   ]
 
-  managed_node_groups = var.enable_managed_nodegroups == false ? tomap({}) : {
+  # The conditionals here are funky since a ternary usually requires that the true value and the false value are the same type.
+  managed_node_groups = tomap(var.enable_managed_nodegroups == true ? tomap({
     # Managed Node groups with minimum config
     mg5 = {
       node_group_name = "mg5"
@@ -252,9 +253,9 @@ locals {
         "k8s.io/cluster-autoscaler/node-template/label/eks/node_group_name"            = "mng-spot-2vcpu-8mem"
       }
     }
-  }
+  }) : tomap({}))
 
-  self_managed_node_groups = var.enable_managed_nodegroups == true ? tomap({}) : {
+  self_managed_node_groups = tomap(var.enable_managed_nodegroups == false ? tomap({
     self_mg1 = {
       node_group_name        = "self_mg1"
       subnet_ids             = module.vpc.private_subnets
@@ -328,7 +329,7 @@ locals {
         subnet_type = "private"
       }
     }
-  }
+  }) : tomap({}))
 }
 
 ###########################################################
