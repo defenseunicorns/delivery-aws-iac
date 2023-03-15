@@ -22,7 +22,7 @@ variable "aws_profile" {
 }
 
 variable "aws_admin_usernames" {
-  description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources"
+  description = "A list of one or more AWS usernames with admin access to KMS and EKS resources"
   type        = list(string)
 }
 

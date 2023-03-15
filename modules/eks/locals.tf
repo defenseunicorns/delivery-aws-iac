@@ -6,6 +6,13 @@ locals {
     Blueprint  = var.name
     GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
   }
+  admin_arns = [for admin_user in var.aws_admin_usernames : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:user/${admin_user}"]
+  aws_auth_users = [for admin_user in var.aws_admin_usernames : {
+    userarn  = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:user/${admin_user}"
+    username = admin_user
+    groups   = ["system:masters"]
+    }
+  ]
 
   cluster_addons = {
     #if enabled, pass in config vars, else null

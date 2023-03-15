@@ -77,8 +77,8 @@ module "aws_eks" {
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
   create_aws_auth_configmap = var.create_aws_auth_configmap
 
-  kms_key_administrators = var.kms_key_administrators
-  aws_auth_users         = var.aws_auth_users
+  kms_key_administrators = distinct(concat(local.admin_arns, var.kms_key_administrators))
+  aws_auth_users         = distinct(concat(local.aws_auth_users, var.aws_auth_users))
   aws_auth_roles = [
     {
       rolearn  = aws_iam_role.auth_eks_role.arn
@@ -103,7 +103,7 @@ resource "aws_iam_role" "auth_eks_role" {
         {
             "Action": "sts:AssumeRole",
             "Principal": {
-              "AWS": ${length(var.kms_key_administrators) == 0 ? "[]" : jsonencode(var.kms_key_administrators)}
+              "AWS": ${length(local.admin_arns) == 0 ? "[]" : jsonencode(local.admin_arns)}
             },
             "Effect": "Allow",
             "Sid": ""

@@ -198,7 +198,7 @@ terraform destroy -auto-approve
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.57.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.58.0 |
 
 ## Modules
 
@@ -233,7 +233,7 @@ terraform destroy -auto-approve
 | <a name="input_amazon_eks_vpc_cni_most_recent"></a> [amazon\_eks\_vpc\_cni\_most\_recent](#input\_amazon\_eks\_vpc\_cni\_most\_recent) | HANDLED by EKS module, not blueprints: Deploy most recent VPC CNI add-on | `bool` | `true` | no |
 | <a name="input_amazon_eks_vpc_cni_resolve_conflict"></a> [amazon\_eks\_vpc\_cni\_resolve\_conflict](#input\_amazon\_eks\_vpc\_cni\_resolve\_conflict) | HANDLED by EKS module, not blueprints: Conflict resolution strategy of VPC CNI add-on deployment via eks module | `string` | `"OVERWRITE"` | no |
 | <a name="input_assign_public_ip"></a> [assign\_public\_ip](#input\_assign\_public\_ip) | Whether to assign a public IP to the bastion | `bool` | `false` | no |
-| <a name="input_aws_admin_usernames"></a> [aws\_admin\_usernames](#input\_aws\_admin\_usernames) | A list of one or more AWS usernames with authorized access to KMS and EKS resources | `list(string)` | n/a | yes |
+| <a name="input_aws_admin_usernames"></a> [aws\_admin\_usernames](#input\_aws\_admin\_usernames) | A list of one or more AWS usernames with admin access to KMS and EKS resources | `list(string)` | n/a | yes |
 | <a name="input_aws_node_termination_handler_helm_config"></a> [aws\_node\_termination\_handler\_helm\_config](#input\_aws\_node\_termination\_handler\_helm\_config) | AWS Node Termination Handler Helm Chart config | `any` | `{}` | no |
 | <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | The AWS profile to use for deployment | `string` | n/a | yes |
 | <a name="input_bastion_ami_id"></a> [bastion\_ami\_id](#input\_bastion\_ami\_id) | (Optional) The AMI ID to use for the bastion, will query the latest Amazon Linux 2 AMI if not provided | `string` | `""` | no |

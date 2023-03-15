@@ -60,6 +60,12 @@ variable "kms_key_administrators" {
   default     = []
 }
 
+variable "aws_admin_usernames" {
+  description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources"
+  type        = list(string)
+  default     = []
+}
+
 variable "manage_aws_auth_configmap" {
   description = "Determines whether to manage the aws-auth configmap"
   type        = bool
@@ -170,7 +176,7 @@ variable "amazon_eks_vpc_cni_resolve_conflict" {
 }
 
 variable "amazon_eks_vpc_cni_configuration_values" {
-  description = "HANDLED by EKS module, not blueprints: ConfigMap of Amazon EKS VPC CNI add-on"
+  description = "Config of Amazon EKS VPC CNI add-on, HCL format that will be jsonencoded"
   type        = any
   default = {
     # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking

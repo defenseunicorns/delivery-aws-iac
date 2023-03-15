@@ -2,6 +2,8 @@ data "aws_eks_cluster_auth" "this" {
   name = module.aws_eks.cluster_name
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_availability_zones" "available" {
   filter {
     name   = "opt-in-status"
