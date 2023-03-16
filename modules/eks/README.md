@@ -34,11 +34,7 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 
 | Name | Type |
 |------|------|
-| [aws_iam_instance_profile.managed_ng](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
-| [aws_iam_instance_profile.self_managed_ng](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_role.auth_eks_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role.managed_ng](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role.self_managed_ng](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [kubectl_manifest.vpc_cni_eni_config](https://registry.terraform.io/providers/gavinbunney/kubectl/latest/docs/resources/manifest) | resource |
 | [aws_ami.amazonlinux2eks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
@@ -80,7 +76,6 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 | <a name="input_enable_amazon_eks_vpc_cni"></a> [enable\_amazon\_eks\_vpc\_cni](#input\_enable\_amazon\_eks\_vpc\_cni) | HANDLED by EKS module, not blueprints: Enable VPC CNI add-on | `bool` | `true` | no |
 | <a name="input_enable_aws_node_termination_handler"></a> [enable\_aws\_node\_termination\_handler](#input\_enable\_aws\_node\_termination\_handler) | Enable AWS Node Termination Handler add-on | `bool` | `false` | no |
 | <a name="input_enable_cluster_autoscaler"></a> [enable\_cluster\_autoscaler](#input\_enable\_cluster\_autoscaler) | Enable Cluster autoscaler add-on | `bool` | `false` | no |
-| <a name="input_enable_managed_nodegroups"></a> [enable\_managed\_nodegroups](#input\_enable\_managed\_nodegroups) | Enable managed node groups. If false, self managed node groups will be used. | `bool` | n/a | yes |
 | <a name="input_enable_metrics_server"></a> [enable\_metrics\_server](#input\_enable\_metrics\_server) | Enable metrics server add-on | `bool` | `false` | no |
 | <a name="input_kms_key_administrators"></a> [kms\_key\_administrators](#input\_kms\_key\_administrators) | List of ARNs of additional administrator users to add to KMS key policy | `list(string)` | `[]` | no |
 | <a name="input_manage_aws_auth_configmap"></a> [manage\_aws\_auth\_configmap](#input\_manage\_aws\_auth\_configmap) | Determines whether to manage the aws-auth configmap | `bool` | `false` | no |
@@ -88,6 +83,7 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 | <a name="input_name"></a> [name](#input\_name) | n/a | `string` | `""` | no |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnet IDs | `list(string)` | `[]` | no |
 | <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | Public subnet IDs | `list(string)` | `[]` | no |
+| <a name="input_self_managed_node_group_defaults"></a> [self\_managed\_node\_group\_defaults](#input\_self\_managed\_node\_group\_defaults) | Map of self-managed node group default configurations | `any` | `{}` | no |
 | <a name="input_self_managed_node_groups"></a> [self\_managed\_node\_groups](#input\_self\_managed\_node\_groups) | Self-managed node groups configuration | `any` | `{}` | no |
 | <a name="input_source_security_group_id"></a> [source\_security\_group\_id](#input\_source\_security\_group\_id) | List of additional rules to add to cluster security group | `string` | `""` | no |
 | <a name="input_tenancy"></a> [tenancy](#input\_tenancy) | Tenancy of the cluster | `string` | `"dedicated"` | no |
@@ -99,10 +95,6 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 | Name | Description |
 |------|-------------|
 | <a name="output_aws_eks"></a> [aws\_eks](#output\_aws\_eks) | all EKS cluster outputs, just for debugging |
-| <a name="output_aws_iam_instance_profile_managed_ng_name"></a> [aws\_iam\_instance\_profile\_managed\_ng\_name](#output\_aws\_iam\_instance\_profile\_managed\_ng\_name) | AWS IAM instance profile managed node group name |
-| <a name="output_aws_iam_instance_profile_self_managed_ng_name"></a> [aws\_iam\_instance\_profile\_self\_managed\_ng\_name](#output\_aws\_iam\_instance\_profile\_self\_managed\_ng\_name) | AWS IAM instance profile self managed node group name |
-| <a name="output_aws_iam_role_managed_ng_arn"></a> [aws\_iam\_role\_managed\_ng\_arn](#output\_aws\_iam\_role\_managed\_ng\_arn) | AWS IAM role managed node group ARN |
-| <a name="output_aws_iam_role_self_managed_ng_arn"></a> [aws\_iam\_role\_self\_managed\_ng\_arn](#output\_aws\_iam\_role\_self\_managed\_ng\_arn) | AWS IAM role self managed node group ARN |
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | EKS cluster certificate authority data |
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | EKS cluster endpoint |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | The name of the EKS cluster |

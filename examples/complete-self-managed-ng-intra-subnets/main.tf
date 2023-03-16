@@ -104,25 +104,36 @@ module "eks" {
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
   create_aws_auth_configmap = var.create_aws_auth_configmap
 
-  enable_managed_nodegroups = false
+  ###########################################################
+  # Self Managed Node Groups
+
+  self_managed_node_group_defaults = {
+    instance_type                          = "m6i.large"
+    update_launch_template_default_version = true
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    } # enable discovery of autoscaling groups by cluster-autoscaler
+    autoscaling_group_tags = {
+      "k8s.io/cluster-autoscaler/enabled" : true,
+      "k8s.io/cluster-autoscaler/${var.cluster_name}" : "owned"
+    }
+  }
 
   self_managed_node_groups = {
     self_mg1 = {
       node_group_name = "self_mg1"
       subnet_ids      = module.vpc.private_subnets
 
-      min_size     = 1
-      max_size     = 5
+      min_size     = 3
+      max_size     = 10
       desired_size = 3
 
-      # ami_id = "" # defaults to amazon linux 2 eks matching k8s version upstream
-      create_iam_role           = false                                                    # Changing `create_iam_role=false` to bring your own IAM Role
-      iam_role_arn              = module.eks.aws_iam_role_self_managed_ng_arn              # custom IAM role for aws-auth mapping; used when create_iam_role = false
-      iam_instance_profile_name = module.eks.aws_iam_instance_profile_self_managed_ng_name # IAM instance profile name for Launch templates; used when create_iam_role = false
+      # ami_id = "" # defaults to latest amazon linux 2 eks ami matching k8s version in the upstream module
+      # create_iam_role           = true                                                    # Changing `create_iam_role=false` to bring your own IAM Role
+      # iam_role_arn              = module.eks.aws_iam_role_self_managed_ng_arn              # custom IAM role for aws-auth mapping; used when create_iam_role = false
+      # iam_instance_profile_name = module.eks.aws_iam_instance_profile_self_managed_ng_name # IAM instance profile name for Launch templates; used when create_iam_role = false
 
-      format_mount_nvme_disk = true
-      public_ip              = false
-      enable_monitoring      = false
+      # format_mount_nvme_disk = true # not supported in terraform-aws-eks - logic can be added manually to userdata script as input variable
 
       placement = {
         affinity          = null
@@ -139,46 +150,46 @@ module "eks" {
         systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
       EOT
 
+      post_userdata = <<-EOT
+        echo "Bootstrap successfully completed! You can further apply config or install to run after bootstrap if needed"
+      EOT
+
       # bootstrap_extra_args used only when you pass custom_ami_id. Allows you to change the Container Runtime for Nodes
       # e.g., bootstrap_extra_args="--use-max-pods false --container-runtime containerd"
       bootstrap_extra_args = "--use-max-pods false"
 
-      block_device_mappings = [
-        {
-          device_name = "/dev/xvda" # mount point to /
-          volume_type = "gp3"
-          volume_size = 50
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size = 50
+            volume_type = "gp3"
+          }
         },
-        {
-          device_name = "/dev/xvdf" # mount point to /local1 (it could be local2, depending upon the disks are attached during boot)
-          volume_type = "gp3"
-          volume_size = 80
-          iops        = 3000
-          throughput  = 125
+        xvdf = {
+          device_name = "/dev/xvdf"
+          ebs = {
+            volume_size = 80
+            volume_type = "gp3"
+            iops        = 3000
+            throughput  = 125
+          }
         },
-        {
-          device_name = "/dev/xvdg" # mount point to /local2 (it could be local1, depending upon the disks are attached during boot)
-          volume_type = "gp3"
-          volume_size = 100
-          iops        = 3000
-          throughput  = 125
+        xvdg = {
+          device_name = "/dev/xvdg"
+          ebs = {
+            volume_size = 100
+            volume_type = "gp3"
+            iops        = 3000
+            throughput  = 125
+          }
         }
-      ]
-
-      instance_type = "m5.xlarge"
-      desired_size  = 3
-      max_size      = 10
-      min_size      = 3
-      capacity_type = "" # Optional Use this only for SPOT capacity as  capacity_type = "spot"
-
-      k8s_labels = {
-        Environment = "preprod"
-        Zone        = "test"
       }
 
-      additional_tags = {
-        ExtraTag    = "m5x-on-demand"
-        Name        = "m5x-on-demand"
+      instance_type = "m5.xlarge"
+      capacity_type = "" # Optional Use this only for SPOT capacity as  capacity_type = "spot"
+
+      tags = {
         subnet_type = "private"
       }
     }

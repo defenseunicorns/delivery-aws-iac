@@ -11,11 +11,6 @@ module "eks_blueprints_kubernetes_addons" {
   eks_cluster_version      = module.aws_eks.cluster_version
   auto_scaling_group_names = concat(lookup(module.aws_eks.self_managed_node_groups, "autoscaling_group_name", []), lookup(module.aws_eks.eks_managed_node_groups, "node_group_autoscaling_group_names", []))
 
-  # EKS Managed Add-ons
-  # VPC CNI - This needs to be done outside of the blueprints module
-  # enable_amazon_eks_vpc_cni = var.enable_amazon_eks_vpc_cni
-  # amazon_eks_vpc_cni_config = var.amazon_eks_vpc_cni_config
-
   # EKS CoreDNS
   enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
   amazon_eks_coredns_config = var.amazon_eks_coredns_config
