@@ -5,6 +5,9 @@ data "aws_eks_cluster_auth" "this" {
 
 data "aws_eks_cluster" "example" {
   name = module.eks.cluster_name
+  depends_on = [
+    module.eks.cluster_status
+  ]
 }
 
 provider "aws" {

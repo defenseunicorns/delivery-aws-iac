@@ -9,6 +9,11 @@ output "cluster_name" {
   value       = module.aws_eks.cluster_name
 }
 
+output "cluster_status" {
+  description = "status of the EKS cluster"
+  value       = module.aws_eks.cluster_status
+}
+
 output "managed_nodegroups" {
   description = "EKS managed node groups"
   value       = module.aws_eks.eks_managed_node_groups
