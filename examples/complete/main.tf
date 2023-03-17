@@ -223,7 +223,7 @@ locals {
     }
   }
 
-  self_managed_node_groups = var.enable_self_managed_nodegroups == true ? tomap({}) : {
+  self_managed_node_groups = var.enable_self_managed_nodegroups == false ? tomap({}) : {
     self_mg1 = {
       node_group_name = "self_mg1"
       subnet_ids      = module.vpc.private_subnets
