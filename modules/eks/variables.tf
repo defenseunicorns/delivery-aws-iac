@@ -152,6 +152,12 @@ variable "self_managed_node_group_defaults" {
   default     = {}
 }
 
+variable "eks_managed_node_group_defaults" {
+  description = "Map of EKS-managed node group default configurations"
+  type        = any
+  default     = {}
+}
+
 ###########################################################
 ################## EKS Addons Config ######################
 

@@ -371,21 +371,19 @@ module "eks" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v<insert tagged version>"
   source = "../../modules/eks"
 
-  name                                  = local.cluster_name
-  aws_region                            = var.region
-  aws_account                           = local.account
-  vpc_id                                = module.vpc.vpc_id
-  private_subnet_ids                    = module.vpc.private_subnets
-  source_security_group_id              = module.bastion.security_group_ids[0]
-  cluster_endpoint_public_access        = var.cluster_endpoint_public_access
-  cluster_endpoint_private_access       = true
-  cluster_kms_key_additional_admin_arns = local.admin_arns
-  vpc_cni_custom_subnet                 = module.vpc.intra_subnets
-  aws_admin_usernames                   = var.aws_admin_usernames
-  cluster_version                       = var.cluster_version
-  bastion_role_arn                      = module.bastion.bastion_role_arn
-  bastion_role_name                     = module.bastion.bastion_role_name
-  enable_managed_nodegroups             = var.enable_managed_nodegroups
+  name                            = local.cluster_name
+  aws_region                      = var.region
+  aws_account                     = local.account
+  vpc_id                          = module.vpc.vpc_id
+  private_subnet_ids              = module.vpc.private_subnets
+  source_security_group_id        = module.bastion.security_group_ids[0]
+  cluster_endpoint_public_access  = var.cluster_endpoint_public_access
+  cluster_endpoint_private_access = true
+  vpc_cni_custom_subnet           = module.vpc.intra_subnets
+  aws_admin_usernames             = var.aws_admin_usernames
+  cluster_version                 = var.cluster_version
+  bastion_role_arn                = module.bastion.bastion_role_arn
+  bastion_role_name               = module.bastion.bastion_role_name
 
   ######################## EKS Managed Node Group ###################################
   eks_managed_node_group_defaults = {
