@@ -115,21 +115,21 @@ variable "amazon_eks_vpc_cni" {
     enabled - (Optional) Whether to enable the add-on. Defaults to false.
     before_compute - (Optional) Whether to create the add-on before the compute resources. Defaults to true.
     most_recent - (Optional) Whether to use the most recent version of the add-on. Defaults to true.
-    resolve_conflict - (Optional) How to resolve parameter value conflicts between the add-on and the cluster. Defaults to OVERWRITE. Valid values: OVERWRITE, NONE, PRESERVE.
+    resolve_conflicts - (Optional) How to resolve parameter value conflicts between the add-on and the cluster. Defaults to OVERWRITE. Valid values: OVERWRITE, NONE, PRESERVE.
     configuration_values - (Optional) A map of configuration values for the add-on. See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon for supported values.
   EOD
   type = object({
     enabled              = bool
     before_compute       = bool
     most_recent          = bool
-    resolve_conflict     = string
+    resolve_conflicts    = string
     configuration_values = map(any) # hcl format later to be json encoded
   })
   default = {
-    before_compute   = true
-    enabled          = false
-    most_recent      = true
-    resolve_conflict = "OVERWRITE"
+    before_compute    = true
+    enabled           = false
+    most_recent       = true
+    resolve_conflicts = "OVERWRITE"
     configuration_values = {
       # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
       AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"

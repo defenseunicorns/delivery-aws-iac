@@ -52,10 +52,10 @@ kc_db_instance_class        = "db.t4g.large"
 
 #################### EKS Addon #########################
 amazon_eks_vpc_cni = {
-  enable           = true
-  before_compute   = true
-  most_recent      = true
-  resolve_conflict = "OVERWRITE"
+  enable            = true
+  before_compute    = true
+  most_recent       = true
+  resolve_conflicts = "OVERWRITE"
   configuration_values = {
     # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
     AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
