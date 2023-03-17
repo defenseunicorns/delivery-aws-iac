@@ -10,7 +10,7 @@ variable "cluster_version" {
   type        = string
   default     = "1.23"
   validation {
-    condition     = contains(["1.23"], var.eks_k8s_version)
+    condition     = contains(["1.23"], var.cluster_version)
     error_message = "Kubernetes version must be equal to one that we support. Currently supported versions are: 1.23."
   }
 }

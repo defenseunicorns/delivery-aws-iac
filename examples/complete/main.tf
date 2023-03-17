@@ -7,7 +7,7 @@ data "aws_ami" "amazonlinux2eks" {
 
   filter {
     name   = "name"
-    values = ["amazon-eks-node-${var.eks_k8s_version}-*"]
+    values = ["amazon-eks-node-${var.cluster_version}-*"]
   }
 
   owners = ["amazon"]
