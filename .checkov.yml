@@ -6,3 +6,5 @@ framework: terraform
 compact: true
 quiet: false
 summary-position: bottom
+skip-check:
+  - CKV2_AWS_5

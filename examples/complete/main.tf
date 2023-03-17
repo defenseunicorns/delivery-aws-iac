@@ -410,7 +410,7 @@ module "eks" {
     # enable discovery of autoscaling groups by cluster-autoscaler
     autoscaling_group_tags = {
       "k8s.io/cluster-autoscaler/enabled" : true,
-      "k8s.io/cluster-autoscaler/${var.cluster_name}" : "owned"
+      "k8s.io/cluster-autoscaler/${local.cluster_name}" : "owned"
     }
     metadata_options = {
       #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template#metadata-options
@@ -456,4 +456,37 @@ module "eks" {
   # EKS Cluster Autoscaler
   enable_cluster_autoscaler      = var.enable_cluster_autoscaler
   cluster_autoscaler_helm_config = var.cluster_autoscaler_helm_config
+}
+
+module "key_pair" {
+  source  = "terraform-aws-modules/key-pair/aws"
+  version = "~> 2.0"
+
+  key_name_prefix    = local.cluster_name
+  create_private_key = true
+
+  tags = local.tags
+}
+
+resource "aws_security_group" "remote_access" {
+  name_prefix = "${local.cluster_name}-remote-access"
+  description = "Allow remote SSH access"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "SSH access"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  egress {
+    description      = "Allow all outbound traffic"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
 }

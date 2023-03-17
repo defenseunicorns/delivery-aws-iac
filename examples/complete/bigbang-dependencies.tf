@@ -18,7 +18,7 @@ module "flux_sops" {
   kubernetes_service_account = "flux-system-sops-sa"
   kubernetes_namespace       = "flux-system"
   irsa_sops_iam_role_name    = "${module.eks.cluster_name}-flux-system-sa-role"
-  eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn
+  eks_oidc_provider_arn      = module.eks.oidc_provider_arn
   tags                       = local.tags
   role_name                  = module.bastion.bastion_role_name
 }
@@ -37,7 +37,7 @@ module "loki_s3_bucket" {
   kubernetes_service_account = "logging-${local.loki_name_prefix}-sa"
   kubernetes_namespace       = "logging"
   irsa_iam_role_name         = "${module.eks.cluster_name}-logging-loki-sa-role"
-  eks_oidc_provider_arn      = module.eks.eks_oidc_provider_arn
+  eks_oidc_provider_arn      = module.eks.oidc_provider_arn
   tags                       = local.tags
   dynamodb_enabled           = true
 }
