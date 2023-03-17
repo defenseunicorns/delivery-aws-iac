@@ -46,6 +46,11 @@ variable "default_tags" {
 
 ###########################################################
 #################### VPC Config ###########################
+variable "vpc_instance_tenancy" {
+  description = "The tenancy of instances launched into the VPC"
+  type        = string
+  default     = "default"
+}
 
 variable "vpc_cidr" {
   description = "The CIDR block for the VPC"
@@ -70,14 +75,13 @@ variable "create_database_subnet_route_table" {
   default     = true
 }
 
-variable "intra_subnets" {
-  description = "A list of intra subnets"
-  type        = list(string)
-  default     = []
-}
-
 ###########################################################
 #################### EKS Config ###########################
+variable "eks_worker_tenancy" {
+  description = "The tenancy of the EKS worker nodes"
+  type        = string
+  default     = "default"
+}
 
 variable "cluster_name" {
   description = "The name to use for the EKS cluster"
@@ -90,7 +94,7 @@ variable "cluster_version" {
   type        = string
   default     = "1.23"
   validation {
-    condition     = contains(["1.23"], var.eks_k8s_version)
+    condition     = contains(["1.23", "1.24", "1,25"], var.cluster_version)
     error_message = "Kubernetes version must be equal to one that we support. Currently supported versions are: 1.23."
   }
 }
@@ -218,6 +222,11 @@ variable "cluster_autoscaler_helm_config" {
 
 ###########################################################
 ################## Bastion Config #########################
+variable "bastion_tenancy" {
+  description = "The tenancy of the bastion"
+  type        = string
+  default     = "default"
+}
 
 variable "bastion_name" {
   description = "The name to use for the bastion"

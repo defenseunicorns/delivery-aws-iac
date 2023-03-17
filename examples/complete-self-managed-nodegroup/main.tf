@@ -5,17 +5,7 @@ locals {
     Blueprint  = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
     GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
   }
-}
-
-data "aws_ami" "amazonlinux2" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm*x86_64-gp2"]
-  }
-
-  owners = ["amazon"]
+  loki_name_prefix = "${var.cluster_name}-loki"
 }
 
 ###########################################################
@@ -48,6 +38,17 @@ module "vpc" {
 
 ###########################################################
 ##################### Bastion #############################
+data "aws_ami" "amazonlinux2" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm*x86_64-gp2"]
+  }
+
+  owners = ["amazon"]
+}
+
 
 module "bastion" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=v<insert tagged version>"

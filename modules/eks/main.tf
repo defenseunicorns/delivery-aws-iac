@@ -14,7 +14,6 @@ module "aws_eks" {
   # public_subnet_ids  = var.public_subnet_ids
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
-  # control_plane_subnet_ids        = var.control_plane_subnet_ids #uses subnet_ids if not set
 
   self_managed_node_group_defaults = var.self_managed_node_group_defaults
   self_managed_node_groups         = var.self_managed_node_groups
