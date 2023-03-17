@@ -123,7 +123,7 @@ variable "amazon_eks_vpc_cni" {
     configuration_values - (Optional) A map of configuration values for the add-on. See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon for supported values.
   EOD
   type = object({
-    enabled              = bool
+    enable               = bool
     before_compute       = bool
     most_recent          = bool
     resolve_conflicts    = string
@@ -131,7 +131,7 @@ variable "amazon_eks_vpc_cni" {
   })
   default = {
     before_compute    = true
-    enabled           = false
+    enable            = false
     most_recent       = true
     resolve_conflicts = "OVERWRITE"
     configuration_values = {
