@@ -11,16 +11,6 @@ variable "region2" {
   type        = string
 }
 
-variable "account" {
-  description = "The AWS account to deploy into"
-  type        = string
-}
-
-variable "aws_profile" {
-  description = "The AWS profile to use for deployment"
-  type        = string
-}
-
 variable "aws_admin_usernames" {
   description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources"
   type        = list(string)
@@ -34,10 +24,14 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "vpc_name" {
+variable "vpc_name_prefix" {
   description = "The name to use for the VPC"
   type        = string
   default     = "my-vpc"
+  validation {
+    condition     = length(var.vpc_name_prefix) <= 20
+    error_message = "The VPC name prefix cannot be more than 20 characters"
+  }
 }
 
 variable "create_database_subnet_group" {
@@ -55,10 +49,14 @@ variable "create_database_subnet_route_table" {
 ###########################################################
 #################### EKS Config ###########################
 
-variable "cluster_name" {
+variable "cluster_name_prefix" {
   description = "The name to use for the EKS cluster"
   type        = string
   default     = "my-eks"
+  validation {
+    condition     = length(var.cluster_name_prefix) <= 20
+    error_message = "The EKS cluster name prefix cannot be more than 20 characters"
+  }
 }
 
 variable "cluster_version" {
@@ -73,13 +71,22 @@ variable "cluster_endpoint_public_access" {
   default     = false
 }
 
+variable "enable_managed_nodegroups" {
+  description = "Enable managed node groups. If false, self managed node groups will be used."
+  type        = bool
+}
+
 ###########################################################
 ################## Bastion Config #########################
 
-variable "bastion_name" {
+variable "bastion_name_prefix" {
   description = "The name to use for the bastion"
   type        = string
   default     = "my-bastion"
+  validation {
+    condition     = length(var.bastion_name_prefix) <= 20
+    error_message = "The Bastion name prefix cannot be more than 20 characters"
+  }
 }
 
 variable "bastion_instance_type" {
@@ -94,11 +101,6 @@ variable "assign_public_ip" {
   default     = false
 }
 
-variable "bastion_ami_id" {
-  description = "(Optional) The AMI ID to use for the bastion, will query the latest Amazon Linux 2 AMI if not provided"
-  type        = string
-  default     = ""
-}
 variable "bastion_ssh_user" {
   description = "The SSH user to use for the bastion"
   type        = string

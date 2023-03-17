@@ -4,16 +4,80 @@
 # Create S3 bucket for access logs with versioning, encryption, blocked public acess enabled
 resource "aws_s3_bucket" "access_log_bucket" {
   # checkov:skip=CKV_AWS_144: Cross region replication is overkill
-  bucket_prefix = "${var.access_log_bucket_name}-"
+  bucket_prefix = "${var.access_log_bucket_name_prefix}-"
   force_destroy = true
+  tags          = var.tags
+}
+data "aws_iam_policy_document" "cloudwatch-policy" {
 
-  tags = var.tags
+  statement {
+    sid    = "AWSCloudTrailAclCheck"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:GetBucketAcl",
+    ]
+
+    resources = [
+      aws_s3_bucket.access_log_bucket.arn
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+
+      values = [
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/${var.name}-ssh-access",
+      ]
+    }
+  }
+
+  statement {
+    sid    = "AWSCloudTrailWrite"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:PutObject",
+    ]
+
+    resources = [
+      "arn:${data.aws_partition.current.partition}:s3:::${aws_s3_bucket.access_log_bucket.id}/*",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+
+      values = [
+        "bucket-owner-full-control",
+      ]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+
+      values = [
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/${var.name}-ssh-access",
+      ]
+    }
+  }
 }
 
-resource "aws_s3_bucket_acl" "access_log_bucket" {
-  bucket = aws_s3_bucket.access_log_bucket.id
+resource "aws_s3_bucket_policy" "cloudwatch-s3-policy" {
+  bucket = aws_s3_bucket.access_log_bucket.bucket
+  policy = data.aws_iam_policy_document.cloudwatch-policy.json
 
-  acl = "log-delivery-write"
 }
 
 resource "aws_s3_bucket_versioning" "access_log_bucket" {
@@ -76,7 +140,7 @@ resource "aws_s3_bucket_notification" "access_log_bucket_notification" {
 # Create S3 bucket for session logs with versioning, encryption, blocked public acess enabled
 resource "aws_s3_bucket" "session_logs_bucket" {
   # checkov:skip=CKV_AWS_144: Cross region replication overkill
-  bucket_prefix = "${var.bucket_name}-"
+  bucket_prefix = "${var.session_log_bucket_name_prefix}-"
   force_destroy = true
   tags          = var.tags
 

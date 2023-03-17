@@ -32,6 +32,7 @@ data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
   arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+
 resource "aws_iam_role_policy_attachment" "bastion-ssm-amazon-policy-attach" {
   role       = aws_iam_role.bastion_ssm_role.name
   policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
@@ -129,7 +130,7 @@ data "aws_iam_policy_document" "ssm_ec2_access" {
     ]
   }
 }
-
+# Create a custom policy for the bastion and attachment
 resource "aws_iam_policy" "ssm_ec2_access" {
   name   = "ssm-${var.name}-${var.aws_region}"
   path   = "/"
@@ -143,7 +144,7 @@ resource "aws_iam_role_policy_attachment" "bastion-ssm-ec2-access-policy-attach"
 
 # Create custom policy and attachment
 resource "aws_iam_policy" "custom" {
-  count       = local.role_name == "" || var.policy_content == "" ? 0 : 1
+  count       = local.add_custom_policy_to_role ? 1 : 0
   name        = "${local.role_name}-policy"
   path        = "/"
   description = "Custom policy for EC2 instance"
@@ -152,7 +153,7 @@ resource "aws_iam_policy" "custom" {
 }
 
 resource "aws_iam_role_policy_attachment" "custom" {
-  count      = local.role_name == "" || var.policy_content == "" ? 0 : 1
+  count      = local.add_custom_policy_to_role ? 1 : 0
   role       = aws_iam_role.bastion_ssm_role.name
   policy_arn = aws_iam_policy.custom[0].arn
 }
@@ -160,7 +161,7 @@ resource "aws_iam_role_policy_attachment" "custom" {
 # Additional policy attachments if needed
 
 resource "aws_iam_role_policy_attachment" "managed" {
-  count      = local.role_name == "" ? 0 : length(var.policy_arns)
+  count      = length(var.policy_arns)
   role       = aws_iam_role.bastion_ssm_role.name
   policy_arn = var.policy_arns[count.index]
 }
@@ -392,4 +393,58 @@ resource "aws_iam_policy" "terraform_policy" {
     ]
 }
 EOF
+}
+# Create custom policy for KMS
+data "aws_iam_policy_document" "kms_access" {
+  # checkov:skip=CKV_AWS_111: todo reduce perms on key
+  # checkov:skip=CKV_AWS_109: todo be more specific with resources
+  statement {
+    sid = "KMS Key Default"
+    principals {
+      type = "AWS"
+      identifiers = [
+        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root"
+      ]
+    }
+
+    actions = [
+      "kms:*",
+    ]
+
+    resources = ["*"]
+  }
+  statement {
+    sid = "CloudWatchLogsEncryption"
+    principals {
+      type        = "Service"
+      identifiers = ["logs.${var.aws_region}.amazonaws.com"]
+    }
+    actions = [
+      "kms:Encrypt*",
+      "kms:Decrypt*",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:Describe*",
+    ]
+
+    resources = ["*"]
+  }
+  statement {
+    sid = "Cloudtrail KMS permissions"
+    principals {
+      type = "Service"
+      identifiers = [
+        "cloudtrail.amazonaws.com"
+      ]
+    }
+    actions = [
+      "kms:Encrypt*",
+      "kms:Decrypt*",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:Describe*",
+    ]
+    resources = ["*"]
+  }
+
 }
