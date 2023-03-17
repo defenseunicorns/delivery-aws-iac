@@ -17,14 +17,11 @@ locals {
   ]
 
   cluster_addons = {
-    #if enabled, pass in config vars, else null
-    vpc-cni = (
-      var.enable_amazon_eks_vpc_cni ? {
-        before_compute       = var.amazon_eks_vpc_cni_before_compute
-        most_recent          = var.amazon_eks_vpc_cni_most_recent
-        configuration_values = jsonencode({ env = var.amazon_eks_vpc_cni_configuration_values })
-        resolve_conflict     = var.amazon_eks_vpc_cni_resolve_conflict
-      } : null
-    )
+    vpc-cni = lookup(var.amazon_eks_vpc_cni, "enabled", false) ? {
+      before_compute       = lookup(var.amazon_eks_vpc_cni, "before_compute", null)
+      most_recent          = lookup(var.amazon_eks_vpc_cni, "most_recent", null)
+      configuration_values = jsonencode({ env = (lookup(var.amazon_eks_vpc_cni, "configuration_values", null)) })
+      resolve_conflict     = lookup(var.amazon_eks_vpc_cni, "resolve_conflict", null)
+    } : null
   }
 }

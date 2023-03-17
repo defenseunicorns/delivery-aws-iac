@@ -151,42 +151,37 @@ variable "self_managed_node_group_defaults" {
 ###########################################################
 ################## EKS Addons Config ######################
 
-#----------------AWS EKS VPC CNI-------------------------
-variable "enable_amazon_eks_vpc_cni" {
-  description = "HANDLED by EKS module, not blueprints: Enable VPC CNI add-on"
-  type        = bool
-  default     = true
-}
+variable "amazon_eks_vpc_cni" {
+  description = <<-EOD
+    The VPC CNI add-on configuration.
 
-variable "amazon_eks_vpc_cni_before_compute" {
-  description = "HANDLED by EKS module, not blueprints: Deploy VPC CNI add-on before compute nodes"
-  type        = bool
-  default     = true
-}
-
-variable "amazon_eks_vpc_cni_most_recent" {
-  description = "HANDLED by EKS module, not blueprints: Deploy most recent VPC CNI add-on"
-  type        = bool
-  default     = true
-}
-
-variable "amazon_eks_vpc_cni_resolve_conflict" {
-  description = "HANDLED by EKS module, not blueprints: Conflict resolution strategy of VPC CNI add-on deployment via eks module"
-  type        = string
-  default     = "OVERWRITE"
-}
-
-variable "amazon_eks_vpc_cni_configuration_values" {
-  description = "Config of Amazon EKS VPC CNI add-on, HCL format that will be jsonencoded"
-  type        = any
+    enabled - (Optional) Whether to enable the add-on. Defaults to false.
+    before_compute - (Optional) Whether to create the add-on before the compute resources. Defaults to true.
+    most_recent - (Optional) Whether to use the most recent version of the add-on. Defaults to true.
+    resolve_conflict - (Optional) How to resolve parameter value conflicts between the add-on and the cluster. Defaults to OVERWRITE. Valid values: OVERWRITE, NONE, PRESERVE.
+    configuration_values - (Optional) A map of configuration values for the add-on. See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon for supported values.
+  EOD
+  type = object({
+    enabled              = bool
+    before_compute       = bool
+    most_recent          = bool
+    resolve_conflict     = string
+    configuration_values = map(any) # hcl format later to be json encoded
+  })
   default = {
-    # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
-    AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
-    ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone"
+    before_compute   = true
+    enabled          = false
+    most_recent      = true
+    resolve_conflict = "OVERWRITE"
+    configuration_values = {
+      # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
+      AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
+      ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone" # allows vpc-cni to use topology labels to determine which subnet to deploy an ENI in
 
-    # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
-    ENABLE_PREFIX_DELEGATION = "true"
-    WARM_PREFIX_TARGET       = "1"
+      # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
+      ENABLE_PREFIX_DELEGATION = "true"
+      WARM_PREFIX_TARGET       = "1"
+    }
   }
 }
 

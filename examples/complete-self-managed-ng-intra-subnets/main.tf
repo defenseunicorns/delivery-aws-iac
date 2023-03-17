@@ -200,11 +200,7 @@ module "eks" {
   #---------------------------------------------------------------
 
   # VPC CNI
-  enable_amazon_eks_vpc_cni               = var.enable_amazon_eks_vpc_cni
-  amazon_eks_vpc_cni_before_compute       = var.amazon_eks_vpc_cni_before_compute
-  amazon_eks_vpc_cni_most_recent          = var.amazon_eks_vpc_cni_most_recent
-  amazon_eks_vpc_cni_resolve_conflict     = var.amazon_eks_vpc_cni_resolve_conflict
-  amazon_eks_vpc_cni_configuration_values = var.amazon_eks_vpc_cni_configuration_values
+  amazon_eks_vpc_cni = var.amazon_eks_vpc_cni
 
   #---------------------------------------------------------------
   # EKS Blueprints - EKS Add-Ons
