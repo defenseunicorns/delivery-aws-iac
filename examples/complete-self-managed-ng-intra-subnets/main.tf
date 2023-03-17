@@ -108,14 +108,21 @@ module "eks" {
   # Self Managed Node Groups
 
   self_managed_node_group_defaults = {
-    instance_type                          = "m6i.large"
+    instance_type                          = "m5.xlarge"
     update_launch_template_default_version = true
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    } # enable discovery of autoscaling groups by cluster-autoscaler
+    }
+    # enable discovery of autoscaling groups by cluster-autoscaler
     autoscaling_group_tags = {
       "k8s.io/cluster-autoscaler/enabled" : true,
       "k8s.io/cluster-autoscaler/${var.cluster_name}" : "owned"
+    }
+    metadata_options = {
+      #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template#metadata-options
+      http_endpoint               = "enabled"
+      http_put_response_hop_limit = 2
+      http_tokens                 = "optional" # set to "enabled" to enforce IMDSv2, default for upstream terraform-aws-eks module
     }
   }
 
@@ -132,18 +139,11 @@ module "eks" {
       # create_iam_role           = true                                                    # Changing `create_iam_role=false` to bring your own IAM Role
       # iam_role_arn              = module.eks.aws_iam_role_self_managed_ng_arn              # custom IAM role for aws-auth mapping; used when create_iam_role = false
       # iam_instance_profile_name = module.eks.aws_iam_instance_profile_self_managed_ng_name # IAM instance profile name for Launch templates; used when create_iam_role = false
-
-      # format_mount_nvme_disk = true # not supported in terraform-aws-eks - logic can be added manually to userdata script as input variable
-
       placement = {
-        affinity          = null
-        availability_zone = null
-        group_name        = null
-        host_id           = null
-        tenancy           = var.eks_worker_tenancy
+        tenancy = var.eks_worker_tenancy
       }
 
-      enable_metadata_options = false
+      metadata_options = false
 
       pre_bootstrap_userdata = <<-EOT
         yum install -y amazon-ssm-agent
@@ -187,7 +187,7 @@ module "eks" {
       }
 
       instance_type = "m5.xlarge"
-      capacity_type = "" # Optional Use this only for SPOT capacity as  capacity_type = "spot"
+      #capacity_type = "" # Optional Use this only for SPOT capacity as  capacity_type = "spot". Only for eks_managed_node_groups
 
       tags = {
         subnet_type = "private"

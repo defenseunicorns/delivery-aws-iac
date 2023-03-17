@@ -19,22 +19,6 @@ output "managed_nodegroups" {
   value       = module.aws_eks.eks_managed_node_groups
 }
 
-#you'd need to build some logic around extracting these outputs around module.eks_managed_node_groups which passes all outputs from the child module
-# output "eks_managed_nodegroup_ids" {
-#   description = "EKS managed node group ids"
-#   value       = module.aws_eks.node_group_id
-# }
-
-# output "eks_managed_nodegroup_arns" {
-#   description = "EKS managed node group arns"
-#   value       = module.aws_eks.managed_node_group_arn
-# }
-
-# output "eks_managed_nodegroup_role_name" {
-#   description = "EKS managed node group role name"
-#   value       = module.aws_eks.managed_node_group_iam_role_names
-# }
-
 # Region used for Terratest
 output "region" {
   description = "AWS region"
@@ -60,23 +44,3 @@ output "cluster_certificate_authority_data" {
   description = "EKS cluster certificate authority data"
   value       = module.aws_eks.cluster_certificate_authority_data
 }
-
-# output "aws_iam_role_self_managed_ng_arn" {
-#   description = "AWS IAM role self managed node group ARN"
-#   value       = try(aws_iam_role.self_managed_ng[0].arn, null)
-# }
-
-# output "aws_iam_instance_profile_self_managed_ng_name" {
-#   description = "AWS IAM instance profile self managed node group name"
-#   value       = try(aws_iam_instance_profile.self_managed_ng[0].name, null)
-# }
-
-# output "aws_iam_role_managed_ng_arn" {
-#   description = "AWS IAM role managed node group ARN"
-#   value       = try(aws_iam_role.managed_ng[0].arn, null)
-# }
-
-# output "aws_iam_instance_profile_managed_ng_name" {
-#   description = "AWS IAM instance profile managed node group name"
-#   value       = try(aws_iam_instance_profile.managed_ng[0].name, null)
-# }

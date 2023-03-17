@@ -1,4 +1,6 @@
 locals {
+  azs = slice(data.aws_availability_zones.available.names, 0, 3)
+
   # var.cluster_name is for Terratest
   cluster_name = coalesce(var.cluster_name, var.name)
 
@@ -25,6 +27,4 @@ locals {
       } : null
     )
   }
-
-  azs = slice(data.aws_availability_zones.available.names, 0, 3)
 }

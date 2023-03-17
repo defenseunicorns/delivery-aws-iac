@@ -130,11 +130,6 @@ variable "tenancy" {
 # Node Groups
 #-------------------------------
 
-# variable "enable_managed_nodegroups" {
-#   description = "Enable managed node groups. If false, self managed node groups will be used."
-#   type        = bool
-# }
-
 variable "eks_managed_node_groups" {
   description = "Managed node groups configuration"
   type        = any

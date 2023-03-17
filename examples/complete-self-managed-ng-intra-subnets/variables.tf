@@ -102,36 +102,48 @@ variable "cluster_endpoint_public_access" {
 
 #----------------AWS EKS VPC CNI-------------------------
 variable "enable_amazon_eks_vpc_cni" {
-  description = "HANDLED by EKS module, not blueprints: Enable VPC CNI add-on"
+  description = "Enable VPC CNI add-on"
   type        = bool
   default     = true
 }
 
 variable "amazon_eks_vpc_cni_before_compute" {
-  description = "HANDLED by EKS module, not blueprints: Deploy VPC CNI add-on before compute nodes"
+  description = <<-EOD
+    Deploy VPC CNI add-on before compute nodes
+    requires var.enable_amazon_eks_vpc_cni to be true to have any effect.
+  EOD
   type        = bool
   default     = true
 }
 
 variable "amazon_eks_vpc_cni_most_recent" {
-  description = "HANDLED by EKS module, not blueprints: Deploy most recent VPC CNI add-on"
+  description = <<-EOD
+    Deploy most recent VPC CNI add-on.
+    Requires var.enable_amazon_eks_vpc_cni to be true to have any effect.
+  EOD
   type        = bool
   default     = true
 }
 
 variable "amazon_eks_vpc_cni_resolve_conflict" {
-  description = "HANDLED by EKS module, not blueprints: Conflict resolution strategy of VPC CNI add-on deployment via eks module"
+  description = <<-EOD
+    Conflict resolution strategy of VPC CNI add-on deployment via eks module.
+    Requires var.enable_amazon_eks_vpc_cni to be true to have any effect.
+  EOD
   type        = string
   default     = "OVERWRITE"
 }
 
 variable "amazon_eks_vpc_cni_configuration_values" {
-  description = "HANDLED by EKS module, not blueprints: ConfigMap of Amazon EKS VPC CNI add-on"
+  description = <<-EOD
+    ConfigMap of Amazon EKS VPC CNI add-on. Define as HCL, will jsonencode when used.
+    Requires var.enable_amazon_eks_vpc_cni to be true to have any effect.
+  EOD
   type        = any
   default = {
     # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
     AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
-    ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone"
+    ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone" # allows vpc-cni to use topology labels to determine which subnet to deploy an ENI in
 
     # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
     ENABLE_PREFIX_DELEGATION = "true"
