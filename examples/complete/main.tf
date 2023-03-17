@@ -200,7 +200,7 @@ locals {
       metadata_options = {
         http_endpoint               = "enabled"
         http_tokens                 = "required"
-        http_put_response_hop_limit = "2"
+        http_put_response_hop_limit = 2
         instance_metadata_tags      = "disabled"
       }
 
@@ -239,8 +239,6 @@ locals {
       placement = {
         tenancy = var.eks_worker_tenancy
       }
-
-      metadata_options = false
 
       pre_bootstrap_userdata = <<-EOT
         yum install -y amazon-ssm-agent

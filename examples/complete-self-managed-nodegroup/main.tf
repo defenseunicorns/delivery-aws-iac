@@ -144,8 +144,6 @@ module "eks" {
         tenancy = var.eks_worker_tenancy
       }
 
-      metadata_options = false
-
       pre_bootstrap_userdata = <<-EOT
         yum install -y amazon-ssm-agent
         systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent

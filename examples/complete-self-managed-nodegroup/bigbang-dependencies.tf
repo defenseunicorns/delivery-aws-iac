@@ -30,10 +30,9 @@ module "loki_s3_bucket" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/s3-irsa?ref=v<insert tagged version>"
   source = "../../modules/s3-irsa"
 
+  name_prefix                = "${local.loki_name_prefix}-s3"
   region                     = var.region
-  cluster_name               = module.eks.cluster_name
   policy_name_prefix         = "${local.loki_name_prefix}-s3-policy"
-  bucket_prefix              = "${local.loki_name_prefix}-s3"
   kms_key_alias              = local.loki_name_prefix
   kubernetes_service_account = "logging-loki-s3-sa"
   kubernetes_namespace       = "logging"

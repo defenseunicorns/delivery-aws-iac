@@ -66,7 +66,7 @@ kc_db_instance_class        = "db.t4g.large"
 loki_s3_bucket_kms_key_alias = "my-loki-s3"
 
 amazon_eks_vpc_cni = {
-  enabled           = true
+  enable            = true
   before_compute    = true
   most_recent       = true
   resolve_conflicts = "OVERWRITE"

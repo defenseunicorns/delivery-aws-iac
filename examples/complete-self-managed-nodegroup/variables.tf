@@ -112,14 +112,14 @@ variable "cluster_endpoint_public_access" {
 variable "amazon_eks_vpc_cni" {
   description = <<-EOD
     The VPC CNI add-on configuration.
-    enabled - (Optional) Whether to enable the add-on. Defaults to false.
+    enable - (Optional) Whether to enable the add-on. Defaults to false.
     before_compute - (Optional) Whether to create the add-on before the compute resources. Defaults to true.
     most_recent - (Optional) Whether to use the most recent version of the add-on. Defaults to true.
     resolve_conflicts - (Optional) How to resolve parameter value conflicts between the add-on and the cluster. Defaults to OVERWRITE. Valid values: OVERWRITE, NONE, PRESERVE.
     configuration_values - (Optional) A map of configuration values for the add-on. See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon for supported values.
   EOD
   type = object({
-    enabled              = bool
+    enable               = bool
     before_compute       = bool
     most_recent          = bool
     resolve_conflicts    = string
@@ -127,7 +127,7 @@ variable "amazon_eks_vpc_cni" {
   })
   default = {
     before_compute    = true
-    enabled           = false
+    enable            = false
     most_recent       = true
     resolve_conflicts = "OVERWRITE"
     configuration_values = {
@@ -309,24 +309,6 @@ variable "kc_db_allocated_storage" {
 variable "kc_db_max_allocated_storage" {
   description = "The database allocated storage to use for Keycloak"
   type        = number
-}
-
-variable "vpc_instance_tenancy" {
-  description = "The tenancy of instances launched into the VPC"
-  type        = string
-  default     = "default"
-}
-
-variable "bastion_tenancy" {
-  description = "The tenancy of the bastion"
-  type        = string
-  default     = "default"
-}
-
-variable "eks_worker_tenancy" {
-  description = "The tenancy of the EKS worker nodes"
-  type        = string
-  default     = "default"
 }
 
 variable "zarf_version" {
