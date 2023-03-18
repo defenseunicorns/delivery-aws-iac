@@ -60,17 +60,17 @@ data "aws_eks_cluster" "example" {
 
 provider "aws" {
   region = var.region
-  default_tags {
-    tags = var.default_tags
-  }
+  # default_tags {
+  #   tags = var.default_tags
+  # }
 }
 
 provider "aws" {
   alias  = "region2"
   region = var.region2
-  default_tags {
-    tags = var.default_tags
-  }
+  # default_tags {
+  #   tags = var.default_tags
+  # }
 }
 
 provider "kubernetes" {

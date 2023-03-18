@@ -4,11 +4,11 @@
 region              = "us-east-1"     # target AWS region
 region2             = "us-east-2"     # RDS backup target AWS region
 aws_admin_usernames = ["Placeholder"] # list of users to be added to the AWS admin group
-default_tags = {
-  Environment = "dev"
-  Project     = "ci-eks"
-  Owner       = "ci"
-}
+# default_tags = {
+#   Environment = "dev"
+#   Project     = "ci-eks"
+#   Owner       = "ci"
+# }
 manage_aws_auth_configmap = true
 create_aws_auth_configmap = true
 
