@@ -1,7 +1,7 @@
 #####################################################
 ##################### S3 Bucket #####################
 
-# Create S3 bucket for access logs with versioning, encryption, blocked public acess enabled
+# Create S3 bucket for access logs with versioning, encryption, blocked public access enabled
 resource "aws_s3_bucket" "access_log_bucket" {
   # checkov:skip=CKV_AWS_144: Cross region replication is overkill
   bucket_prefix = "${var.access_log_bucket_name_prefix}-"
@@ -99,7 +99,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "access_log_bucket
   }
 }
 
-resource "aws_s3_bucket_logging" "access_logging_bucket" {
+resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
   bucket = aws_s3_bucket.session_logs_bucket.id
 
   target_bucket = aws_s3_bucket.access_log_bucket.id
@@ -169,13 +169,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "session_logs_buck
       sse_algorithm     = "aws:kms"
     }
   }
-}
-
-resource "aws_s3_bucket_logging" "session_logs_bucket" {
-  bucket = aws_s3_bucket.session_logs_bucket.id
-
-  target_bucket = aws_s3_bucket.session_logs_bucket.id
-  target_prefix = "log/"
 }
 
 resource "aws_s3_bucket_public_access_block" "session_logs_bucket" {
