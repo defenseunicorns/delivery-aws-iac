@@ -57,14 +57,15 @@ locals {
   account = data.aws_caller_identity.current.account_id
 
   tags = {
-    Blueprint  = "${replace(basename(path.cwd), "_", "-")}" # tag names based on the directory name
+    Blueprint  = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
     GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
   }
 
-  eks_managed_node_groups = var.enable_eks_managed_nodegroups == false ? tomap({}) : {
+  eks_managed_node_groups = {
     # Managed Node groups with minimum config
     # Default node group - as provided by AWS EKS
     default_node_group = {
+      create = var.enable_eks_managed_nodegroups
       # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
       # so we need to disable it to use the default template provided by the AWS EKS managed node group service
       use_custom_launch_template = false
@@ -80,6 +81,7 @@ locals {
 
     # Default node group - as provided by AWS EKS using Bottlerocket
     bottlerocket_default = {
+      create = var.enable_eks_managed_nodegroups
       # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
       # so we need to disable it to use the default template provided by the AWS EKS managed node group service
       use_custom_launch_template = false
@@ -87,144 +89,11 @@ locals {
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
     }
-
-    # Adds to the AWS provided user data
-    bottlerocket_add = {
-      ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
-
-      # This will get added to what AWS provides
-      bootstrap_extra_args = <<-EOT
-        # extra args added
-        [settings.kernel]
-        lockdown = "integrity"
-      EOT
-    }
-
-    # Custom AMI, using module provided bootstrap data
-    bottlerocket_custom = {
-      # Current bottlerocket AMI
-      ami_id   = data.aws_ami.eks_default_bottlerocket.image_id
-      platform = "bottlerocket"
-
-      # Use module user data template to bootstrap
-      enable_bootstrap_user_data = true
-      # This will get added to the template
-      bootstrap_extra_args = <<-EOT
-        # The admin host container provides SSH access and runs with "superpowers".
-        # It is disabled by default, but can be disabled explicitly.
-        [settings.host-containers.admin]
-        enabled = false
-
-        # The control host container provides out-of-band access via SSM.
-        # It is enabled by default, and can be disabled if you do not expect to use SSM.
-        # This could leave you with no way to access the API and change settings on an existing node!
-        [settings.host-containers.control]
-        enabled = true
-
-        # extra args added
-        [settings.kernel]
-        lockdown = "integrity"
-
-        [settings.kubernetes.node-labels]
-        label1 = "foo"
-        label2 = "bar"
-
-        [settings.kubernetes.node-taints]
-        dedicated = "experimental:PreferNoSchedule"
-        special = "true:NoSchedule"
-      EOT
-    }
-
-    # Complete
-    complete = {
-      name            = "complete-eks-mng"
-      use_name_prefix = true
-
-      subnet_ids = module.vpc.private_subnets
-
-      min_size     = 1
-      max_size     = 7
-      desired_size = 1
-
-      ami_id                     = data.aws_ami.eks_default.image_id
-      enable_bootstrap_user_data = true
-
-      pre_bootstrap_user_data = <<-EOT
-        export FOO=bar
-      EOT
-
-      post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
-      EOT
-
-      capacity_type        = "SPOT"
-      force_update_version = true
-      instance_types       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-      labels = {
-        GithubRepo = "terraform-aws-eks"
-        GithubOrg  = "terraform-aws-modules"
-      }
-
-      taints = [
-        {
-          key    = "dedicated"
-          value  = "gpuGroup"
-          effect = "NO_SCHEDULE"
-        }
-      ]
-
-      update_config = {
-        max_unavailable_percentage = 33 # or set `max_unavailable`
-      }
-
-      description = "EKS managed node group example launch template"
-
-      ebs_optimized           = true
-      disable_api_termination = false
-      enable_monitoring       = true
-
-      block_device_mappings = {
-        xvda = {
-          device_name = "/dev/xvda"
-          ebs = {
-            volume_size           = 75
-            volume_type           = "gp3"
-            iops                  = 3000
-            throughput            = 150
-            delete_on_termination = true
-          }
-        }
-      }
-
-      metadata_options = {
-        http_endpoint               = "enabled"
-        http_tokens                 = "required"
-        http_put_response_hop_limit = 2
-        instance_metadata_tags      = "disabled"
-      }
-
-      create_iam_role          = true
-      iam_role_name            = "eks-managed-node-group-complete-example"
-      iam_role_use_name_prefix = false
-      iam_role_description     = "EKS managed node group complete example role"
-      iam_role_tags = {
-        Purpose = "Protector of the kubelet"
-      }
-      iam_role_additional_policies = {
-        AmazonEC2ContainerRegistryReadOnly = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-        AmazonSSMManagedInstanceCore       = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
-
-      }
-
-      tags = {
-        ExtraTag = "EKS managed node group complete example"
-      }
-    }
   }
 
-  self_managed_node_groups = var.enable_self_managed_nodegroups == false ? tomap({}) : {
+  self_managed_node_groups = {
     self_mg1 = {
+      create          = var.enable_self_managed_nodegroups
       node_group_name = "self_mg1"
       subnet_ids      = module.vpc.private_subnets
 
@@ -383,6 +252,10 @@ module "eks" {
   bastion_role_arn                = module.bastion.bastion_role_arn
   bastion_role_name               = module.bastion.bastion_role_name
 
+  # If not using EKS Managed Node Groups, we need to create the aws-auth configmap, ex: for self-managed node groups only
+  create_aws_auth_configmap = var.enable_eks_managed_nodegroups == false ? true : var.create_aws_auth_configmap
+  manage_aws_auth_configmap = var.manage_aws_auth_configmap
+
   ######################## EKS Managed Node Group ###################################
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
@@ -467,10 +340,10 @@ module "key_pair" {
 }
 
 resource "aws_security_group" "remote_access" {
+  #checkov:skip=CKV2_AWS_5: this is a false positive
   name_prefix = "${local.cluster_name}-remote-access"
   description = "Allow remote SSH access"
   vpc_id      = module.vpc.vpc_id
-
   ingress {
     description = "SSH access"
     from_port   = 22

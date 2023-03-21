@@ -164,8 +164,7 @@ variable "eks_managed_node_group_defaults" {
 variable "amazon_eks_vpc_cni" {
   description = <<-EOD
     The VPC CNI add-on configuration.
-
-    enabled - (Optional) Whether to enable the add-on. Defaults to false.
+    enable - (Optional) Whether to enable the add-on. Defaults to false.
     before_compute - (Optional) Whether to create the add-on before the compute resources. Defaults to true.
     most_recent - (Optional) Whether to use the most recent version of the add-on. Defaults to true.
     resolve_conflicts - (Optional) How to resolve parameter value conflicts between the add-on and the cluster. Defaults to OVERWRITE. Valid values: OVERWRITE, NONE, PRESERVE.

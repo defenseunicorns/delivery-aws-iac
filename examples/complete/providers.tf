@@ -1,4 +1,5 @@
 terraform {
+  required_version = ">= 1.3.0"
   required_providers {
     kubectl = {
       source  = "gavinbunney/kubectl"
@@ -47,10 +48,6 @@ terraform {
   }
 }
 
-data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_name
-}
-
 data "aws_eks_cluster" "example" {
   name = module.eks.cluster_name
   depends_on = [
@@ -92,5 +89,16 @@ provider "helm" {
       args        = ["eks", "get-token", "--cluster-name", local.cluster_name]
       command     = "aws"
     }
+  }
+}
+
+provider "kubectl" {
+  apply_retry_count      = 5
+  host                   = data.aws_eks_cluster.example.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.example.certificate_authority[0].data)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    args        = ["eks", "get-token", "--cluster-name", local.cluster_name]
+    command     = "aws"
   }
 }

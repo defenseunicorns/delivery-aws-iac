@@ -1,9 +1,10 @@
 package test_test
 
 import (
+	"testing"
+
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	teststructure "github.com/gruntwork-io/terratest/modules/test-structure"
-	"testing"
 )
 
 func TestExamplesCompleteInsecure(t *testing.T) {

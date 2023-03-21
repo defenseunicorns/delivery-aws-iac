@@ -25,7 +25,7 @@ locals {
   ))
 
   cluster_addons = {
-    vpc-cni = lookup(var.amazon_eks_vpc_cni, "enabled", false) ? {
+    vpc-cni = lookup(var.amazon_eks_vpc_cni, "enable", null) ? {
       before_compute       = lookup(var.amazon_eks_vpc_cni, "before_compute", null)
       most_recent          = lookup(var.amazon_eks_vpc_cni, "most_recent", null)
       configuration_values = jsonencode({ env = (lookup(var.amazon_eks_vpc_cni, "configuration_values", null)) })

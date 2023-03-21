@@ -74,8 +74,9 @@ module "aws_eks" {
   }
 
   #AWS_AUTH things
-  manage_aws_auth_configmap = var.manage_aws_auth_configmap
+  # If not using EKS Managed Node Groups, we need to create the aws-auth configmap, ex: for self-managed node groups only
   create_aws_auth_configmap = var.create_aws_auth_configmap
+  manage_aws_auth_configmap = var.manage_aws_auth_configmap
 
   kms_key_administrators = distinct(concat(local.admin_arns, var.kms_key_administrators))
   aws_auth_users         = distinct(concat(local.aws_auth_users, var.aws_auth_users))
