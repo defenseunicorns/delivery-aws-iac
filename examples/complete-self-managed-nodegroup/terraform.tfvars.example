@@ -12,7 +12,7 @@ aws_profile         = "du-dev"                   # local AWS profile to be used 
 aws_admin_usernames = ["Bob.Marley", "Jane.Doe"] # list of users to be added to the AWS admin group
 default_tags = {
   Environment = "dev"
-  Project     = "du-navy"
+  Project     = "du-dev"
   Owner       = "my-name"
 }
 manage_aws_auth_configmap = true

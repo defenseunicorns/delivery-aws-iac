@@ -73,8 +73,7 @@ module "aws_eks" {
     }
   }
 
-  # If using EKS Managed Node Groups, the aws-auth ConfigMap is created by eks itself and terraform can not create it
-  create_aws_auth_configmap = length(var.eks_managed_node_groups) > 0 ? false : var.create_aws_auth_configmap
+  create_aws_auth_configmap = local.create_aws_auth_configmap
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
 
   kms_key_administrators = distinct(concat(local.admin_arns, var.kms_key_administrators))

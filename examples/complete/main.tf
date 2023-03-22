@@ -71,12 +71,6 @@ locals {
       use_custom_launch_template = false
 
       disk_size = 50
-
-      # Remote access cannot be specified with a launch template
-      remote_access = {
-        ec2_ssh_key               = module.key_pair.key_pair_name
-        source_security_group_ids = [aws_security_group.remote_access.id]
-      }
     }
 
     # Default node group - as provided by AWS EKS using Bottlerocket
@@ -253,7 +247,6 @@ module "eks" {
   bastion_role_name               = module.bastion.bastion_role_name
 
   # If using EKS Managed Node Groups, the aws-auth ConfigMap is created by eks itself and terraform can not create it
-  create_aws_auth_configmap = var.enable_eks_managed_nodegroups ? false : var.create_aws_auth_configmap
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
 
   ######################## EKS Managed Node Group ###################################
@@ -327,37 +320,4 @@ module "eks" {
   # EKS Cluster Autoscaler
   enable_cluster_autoscaler      = var.enable_cluster_autoscaler
   cluster_autoscaler_helm_config = var.cluster_autoscaler_helm_config
-}
-
-module "key_pair" {
-  source  = "terraform-aws-modules/key-pair/aws"
-  version = "~> 2.0"
-
-  key_name_prefix    = local.cluster_name
-  create_private_key = true
-
-  tags = local.tags
-}
-
-resource "aws_security_group" "remote_access" {
-  #checkov:skip=CKV2_AWS_5: this is a false positive
-  name_prefix = "${local.cluster_name}-remote-access"
-  description = "Allow remote SSH access"
-  vpc_id      = module.vpc.vpc_id
-  ingress {
-    description = "SSH access"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
-  }
-
-  egress {
-    description      = "Allow all outbound traffic"
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
 }

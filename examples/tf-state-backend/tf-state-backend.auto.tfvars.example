@@ -13,6 +13,6 @@
   force_delete = false
   default_tags = {
     Environment = "dev"
-    Project     = "du-navy"
+    Project     = "du-dev"
     Owner       = "my-name"
   }

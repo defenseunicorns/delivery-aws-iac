@@ -10,7 +10,6 @@ aws_admin_usernames = ["Placeholder"] # list of users to be added to the AWS adm
 #   Owner       = "ci"
 # }
 manage_aws_auth_configmap = true
-create_aws_auth_configmap = true
 
 ###########################################################
 #################### VPC Config ###########################

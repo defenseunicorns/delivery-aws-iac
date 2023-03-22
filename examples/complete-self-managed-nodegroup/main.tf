@@ -103,7 +103,6 @@ module "eks" {
 
   #AWS_AUTH
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
-  create_aws_auth_configmap = var.create_aws_auth_configmap
 
   ###########################################################
   # Self Managed Node Groups
@@ -111,6 +110,7 @@ module "eks" {
   self_managed_node_group_defaults = {
     instance_type                          = "m5.xlarge"
     update_launch_template_default_version = true
+    ebs_optimized                          = true
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -161,26 +161,33 @@ module "eks" {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
-            volume_size = 50
-            volume_type = "gp3"
+            encrypted             = true
+            delete_on_termination = true
+            iops                  = 3000
+            volume_size           = 50
+            volume_type           = "gp3"
           }
         },
         xvdf = {
           device_name = "/dev/xvdf"
           ebs = {
-            volume_size = 80
-            volume_type = "gp3"
-            iops        = 3000
-            throughput  = 125
+            encrypted             = true
+            delete_on_termination = true
+            volume_size           = 80
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 125
           }
         },
         xvdg = {
           device_name = "/dev/xvdg"
           ebs = {
-            volume_size = 100
-            volume_type = "gp3"
-            iops        = 3000
-            throughput  = 125
+            encrypted             = true
+            delete_on_termination = true
+            volume_size           = 100
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 125
           }
         }
       }
