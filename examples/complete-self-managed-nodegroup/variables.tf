@@ -304,9 +304,3 @@ variable "zarf_version" {
   type        = string
   default     = ""
 }
-
-variable "loki_s3_bucket_kms_key_alias" {
-  description = "The alias of the KMS key to use for the Loki S3 bucket"
-  type        = string
-  default     = ""
-}
