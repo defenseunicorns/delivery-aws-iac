@@ -1,9 +1,8 @@
 ###########################################################
 ################## Global Settings ########################
 
-region              = "us-east-1"     # target AWS region
-region2             = "us-east-2"     # RDS backup target AWS region
-aws_admin_usernames = ["Placeholder"] # list of users to be added to the AWS admin group
+region  = "us-east-1" # target AWS region
+region2 = "us-east-2" # RDS backup target AWS region
 # default_tags = {
 #   Environment = "dev"
 #   Project     = "ci-eks"
@@ -16,7 +15,6 @@ manage_aws_auth_configmap = true
 
 vpc_cidr        = "10.200.0.0/16"
 vpc_name_prefix = "ex-complete-vpc-"
-# vpc_instance_tenancy                = "dedicated" #does not currently work with EKS
 
 ###########################################################
 ################## Bastion Config #########################

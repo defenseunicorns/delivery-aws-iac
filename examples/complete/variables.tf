@@ -30,12 +30,6 @@ variable "default_tags" {
 
 ###########################################################
 #################### VPC Config ###########################
-variable "vpc_instance_tenancy" {
-  description = "The tenancy of instances launched into the VPC"
-  type        = string
-  default     = "default"
-}
-
 variable "vpc_cidr" {
   description = "The CIDR block for the VPC"
   type        = string

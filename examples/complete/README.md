@@ -137,7 +137,6 @@ Coming soon
 | <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_region2"></a> [region2](#input\_region2) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | The CIDR block for the VPC | `string` | n/a | yes |
-| <a name="input_vpc_instance_tenancy"></a> [vpc\_instance\_tenancy](#input\_vpc\_instance\_tenancy) | The tenancy of instances launched into the VPC | `string` | `"default"` | no |
 | <a name="input_vpc_name_prefix"></a> [vpc\_name\_prefix](#input\_vpc\_name\_prefix) | The name to use for the VPC | `string` | `"my-vpc"` | no |
 | <a name="input_zarf_version"></a> [zarf\_version](#input\_zarf\_version) | The version of Zarf to use | `string` | `""` | no |
 

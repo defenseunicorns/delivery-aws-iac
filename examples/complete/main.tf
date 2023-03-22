@@ -179,7 +179,7 @@ module "vpc" {
   create_database_subnet_group       = true
   create_database_subnet_route_table = true
 
-  instance_tenancy = var.vpc_instance_tenancy # dedicated tenancy globally set in VPC does not currently work with EKS
+  instance_tenancy = "default"
 }
 
 ###########################################################
