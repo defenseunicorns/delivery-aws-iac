@@ -12,7 +12,7 @@ locals {
 }
 
 module "tfstate_backend" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-tfstate-backend.git?ref=main"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-tfstate-backend.git?ref=0.0.2"
 
   region              = var.region
   bucket_prefix       = var.bucket_prefix
