@@ -22,8 +22,9 @@ variable "aws_profile" {
 }
 
 variable "aws_admin_usernames" {
-  description = "A list of one or more AWS usernames with admin access to KMS and EKS resources"
+  description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin"
   type        = list(string)
+  default     = []
 }
 
 variable "manage_aws_auth_configmap" {

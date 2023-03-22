@@ -8,7 +8,10 @@ provider "aws" {
 data "aws_partition" "current" {}
 
 locals {
-  admin_arns = [for admin in var.aws_admin_usernames : "arn:${data.aws_partition.current.partition}:iam::${var.account}:user/${admin}"]
+  admin_arns = distinct(concat(
+    [for admin_user in var.aws_admin_usernames : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:user/${admin_user}"],
+    [data.aws_caller_identity.current.arn]
+  ))
 }
 
 module "tfstate_backend" {

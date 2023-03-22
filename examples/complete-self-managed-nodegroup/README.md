@@ -198,7 +198,7 @@ terraform destroy -auto-approve
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.9 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.59.0 |
 
 ## Modules
 
@@ -230,7 +230,7 @@ terraform destroy -auto-approve
 | <a name="input_amazon_eks_kube_proxy_config"></a> [amazon\_eks\_kube\_proxy\_config](#input\_amazon\_eks\_kube\_proxy\_config) | ConfigMap for Amazon EKS Kube-Proxy add-on | `any` | `{}` | no |
 | <a name="input_amazon_eks_vpc_cni"></a> [amazon\_eks\_vpc\_cni](#input\_amazon\_eks\_vpc\_cni) | The VPC CNI add-on configuration.<br>enable - (Optional) Whether to enable the add-on. Defaults to false.<br>before\_compute - (Optional) Whether to create the add-on before the compute resources. Defaults to true.<br>most\_recent - (Optional) Whether to use the most recent version of the add-on. Defaults to true.<br>resolve\_conflicts - (Optional) How to resolve parameter value conflicts between the add-on and the cluster. Defaults to OVERWRITE. Valid values: OVERWRITE, NONE, PRESERVE.<br>configuration\_values - (Optional) A map of configuration values for the add-on. See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon for supported values. | <pre>object({<br>    enable               = bool<br>    before_compute       = bool<br>    most_recent          = bool<br>    resolve_conflicts    = string<br>    configuration_values = map(any) # hcl format later to be json encoded<br>  })</pre> | <pre>{<br>  "before_compute": true,<br>  "configuration_values": {<br>    "AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG": "true",<br>    "ENABLE_PREFIX_DELEGATION": "true",<br>    "ENI_CONFIG_LABEL_DEF": "topology.kubernetes.io/zone",<br>    "WARM_PREFIX_TARGET": "1"<br>  },<br>  "enable": false,<br>  "most_recent": true,<br>  "resolve_conflicts": "OVERWRITE"<br>}</pre> | no |
 | <a name="input_assign_public_ip"></a> [assign\_public\_ip](#input\_assign\_public\_ip) | Whether to assign a public IP to the bastion | `bool` | `false` | no |
-| <a name="input_aws_admin_usernames"></a> [aws\_admin\_usernames](#input\_aws\_admin\_usernames) | A list of one or more AWS usernames with admin access to KMS and EKS resources | `list(string)` | n/a | yes |
+| <a name="input_aws_admin_usernames"></a> [aws\_admin\_usernames](#input\_aws\_admin\_usernames) | A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin | `list(string)` | `[]` | no |
 | <a name="input_aws_node_termination_handler_helm_config"></a> [aws\_node\_termination\_handler\_helm\_config](#input\_aws\_node\_termination\_handler\_helm\_config) | AWS Node Termination Handler Helm Chart config | `any` | `{}` | no |
 | <a name="input_aws_profile"></a> [aws\_profile](#input\_aws\_profile) | The AWS profile to use for deployment | `string` | n/a | yes |
 | <a name="input_bastion_ami_id"></a> [bastion\_ami\_id](#input\_bastion\_ami\_id) | (Optional) The AMI ID to use for the bastion, will query the latest Amazon Linux 2 AMI if not provided | `string` | `""` | no |
