@@ -2,37 +2,6 @@ data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
-data "aws_ami" "amazonlinux2eks" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-${var.cluster_version}-*"]
-  }
-
-  owners = ["amazon"]
-}
-
-data "aws_ami" "eks_default" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-${var.cluster_version}-v*"]
-  }
-}
-
-data "aws_ami" "eks_default_bottlerocket" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["bottlerocket-aws-k8s-${var.cluster_version}-x86_64-*"]
-  }
-}
-
 resource "random_id" "vpc_name" {
   byte_length = 2
   prefix      = var.vpc_name_prefix
@@ -71,17 +40,6 @@ locals {
       use_custom_launch_template = false
 
       disk_size = 50
-    }
-
-    # Default node group - as provided by AWS EKS using Bottlerocket
-    bottlerocket_default = {
-      create = var.enable_eks_managed_nodegroups
-      # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
-      # so we need to disable it to use the default template provided by the AWS EKS managed node group service
-      use_custom_launch_template = false
-
-      ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
     }
   }
 
