@@ -42,8 +42,6 @@ cluster_name                   = "my-eks"
 cluster_version                = "1.23"
 eks_worker_tenancy             = "dedicated"
 cluster_endpoint_public_access = true
-instance_type                  = "m4.xlarge"
-
 
 ###########################################################
 ############## Big Bang Dependencies ######################
@@ -63,8 +61,6 @@ kc_db_max_allocated_storage = 100
 kc_db_instance_class        = "db.t4g.large"
 
 #################### Other Addon ########################
-loki_s3_bucket_kms_key_alias = "my-loki-s3"
-
 amazon_eks_vpc_cni = {
   enable            = true
   before_compute    = true
