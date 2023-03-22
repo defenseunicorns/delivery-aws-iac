@@ -90,7 +90,6 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 
 | Name | Description |
 |------|-------------|
-| <a name="output_aws_eks"></a> [aws\_eks](#output\_aws\_eks) | all EKS cluster outputs, just for debugging |
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | EKS cluster certificate authority data |
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | EKS cluster endpoint |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | The name of the EKS cluster |

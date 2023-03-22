@@ -2,8 +2,8 @@ data "aws_partition" "current" {}
 
 locals {
   tags = {
-    Blueprint  = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
-    GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
+    RootModule = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
+    GithubRepo = "github.com/defenseunicorns/iac"
   }
   loki_name_prefix = "${var.cluster_name}-loki"
 }

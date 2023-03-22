@@ -1,9 +1,3 @@
-output "aws_eks" {
-  #https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/outputs.tf
-  description = "all EKS cluster outputs, just for debugging"
-  value       = module.aws_eks
-}
-
 output "cluster_name" {
   description = "The name of the EKS cluster"
   value       = module.aws_eks.cluster_name
@@ -38,9 +32,11 @@ output "oidc_provider_arn" {
 output "cluster_endpoint" {
   description = "EKS cluster endpoint"
   value       = module.aws_eks.cluster_endpoint
+  sensitive   = true
 }
 
 output "cluster_certificate_authority_data" {
   description = "EKS cluster certificate authority data"
   value       = module.aws_eks.cluster_certificate_authority_data
+  sensitive   = true
 }

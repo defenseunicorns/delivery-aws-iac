@@ -3,7 +3,6 @@
 #---------------------------------------------------------------
 
 module "aws_eks" {
-  # module "eks_blueprints" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v19.10.0"
 
   cluster_name    = local.cluster_name
