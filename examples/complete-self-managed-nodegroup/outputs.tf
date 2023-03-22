@@ -1,6 +1,6 @@
 output "loki_s3_bucket" {
   description = "Loki S3 Bucket Name"
-  value       = try(module.loki_s3_bucket.s3_bucket, null)
+  value       = module.loki_s3_bucket.s3_bucket
 }
 
 output "keycloak_db_instance_endpoint" {
@@ -27,15 +27,15 @@ output "keycloak_db_instance_port" {
 
 output "bastion_instance_id" {
   description = "The ID of the bastion host"
-  value       = try(module.bastion.instance_id, null)
+  value       = module.bastion.instance_id
 }
 
 output "bastion_private_key" {
   description = "The private key for the bastion host"
-  value       = try(module.bastion.private_key, null)
+  value       = module.bastion.private_key
   sensitive   = true
 }
 output "dynamodb_name" {
   description = "Name of DynmoDB table"
-  value       = try(module.loki_s3_bucket.dynamodb_name, null)
+  value       = module.loki_s3_bucket.dynamodb_name
 }
