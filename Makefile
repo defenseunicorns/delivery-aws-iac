@@ -1,6 +1,6 @@
 # The version of the build harness container to use
 BUILD_HARNESS_REPO := ghcr.io/defenseunicorns/not-a-build-harness/not-a-build-harness
-BUILD_HARNESS_VERSION := 0.0.8
+BUILD_HARNESS_VERSION := 0.0.11
 
 .DEFAULT_GOAL := help
 
@@ -31,15 +31,16 @@ _test-all:
 	mkdir -p .cache/tmp
 	echo "Running automated tests. This will take several minutes. At times it does not log anything to the console. If you interrupt the test run you will need to log into AWS console and manually delete any orphaned infrastructure."
 	docker run $(TTY_ARG) --rm \
+		--cap-add=NET_ADMIN \
+		--cap-add=NET_RAW \
 		-v "${PWD}:/app" \
 		-v "${PWD}/.cache/tmp:/tmp" \
 		-v "${PWD}/.cache/go:/root/go" \
 		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
+		-v "${PWD}/test/.ssh:/root/.ssh" \
 		--workdir "/app/test/e2e" \
 		-e GOPATH=/root/go \
 		-e GOCACHE=/root/.cache/go-build \
-		-e REPO_URL \
-		-e GIT_BRANCH \
 		-e AWS_REGION \
 		-e AWS_DEFAULT_REGION \
 		-e AWS_ACCESS_KEY_ID \
@@ -62,8 +63,7 @@ test-complete-insecure: ## Run one test (TestExamplesCompleteInsecure). Requires
 
 .PHONY: test-complete-secure
 test-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires access to an AWS account. Costs real money.
-	#$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompleteSecure"
-	echo "TestExamplesCompleteSecure is still being worked on. For now feel free to use the complete-self-managed-nodegroup example."
+	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompleteSecure"
 
 .PHONY: docker-save-build-harness
 docker-save-build-harness: ## Pulls the build harness docker image and saves it to a tarball

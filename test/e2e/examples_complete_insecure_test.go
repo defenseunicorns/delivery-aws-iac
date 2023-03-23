@@ -18,18 +18,18 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 			"fixtures.insecure.tfvars",
 		},
 	}
-	defer teardown(t, terraformOptions)
-	setup(t, terraformOptions)
+	defer teardownTestExamplesCompleteInsecure(t, terraformOptions)
+	setupTestExamplesCompleteInsecure(t, terraformOptions)
 }
 
-func setup(t *testing.T, terraformOptions *terraform.Options) {
+func setupTestExamplesCompleteInsecure(t *testing.T, terraformOptions *terraform.Options) {
 	t.Helper()
 	teststructure.RunTestStage(t, "SETUP", func() {
 		terraform.InitAndApply(t, terraformOptions)
 	})
 }
 
-func teardown(t *testing.T, terraformOptions *terraform.Options) {
+func teardownTestExamplesCompleteInsecure(t *testing.T, terraformOptions *terraform.Options) {
 	t.Helper()
 	teststructure.RunTestStage(t, "TEARDOWN", func() {
 		terraform.Destroy(t, terraformOptions)
