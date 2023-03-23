@@ -34,7 +34,13 @@ output "bastion_private_key" {
   value       = module.bastion.private_key
   sensitive   = true
 }
+
 output "dynamodb_name" {
   description = "Name of DynmoDB table"
   value       = module.loki_s3_bucket.dynamodb_name
+}
+
+output "vpc_cidr" {
+  description = "The CIDR block of the VPC"
+  value       = module.vpc.vpc_cidr_block
 }
