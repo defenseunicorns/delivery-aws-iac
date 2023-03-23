@@ -5,12 +5,12 @@ variable "cluster_name" {
   default     = ""
 }
 
-variable "eks_k8s_version" {
-  description = "The Kubernetes version to use for the EKS cluster"
+variable "cluster_version" {
+  description = "Kubernetes version to use for EKS cluster"
   type        = string
   default     = "1.23"
   validation {
-    condition     = contains(["1.23"], var.eks_k8s_version)
+    condition     = contains(["1.23"], var.cluster_version)
     error_message = "Kubernetes version must be equal to one that we support. Currently supported versions are: 1.23."
   }
 }
@@ -48,7 +48,7 @@ variable "name" {
   default = ""
 }
 
-variable "aws_auth_eks_map_users" {
+variable "aws_auth_users" {
   description = "List of map of users to add to aws-auth configmap"
   type = list(object({
     userarn  = string
@@ -58,10 +58,22 @@ variable "aws_auth_eks_map_users" {
   default = []
 }
 
-variable "cluster_kms_key_additional_admin_arns" {
-  description = "List of ARNs of additional users to add to KMS key policy"
+variable "kms_key_administrators" {
+  description = "List of ARNs of additional administrator users to add to KMS key policy"
   type        = list(string)
   default     = []
+}
+
+variable "aws_admin_usernames" {
+  description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin"
+  type        = list(string)
+  default     = []
+}
+
+variable "manage_aws_auth_configmap" {
+  description = "Determines whether to manage the aws-auth configmap"
+  type        = bool
+  default     = false
 }
 
 variable "cluster_endpoint_private_access" {
@@ -78,6 +90,12 @@ variable "cluster_endpoint_public_access" {
 
 variable "control_plane_subnet_ids" {
   description = "Subnet IDs for control plane"
+  type        = list(string)
+  default     = []
+}
+
+variable "vpc_cni_custom_subnet" {
+  description = "Subnet to put pod ENIs in"
   type        = list(string)
   default     = []
 }
@@ -110,12 +128,7 @@ variable "tenancy" {
 # Node Groups
 #-------------------------------
 
-variable "enable_managed_nodegroups" {
-  description = "Enable managed node groups. If false, self managed node groups will be used."
-  type        = bool
-}
-
-variable "managed_node_groups" {
+variable "eks_managed_node_groups" {
   description = "Managed node groups configuration"
   type        = any
   default     = {}
@@ -127,53 +140,146 @@ variable "self_managed_node_groups" {
   default     = {}
 }
 
-#-------------------------------
-# EKS Add-Ons
-#-------------------------------
-variable "enable_eks_vpc_cni" {
-  description = "Enable Amazon EKS VPC CNI"
+variable "self_managed_node_group_defaults" {
+  description = "Map of self-managed node group default configurations"
+  type        = any
+  default     = {}
+}
+
+variable "eks_managed_node_group_defaults" {
+  description = "Map of EKS-managed node group default configurations"
+  type        = any
+  default     = {}
+}
+
+###########################################################
+################## EKS Addons Config ######################
+
+variable "amazon_eks_vpc_cni" {
+  description = <<-EOD
+    The VPC CNI add-on configuration.
+    enable - (Optional) Whether to enable the add-on. Defaults to false.
+    before_compute - (Optional) Whether to create the add-on before the compute resources. Defaults to true.
+    most_recent - (Optional) Whether to use the most recent version of the add-on. Defaults to true.
+    resolve_conflicts - (Optional) How to resolve parameter value conflicts between the add-on and the cluster. Defaults to OVERWRITE. Valid values: OVERWRITE, NONE, PRESERVE.
+    configuration_values - (Optional) A map of configuration values for the add-on. See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon for supported values.
+  EOD
+  type = object({
+    enable               = bool
+    before_compute       = bool
+    most_recent          = bool
+    resolve_conflicts    = string
+    configuration_values = map(any) # hcl format later to be json encoded
+  })
+  default = {
+    before_compute    = true
+    enable            = false
+    most_recent       = true
+    resolve_conflicts = "OVERWRITE"
+    configuration_values = {
+      # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
+      AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
+      ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone" # allows vpc-cni to use topology labels to determine which subnet to deploy an ENI in
+
+      # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
+      ENABLE_PREFIX_DELEGATION = "true"
+      WARM_PREFIX_TARGET       = "1"
+    }
+  }
+}
+
+#----------------AWS CoreDNS-------------------------
+variable "enable_amazon_eks_coredns" {
+  description = "Enable Amazon EKS CoreDNS add-on"
   type        = bool
   default     = false
 }
 
-variable "enable_eks_coredns" {
-  description = "Enable Amazon EKS CoreDNS"
+variable "amazon_eks_coredns_config" {
+  description = "Configuration for Amazon CoreDNS EKS add-on"
+  type        = any
+  default     = {}
+}
+
+#----------------AWS Kube Proxy-------------------------
+variable "enable_amazon_eks_kube_proxy" {
+  description = "Enable Kube Proxy add-on"
   type        = bool
   default     = false
 }
 
-variable "enable_eks_kube_proxy" {
-  description = "Enable Amazon EKS Kube Proxy"
+variable "amazon_eks_kube_proxy_config" {
+  description = "ConfigMap for Amazon EKS Kube-Proxy add-on"
+  type        = any
+  default     = {}
+}
+
+#----------------AWS EBS CSI Driver-------------------------
+variable "enable_amazon_eks_aws_ebs_csi_driver" {
+  description = "Enable EKS Managed AWS EBS CSI Driver add-on; enable_amazon_eks_aws_ebs_csi_driver and enable_self_managed_aws_ebs_csi_driver are mutually exclusive"
   type        = bool
   default     = false
 }
 
-variable "enable_eks_ebs_csi_driver" {
-  description = "Enable Amazon EKS EBS CSI Driver"
+variable "amazon_eks_aws_ebs_csi_driver_config" {
+  description = "configMap for AWS EBS CSI Driver add-on"
+  type        = any
+  default     = {}
+}
+
+#----------------Metrics Server-------------------------
+variable "enable_metrics_server" {
+  description = "Enable metrics server add-on"
   type        = bool
   default     = false
 }
 
-variable "enable_eks_metrics_server" {
-  description = "Enable Amazon EKS Metrics Server"
+variable "metrics_server_helm_config" {
+  description = "Metrics Server Helm Chart config"
+  type        = any
+  default     = {}
+}
+
+#----------------AWS Node Termination Handler-------------------------
+variable "enable_aws_node_termination_handler" {
+  description = "Enable AWS Node Termination Handler add-on"
   type        = bool
   default     = false
 }
 
-variable "enable_eks_node_termination_handler" {
-  description = "Enable Amazon EKS Node Termination Handler"
-  type        = bool
-  default     = false
+variable "aws_node_termination_handler_helm_config" {
+  description = "AWS Node Termination Handler Helm Chart config"
+  type        = any
+  default     = {}
 }
 
-variable "enable_eks_cluster_autoscaler" {
-  description = "Enable Amazon EKS Cluster Autoscaler"
+#----------------Cluster Autoscaler-------------------------
+variable "enable_cluster_autoscaler" {
+  description = "Enable Cluster autoscaler add-on"
   type        = bool
   default     = false
 }
 
 variable "cluster_autoscaler_helm_config" {
-  description = "Helm configuration for Amazon EKS Cluster Autoscaler"
+  description = "Cluster Autoscaler Helm Chart config"
   type        = any
-  default     = {}
+  default = {
+    set = [
+      {
+        name  = "extraArgs.expander"
+        value = "priority"
+      },
+      {
+        name  = "expanderPriorities"
+        value = <<-EOT
+                  100:
+                    - .*-spot-2vcpu-8mem.*
+                  90:
+                    - .*-spot-4vcpu-16mem.*
+                  10:
+                    - .*
+                EOT
+      }
+    ]
+  }
 }

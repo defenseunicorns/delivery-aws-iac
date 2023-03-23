@@ -9,8 +9,9 @@ variable "account" {
 }
 
 variable "aws_admin_usernames" {
-  description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources"
+  description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin"
   type        = list(string)
+  default     = []
 }
 
 variable "bucket_prefix" {
@@ -21,4 +22,15 @@ variable "bucket_prefix" {
 variable "dynamodb_table_name" {
   type    = string
   default = "my-tfstate-backend-lock"
+}
+
+variable "force_destroy" {
+  type    = bool
+  default = false
+}
+
+variable "default_tags" {
+  description = "A map of default tags to apply to all resources"
+  type        = map(string)
+  default     = {}
 }

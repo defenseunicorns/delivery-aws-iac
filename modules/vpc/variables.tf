@@ -43,9 +43,17 @@ variable "create_database_subnet_route_table" {
 }
 
 variable "instance_tenancy" {
-  description = "Tenancy of instances launched into the VPC"
+  description = <<-EOD
+  Tenancy of instances launched into the VPC.
+  Valid values are "default" or "dedicated".
+  EKS does not support dedicated tenancy.
+  EOD
   type        = string
   default     = "default"
+  validation {
+    condition     = contains(["default", "dedicated"], var.instance_tenancy)
+    error_message = "Value must be either default or dedicated."
+  }
 }
 
 variable "public_subnets" {

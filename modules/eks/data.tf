@@ -1,6 +1,8 @@
 data "aws_eks_cluster_auth" "this" {
-  name = module.eks_blueprints.eks_cluster_id
+  name = module.aws_eks.cluster_name
 }
+
+data "aws_caller_identity" "current" {}
 
 data "aws_availability_zones" "available" {
   filter {
@@ -14,7 +16,7 @@ data "aws_ami" "amazonlinux2eks" {
 
   filter {
     name   = "name"
-    values = ["amazon-eks-node-${var.eks_k8s_version}-*"]
+    values = ["amazon-eks-node-${var.cluster_version}-*"]
   }
 
   owners = ["amazon"]

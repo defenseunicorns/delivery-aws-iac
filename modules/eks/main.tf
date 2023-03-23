@@ -2,21 +2,23 @@
 # EKS Blueprints
 #---------------------------------------------------------------
 
-module "eks_blueprints" {
-  source = "git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git?ref=v4.24.0"
+module "aws_eks" {
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v19.10.0"
 
   cluster_name    = local.cluster_name
-  cluster_version = var.eks_k8s_version
+  cluster_version = var.cluster_version
 
-  vpc_id             = var.vpc_id
-  private_subnet_ids = var.private_subnet_ids
+  vpc_id     = var.vpc_id
+  subnet_ids = var.private_subnet_ids
   # public_subnet_ids  = var.public_subnet_ids
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
-  control_plane_subnet_ids        = var.control_plane_subnet_ids
 
-  self_managed_node_groups = var.self_managed_node_groups
-  managed_node_groups      = var.managed_node_groups
+  self_managed_node_group_defaults = var.self_managed_node_group_defaults
+  self_managed_node_groups         = var.self_managed_node_groups
+  eks_managed_node_groups          = var.eks_managed_node_groups
+
+  cluster_addons = local.cluster_addons
 
   #----------------------------------------------------------------------------------------------------------#
   # Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
@@ -28,7 +30,7 @@ module "eks_blueprints" {
     ingress_bastion_to_cluster = {
       # name        = "allow bastion ingress to cluster"
       description              = "Bastion SG to Cluster"
-      security_group_id        = module.eks_blueprints.cluster_security_group_id
+      security_group_id        = module.aws_eks.cluster_security_group_id
       from_port                = 443
       to_port                  = 443
       protocol                 = "tcp"
@@ -70,10 +72,12 @@ module "eks_blueprints" {
     }
   }
 
-  cluster_kms_key_additional_admin_arns = var.cluster_kms_key_additional_admin_arns
+  create_aws_auth_configmap = local.create_aws_auth_configmap
+  manage_aws_auth_configmap = var.manage_aws_auth_configmap
 
-  map_users = var.aws_auth_eks_map_users
-  map_roles = [
+  kms_key_administrators = distinct(concat(local.admin_arns, var.kms_key_administrators))
+  aws_auth_users         = distinct(concat(local.aws_auth_users, var.aws_auth_users))
+  aws_auth_roles = [
     {
       rolearn  = aws_iam_role.auth_eks_role.arn
       username = aws_iam_role.auth_eks_role.name
@@ -97,7 +101,7 @@ resource "aws_iam_role" "auth_eks_role" {
         {
             "Action": "sts:AssumeRole",
             "Principal": {
-               "AWS": ${var.cluster_kms_key_additional_admin_arns == [] ? "[]" : jsonencode(var.cluster_kms_key_additional_admin_arns)}
+              "AWS": ${length(local.admin_arns) == 0 ? "[]" : jsonencode(local.admin_arns)}
             },
             "Effect": "Allow",
             "Sid": ""
@@ -106,80 +110,4 @@ resource "aws_iam_role" "auth_eks_role" {
 }
 EOF
 
-}
-
-#---------------------------------------------------------------
-# Custom IAM role for Self Managed Node Group
-#---------------------------------------------------------------
-
-resource "aws_iam_role" "self_managed_ng" {
-
-  count = var.enable_managed_nodegroups == false ? 1 : 0
-
-  name                  = "${var.name}-self-managed-node-role"
-  description           = "EKS Managed Node group IAM Role"
-  assume_role_policy    = data.aws_iam_policy_document.self_managed_ng_assume_role_policy.json
-  path                  = "/"
-  force_detach_policies = true
-  managed_policy_arns = [
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKS_CNI_Policy",
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  ]
-
-  tags = local.tags
-}
-
-resource "aws_iam_instance_profile" "self_managed_ng" {
-
-  count = var.enable_managed_nodegroups == false ? 1 : 0
-
-  name = "${var.name}-self-managed-node-instance-profile"
-  role = aws_iam_role.self_managed_ng[count.index].name
-  path = "/"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = local.tags
-}
-
-#---------------------------------------------------------------
-# Custom IAM role for Managed Node Group
-#---------------------------------------------------------------
-
-resource "aws_iam_role" "managed_ng" {
-
-  count = var.enable_managed_nodegroups == true ? 1 : 0
-
-  name                  = "${var.name}-managed-node-role"
-  description           = "EKS Managed Node group IAM Role"
-  assume_role_policy    = data.aws_iam_policy_document.managed_ng_assume_role_policy.json
-  path                  = "/"
-  force_detach_policies = true
-  managed_policy_arns = [
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKS_CNI_Policy",
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  ]
-
-  tags = local.tags
-}
-
-resource "aws_iam_instance_profile" "managed_ng" {
-
-  count = var.enable_managed_nodegroups == true ? 1 : 0
-
-  name = "${var.name}-managed-node-instance-profile"
-  role = aws_iam_role.managed_ng[count.index].name
-  path = "/"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = local.tags
 }

@@ -3,25 +3,26 @@ output "loki_s3_bucket" {
   value       = module.loki_s3_bucket.s3_bucket
 }
 
-output "keycloak_db_instance_address" {
-  description = "The address of the RDS instance"
-  value       = module.rds_postgres_keycloak[0].db_instance_address
+output "keycloak_db_instance_endpoint" {
+  description = "The connection endpoint"
+  value       = try(module.rds_postgres_keycloak[0].db_instance_endpoint, null)
+
 }
 
 output "keycloak_db_instance_name" {
   description = "The database name"
-  value       = module.rds_postgres_keycloak[0].db_instance_name
+  value       = try(module.rds_postgres_keycloak[0].db_instance_name, null)
 }
 
 output "keycloak_db_instance_username" {
   description = "The master username for the database"
-  value       = module.rds_postgres_keycloak[0].db_instance_username
+  value       = try(module.rds_postgres_keycloak[0].db_instance_username, null)
   sensitive   = true
 }
 
 output "keycloak_db_instance_port" {
   description = "The database port"
-  value       = module.rds_postgres_keycloak[0].db_instance_port
+  value       = try(module.rds_postgres_keycloak[0].db_instance_port, null)
 }
 
 output "bastion_instance_id" {
