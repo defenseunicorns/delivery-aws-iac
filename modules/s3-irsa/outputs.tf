@@ -9,5 +9,5 @@ output "dynamodb_name" {
 
 output "irsa_role" {
   description = "ARN of the IRSA Role"
-  value = aws_iam_role[0].irsa.arn
+  value = aws_iam_role.irsa[0].arn
 }
