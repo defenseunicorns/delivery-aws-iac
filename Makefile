@@ -37,7 +37,6 @@ _test-all:
 		-v "${PWD}/.cache/tmp:/tmp" \
 		-v "${PWD}/.cache/go:/root/go" \
 		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
-		-v "${PWD}/test/.ssh:/root/.ssh" \
 		--workdir "/app/test/e2e" \
 		-e GOPATH=/root/go \
 		-e GOCACHE=/root/.cache/go-build \

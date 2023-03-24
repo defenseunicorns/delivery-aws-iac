@@ -166,6 +166,7 @@ No modules.
 | <a name="output_private_ip"></a> [private\_ip](#output\_private\_ip) | Private IP |
 | <a name="output_private_key"></a> [private\_key](#output\_private\_key) | n/a |
 | <a name="output_public_ip"></a> [public\_ip](#output\_public\_ip) | Public IP |
+| <a name="output_region"></a> [region](#output\_region) | Region the bastion was deployed to |
 | <a name="output_security_group_ids"></a> [security\_group\_ids](#output\_security\_group\_ids) | Security Group Ids |
 | <a name="output_session_logs_bucket_arn"></a> [session\_logs\_bucket\_arn](#output\_session\_logs\_bucket\_arn) | Session Logs Bucket ARN |
 | <a name="output_session_logs_bucket_name"></a> [session\_logs\_bucket\_name](#output\_session\_logs\_bucket\_name) | Session Logs Bucket Name |

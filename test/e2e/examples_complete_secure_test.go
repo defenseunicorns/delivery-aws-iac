@@ -58,7 +58,8 @@ func setupTestExamplesCompleteSecure(t *testing.T, terraformOptionsNoTargets *te
 		// TODO: Figure out how to parse the input variables to get the bastion password rather than having to hardcode it
 		bastionPassword := "my-password"
 		vpcCidr := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "vpc_cidr")
-		err := applyWithSshuttle(t, bastionInstanceID, bastionPassword, vpcCidr, terraformOptionsNoTargets)
+		bastionRegion := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "bastion_region")
+		err := applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsNoTargets)
 		require.NoError(t, err)
 	})
 }
@@ -71,15 +72,16 @@ func teardownTestExamplesCompleteSecure(t *testing.T, terraformOptionsNoTargets 
 		// TODO: Figure out how to parse the input variables to get the bastion password rather than having to hardcode it
 		bastionPassword := "my-password"
 		vpcCidr := terraform.Output(t, terraformOptionsWithEKSTarget, "vpc_cidr")
-		err := destroyWithSshuttle(t, bastionInstanceID, bastionPassword, vpcCidr, terraformOptionsWithEKSTarget)
+		bastionRegion := terraform.Output(t, terraformOptionsWithEKSTarget, "bastion_region")
+		err := destroyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsWithEKSTarget)
 		assert.NoError(t, err)
 		terraform.Destroy(t, terraformOptionsNoTargets)
 	})
 }
 
-func applyWithSshuttle(t *testing.T, bastionInstanceID string, bastionPassword string, vpcCidr string, terraformOptions *terraform.Options) error {
+func applyWithSshuttle(t *testing.T, bastionInstanceID string, bastionRegion string, bastionPassword string, vpcCidr string, terraformOptions *terraform.Options) error {
 	t.Helper()
-	cmd, err := runSshuttleInBackground(t, bastionInstanceID, bastionPassword, vpcCidr)
+	cmd, err := runSshuttleInBackground(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr)
 	if err != nil {
 		return err
 	}
@@ -92,9 +94,9 @@ func applyWithSshuttle(t *testing.T, bastionInstanceID string, bastionPassword s
 	return nil
 }
 
-func destroyWithSshuttle(t *testing.T, bastionInstanceID string, bastionPassword string, vpcCidr string, terraformOptions *terraform.Options) error {
+func destroyWithSshuttle(t *testing.T, bastionInstanceID string, bastionRegion string, bastionPassword string, vpcCidr string, terraformOptions *terraform.Options) error {
 	t.Helper()
-	cmd, err := runSshuttleInBackground(t, bastionInstanceID, bastionPassword, vpcCidr)
+	cmd, err := runSshuttleInBackground(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr)
 	if err != nil {
 		return err
 	}
@@ -107,9 +109,9 @@ func destroyWithSshuttle(t *testing.T, bastionInstanceID string, bastionPassword
 	return nil
 }
 
-func runSshuttleInBackground(t *testing.T, bastionInstanceID string, bastionPassword string, vpcCidr string) (*exec.Cmd, error) {
+func runSshuttleInBackground(t *testing.T, bastionInstanceID string, bastionRegion string, bastionPassword string, vpcCidr string) (*exec.Cmd, error) {
 	t.Helper()
-	cmd := exec.Command("sshuttle", "-e", fmt.Sprintf(`sshpass -p "%s" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null`, bastionPassword), "--dns", "--disable-ipv6", "-vr", fmt.Sprintf("ec2-user@%s", bastionInstanceID), vpcCidr) //nolint:gosec
+	cmd := exec.Command("sshuttle", "-e", fmt.Sprintf(`sshpass -p "%s" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="aws ssm --region '%s' start-session --target %%h --document-name AWS-StartSSHSession --parameters 'portNumber=%%p'"`, bastionPassword, bastionRegion), "--dns", "--disable-ipv6", "-vr", fmt.Sprintf("ec2-user@%s", bastionInstanceID), vpcCidr) //nolint:gosec
 	if err := cmd.Start(); err != nil {
 		return nil, fmt.Errorf("failed to start sshuttle: %w", err)
 	}

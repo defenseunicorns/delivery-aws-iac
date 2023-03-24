@@ -29,11 +29,17 @@ output "bastion_instance_id" {
   value       = module.bastion.instance_id
 }
 
+output "bastion_region" {
+  description = "The region that the bastion host was deployed to"
+  value       = module.bastion.region
+}
+
 output "bastion_private_key" {
   description = "The private key for the bastion host"
   value       = module.bastion.private_key
   sensitive   = true
 }
+
 output "dynamodb_name" {
   description = "Name of DynmoDB table"
   value       = module.loki_s3_bucket.dynamodb_name
