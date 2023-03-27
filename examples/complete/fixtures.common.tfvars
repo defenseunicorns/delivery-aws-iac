@@ -8,6 +8,7 @@ region2 = "us-east-1" # RDS backup target AWS region
 #   Project     = "ci-eks"
 #   Owner       = "ci"
 # }
+manage_aws_auth_configmap = true
 
 ###########################################################
 #################### VPC Config ###########################
@@ -32,7 +33,8 @@ cluster_version     = "1.23"
 ###########################################################
 ############## Big Bang Dependencies ######################
 
-keycloak_enabled = true
+# TODO: change back to true when I'm done testing, before this PR is merged
+keycloak_enabled = false
 # other_addon_enabled = true
 
 
