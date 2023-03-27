@@ -31,7 +31,6 @@ module "s3_bucket" {
 }
 
 resource "aws_s3_bucket_versioning" "versioning" {
-  count  = var.versioning_enabled ? 1 : 0
   bucket = module.s3_bucket.s3_bucket_id
   versioning_configuration {
     status = "Enabled"
