@@ -1,3 +1,4 @@
+manage_aws_auth_configmap      = true
 enable_eks_managed_nodegroups  = true
 enable_self_managed_nodegroups = true
 bastion_tenancy                = "default"
