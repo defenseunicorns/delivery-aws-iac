@@ -34,6 +34,19 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"module.bastion",
 		},
 	}
+	terraformOptionsWithVpcAndBastionAndEKSTargets := &terraform.Options{
+		TerraformDir: tempFolder,
+		Upgrade:      false,
+		VarFiles: []string{
+			"fixtures.common.tfvars",
+			"fixtures.secure.tfvars",
+		},
+		Targets: []string{
+			"module.vpc",
+			"module.bastion",
+			"module.eks",
+		},
+	}
 	terraformOptionsWithEKSTarget := &terraform.Options{
 		TerraformDir: tempFolder,
 		Upgrade:      false,
@@ -45,37 +58,34 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"module.eks",
 		},
 	}
-	defer teardownTestExamplesCompleteSecure(t, terraformOptionsNoTargets, terraformOptionsWithEKSTarget)
-	setupTestExamplesCompleteSecure(t, terraformOptionsNoTargets, terraformOptionsWithVPCAndBastionTargets)
-}
-
-func setupTestExamplesCompleteSecure(t *testing.T, terraformOptionsNoTargets *terraform.Options, terraformOptionsWithVPCAndBastionTargets *terraform.Options) {
-	t.Helper()
+	defer func() {
+		t.Helper()
+		teststructure.RunTestStage(t, "TEARDOWN", func() {
+			bastionInstanceID := terraform.Output(t, terraformOptionsWithEKSTarget, "bastion_instance_id")
+			//nolint:godox
+			// TODO: Figure out how to parse the input variables to get the bastion password rather than having to hardcode it
+			bastionPassword := "my-password"
+			vpcCidr := terraform.Output(t, terraformOptionsWithEKSTarget, "vpc_cidr")
+			bastionRegion := terraform.Output(t, terraformOptionsWithEKSTarget, "bastion_region")
+			err := destroyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsWithEKSTarget)
+			assert.NoError(t, err)
+			terraform.Destroy(t, terraformOptionsNoTargets)
+		})
+	}()
+	// setupTestExamplesCompleteSecure(t, terraformOptionsNoTargets, terraformOptionsWithVPCAndBastionTargets)
 	teststructure.RunTestStage(t, "SETUP", func() {
-		terraform.InitAndApply(t, terraformOptionsWithVPCAndBastionTargets)
+		terraform.Init(t, terraformOptionsNoTargets)
+		terraform.Apply(t, terraformOptionsWithVPCAndBastionTargets)
 		bastionInstanceID := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "bastion_instance_id")
 		//nolint:godox
 		// TODO: Figure out how to parse the input variables to get the bastion password rather than having to hardcode it
 		bastionPassword := "my-password"
 		vpcCidr := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "vpc_cidr")
 		bastionRegion := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "bastion_region")
-		err := applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsNoTargets)
+		err := applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsWithVpcAndBastionAndEKSTargets)
 		require.NoError(t, err)
-	})
-}
-
-func teardownTestExamplesCompleteSecure(t *testing.T, terraformOptionsNoTargets *terraform.Options, terraformOptionsWithEKSTarget *terraform.Options) {
-	t.Helper()
-	teststructure.RunTestStage(t, "TEARDOWN", func() {
-		bastionInstanceID := terraform.Output(t, terraformOptionsWithEKSTarget, "bastion_instance_id")
-		//nolint:godox
-		// TODO: Figure out how to parse the input variables to get the bastion password rather than having to hardcode it
-		bastionPassword := "my-password"
-		vpcCidr := terraform.Output(t, terraformOptionsWithEKSTarget, "vpc_cidr")
-		bastionRegion := terraform.Output(t, terraformOptionsWithEKSTarget, "bastion_region")
-		err := destroyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsWithEKSTarget)
-		assert.NoError(t, err)
-		terraform.Destroy(t, terraformOptionsNoTargets)
+		err = applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsNoTargets)
+		require.NoError(t, err)
 	})
 }
 
