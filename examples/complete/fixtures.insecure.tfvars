@@ -1,4 +1,4 @@
-enable_eks_managed_nodegroups  = true
+enable_eks_managed_nodegroups  = false
 enable_self_managed_nodegroups = true
 bastion_tenancy                = "default"
 eks_worker_tenancy             = "default"
