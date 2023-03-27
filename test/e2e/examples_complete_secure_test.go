@@ -8,9 +8,22 @@ import (
 	"github.com/stretchr/testify/require"
 	"os/exec"
 	"testing"
+	"time"
 )
 
-// To run this test, we first have to apply with the EKS public endpoint on, then apply again to turn the endpoint off. When destroying we need to do the opposite.
+// This test deploys the complete example in "secure mode". Secure mode is:
+// - Self-managed nodegroups only
+// - Dedicated instance tenancy
+// - EKS public endpoint disabled
+// Sequence of events:
+// 1. Deploy the VPC and Bastion
+// 2. With Sshuttle tunneling to the bastion, deploy the EKS cluster
+// 3. Wait 30 seconds
+// 4. With Sshuttle tunneling to the bastion, deploy the rest of the example
+// 5. With Sshuttle tunneling to the bastion, destroy EKS cluster
+// 6. Destroy the rest of the example
+// Notes:
+// - Steps 2 and 3 wouldn't normally be necessary, but we have an issue with Terraform trying to deploy stuff to the EKS cluster before it is ready. Separating out deployment of the EKS cluster and everything that goes into the EKS cluster gives the cluster a bit more time to be ready to accept deployments to it.
 func TestExamplesCompleteSecure(t *testing.T) {
 	t.Parallel()
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
@@ -32,6 +45,19 @@ func TestExamplesCompleteSecure(t *testing.T) {
 		Targets: []string{
 			"module.vpc",
 			"module.bastion",
+		},
+	}
+	terraformOptionsWithVPCAndBastionAndEKSTargets := &terraform.Options{
+		TerraformDir: tempFolder,
+		Upgrade:      false,
+		VarFiles: []string{
+			"fixtures.common.tfvars",
+			"fixtures.secure.tfvars",
+		},
+		Targets: []string{
+			"module.vpc",
+			"module.bastion",
+			"module.eks",
 		},
 	}
 	terraformOptionsWithEKSTarget := &terraform.Options{
@@ -69,7 +95,10 @@ func TestExamplesCompleteSecure(t *testing.T) {
 		bastionPassword := "my-password"
 		vpcCidr := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "vpc_cidr")
 		bastionRegion := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "bastion_region")
-		err := applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsNoTargets)
+		err := applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsWithVPCAndBastionAndEKSTargets)
+		require.NoError(t, err)
+		time.Sleep(30 * time.Second)
+		err = applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsNoTargets)
 		require.NoError(t, err)
 	})
 }
