@@ -19,6 +19,7 @@ module "s3_bucket" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 
+  tags = var.tags
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -27,6 +28,21 @@ module "s3_bucket" {
       }
     }
   }
+}
+
+resource "aws_s3_bucket_versioning" "versioning" {
+  count  = var.versioning_enabled ? 1 : 0
+  bucket = module.s3_bucket.s3_bucket_id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_logging" "logging" {
+  bucket = module.s3_bucket.s3_bucket_id
+
+  target_bucket = module.s3_bucket.s3_bucket_id
+  target_prefix = "log/"
 }
 
 resource "aws_kms_key" "objects" {
@@ -49,20 +65,6 @@ data "aws_iam_policy_document" "irsa_policy" {
     actions   = ["s3:*Object"]
     resources = ["${module.s3_bucket.s3_bucket_arn}/*"]
   }
-  statement {
-    actions = [
-      "ssm:PutParameter",
-      "ssm:DeleteParameter",
-      "ssm:GetParameterHistory",
-      "ssm:GetParametersByPath",
-      "ssm:GetParameters",
-      "ssm:GetParameter",
-      "ssm:DeleteParameters",
-      "ssm:DescribeParameters"
-    ]
-    resources = ["arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/bigbang-*"]
-  }
-
   statement {
     actions = [
       "kms:GenerateDataKey",
@@ -112,6 +114,32 @@ resource "aws_iam_role_policy_attachment" "irsa" {
 
   policy_arn = aws_iam_policy.irsa_policy.arn
   role       = aws_iam_role.irsa[0].name
+}
+
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  # count  = local.create_bucket_policy ? 1 : 0
+  bucket = module.s3_bucket.s3_bucket_id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:PutObject"
+        ]
+        Effect = "Allow"
+        Principal = {
+          AWS = aws_iam_role.irsa[0].arn
+        }
+        Resource = [
+          module.s3_bucket.s3_bucket_arn,
+          "${module.s3_bucket.s3_bucket_arn}/*"
+        ]
+      }
+    ]
+  })
 }
 
 ################################################################################
