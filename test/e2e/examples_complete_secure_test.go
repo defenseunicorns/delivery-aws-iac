@@ -34,19 +34,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"module.bastion",
 		},
 	}
-	terraformOptionsWithVpcAndBastionAndEKSTargets := &terraform.Options{
-		TerraformDir: tempFolder,
-		Upgrade:      false,
-		VarFiles: []string{
-			"fixtures.common.tfvars",
-			"fixtures.secure.tfvars",
-		},
-		Targets: []string{
-			"module.vpc",
-			"module.bastion",
-			"module.eks",
-		},
-	}
 	terraformOptionsWithEKSTarget := &terraform.Options{
 		TerraformDir: tempFolder,
 		Upgrade:      false,
@@ -82,9 +69,7 @@ func TestExamplesCompleteSecure(t *testing.T) {
 		bastionPassword := "my-password"
 		vpcCidr := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "vpc_cidr")
 		bastionRegion := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "bastion_region")
-		err := applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsWithVpcAndBastionAndEKSTargets)
-		require.NoError(t, err)
-		err = applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsNoTargets)
+		err := applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsNoTargets)
 		require.NoError(t, err)
 	})
 }
