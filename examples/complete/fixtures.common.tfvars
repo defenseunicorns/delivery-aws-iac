@@ -33,8 +33,7 @@ cluster_version     = "1.23"
 ###########################################################
 ############## Big Bang Dependencies ######################
 
-# TODO: change back to true when I'm done testing, before this PR is merged
-keycloak_enabled = false
+keycloak_enabled = true
 # other_addon_enabled = true
 
 
