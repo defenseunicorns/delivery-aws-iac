@@ -38,3 +38,55 @@ module "eks_blueprints_kubernetes_addons" {
   enable_cluster_autoscaler      = var.enable_cluster_autoscaler
   cluster_autoscaler_helm_config = var.cluster_autoscaler_helm_config
 }
+
+####adding efs toggle####
+
+locals {
+
+  name = basename(path.cwd)
+
+  availability_zone_name = slice(data.aws_availability_zones.available.names, 0, 3)
+
+
+
+  # To ensure name is consistent between whats created and the user data script
+
+
+
+}
+
+
+module "efs" {
+  source  = "terraform-aws-modules/efs/aws"
+  version = "~> 1.0"
+
+  count = var.enable_efs ? 1 : 0
+
+  creation_token = local.name
+  name           = "efsname"
+
+  # Mount targets / security group
+  mount_targets = {
+    for k, v in zipmap(local.availability_zone_name, var.private_subnet_ids) : k => { subnet_id = v }
+  }
+
+  security_group_description = "${local.cluster_name} EFS security group"
+  security_group_vpc_id      = var.vpc_id
+  security_group_rules = [
+    {
+      type                     = "ingress"
+      from_port                = 2049
+      to_port                  = 2049
+      protocol                 = "tcp"
+      source_security_group_id = var.source_security_group_id
+    },
+    {
+      type                     = "egress"
+      from_port                = 0
+      to_port                  = 0
+      protocol                 = "-1"
+      source_security_group_id = var.source_security_group_id
+
+    }
+  ]
+}
