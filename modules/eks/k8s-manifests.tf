@@ -16,8 +16,4 @@ spec:
     - ${module.aws_eks.cluster_primary_security_group_id}
     - ${module.aws_eks.node_security_group_id}
 YAML
-
-  depends_on = [
-    module.aws_eks.cluster_addons
-  ]
 }

@@ -153,7 +153,7 @@ variable "eks_managed_node_group_defaults" {
 }
 
 ###########################################################
-################## EKS Addons Config ######################
+################## EKS add-ons Config ######################
 
 variable "amazon_eks_vpc_cni" {
   description = <<-EOD
@@ -162,7 +162,8 @@ variable "amazon_eks_vpc_cni" {
     before_compute - (Optional) Whether to create the add-on before the compute resources. Defaults to true.
     most_recent - (Optional) Whether to use the most recent version of the add-on. Defaults to true.
     resolve_conflicts - (Optional) How to resolve parameter value conflicts between the add-on and the cluster. Defaults to OVERWRITE. Valid values: OVERWRITE, NONE, PRESERVE.
-    configuration_values - (Optional) A map of configuration values for the add-on. See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon for supported values.
+    configuration_values - (Optional) A map of configuration values for the add-on. See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on for supported values.
+    preserve - (Optional) Whether to preserve the add-on's objects when the add-on is deleted. Defaults to true.
   EOD
   type = object({
     enable               = bool
@@ -170,12 +171,14 @@ variable "amazon_eks_vpc_cni" {
     most_recent          = bool
     resolve_conflicts    = string
     configuration_values = map(any) # hcl format later to be json encoded
+    preserve             = bool
   })
   default = {
     before_compute    = true
     enable            = false
     most_recent       = true
     resolve_conflicts = "OVERWRITE"
+    preserve          = true # this resolves a TF race condition when destroying the add-on before the manifests that depend the CRDs that the add-on makes
     configuration_values = {
       # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
       AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
