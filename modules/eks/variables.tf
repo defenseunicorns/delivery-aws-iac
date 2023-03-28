@@ -188,6 +188,13 @@ variable "amazon_eks_vpc_cni" {
   }
 }
 
+variable "enable_efs" {
+  description = "Enable EFS CSI Driver add-on"
+  type        = bool
+  default     = false
+
+}
+
 #----------------AWS CoreDNS-------------------------
 variable "enable_amazon_eks_coredns" {
   description = "Enable Amazon EKS CoreDNS add-on"

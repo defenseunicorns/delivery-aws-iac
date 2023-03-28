@@ -91,6 +91,7 @@ module "aws_eks" {
   ]
 }
 
+
 resource "aws_iam_role" "auth_eks_role" {
   name               = "${var.name}-auth-eks-role"
   description        = "EKS AuthConfig Role"
@@ -110,4 +111,26 @@ resource "aws_iam_role" "auth_eks_role" {
 }
 EOF
 
+}
+
+resource "kubernetes_storage_class_v1" "efs" {
+  count = var.enable_efs ? 1 : 0
+  metadata {
+    name = "efs"
+  }
+
+  storage_provisioner = "efs.csi.aws.com"
+  parameters = {
+    provisioningMode = "efs-ap" # Dynamic provisioning
+    fileSystemId     = module.efs[0].id
+    directoryPerms   = "700"
+  }
+
+  mount_options = [
+    "iam"
+  ]
+
+  depends_on = [
+    module.eks_blueprints_kubernetes_addons
+  ]
 }
