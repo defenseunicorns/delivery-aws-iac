@@ -53,7 +53,7 @@ amazon_eks_vpc_cni = {
   before_compute    = true
   most_recent       = true
   resolve_conflicts = "OVERWRITE"
-  preserve          = true
+  preserve          = false
   configuration_values = {
     # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
     AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
