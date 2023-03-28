@@ -23,14 +23,20 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.9 |
 | <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | >= 1.14 |
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 2.10 |
+<<<<<<< HEAD
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
+=======
+>>>>>>> 406f145 (WIP/base efs configs)
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_aws_eks"></a> [aws\_eks](#module\_aws\_eks) | git::https://github.com/terraform-aws-modules/terraform-aws-eks.git | v19.11.0 |
+<<<<<<< HEAD
 | <a name="module_aws_eks"></a> [aws\_eks](#module\_aws\_eks) | git::https://github.com/terraform-aws-modules/terraform-aws-eks.git | v19.11.0 |
+=======
+>>>>>>> 406f145 (WIP/base efs configs)
 | <a name="module_efs"></a> [efs](#module\_efs) | terraform-aws-modules/efs/aws | ~> 1.0 |
 | <a name="module_eks_blueprints_kubernetes_addons"></a> [eks\_blueprints\_kubernetes\_addons](#module\_eks\_blueprints\_kubernetes\_addons) | git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git//modules/kubernetes-addons | v4.24.0 |
 
@@ -41,7 +47,10 @@ To view examples for how you can leverage this EKS Module, please see the [examp
 | [aws_iam_role.auth_eks_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [kubectl_manifest.eni_config](https://registry.terraform.io/providers/gavinbunney/kubectl/latest/docs/resources/manifest) | resource |
 | [kubernetes_storage_class_v1.efs](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
+<<<<<<< HEAD
 | [random_id.efs_name](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
+=======
+>>>>>>> 406f145 (WIP/base efs configs)
 | [aws_ami.amazonlinux2eks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |

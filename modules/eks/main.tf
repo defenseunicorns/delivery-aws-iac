@@ -59,6 +59,7 @@ module "aws_eks" {
 }
 
 
+
 resource "aws_iam_role" "auth_eks_role" {
   name               = "${var.name}-auth-eks-role"
   description        = "EKS AuthConfig Role"
