@@ -124,6 +124,20 @@ variable "tenancy" {
   default     = "dedicated"
 }
 
+variable "wait_for_cluster_command" {
+  type        = string
+  description = "`local-exec` command to execute to determine if the EKS cluster is healthy. Cluster endpoint URL is available as environment variable `ENDPOINT`"
+  ## --max-time is per attempt, --retry is the number of attempts
+  ## Approx. total time limit is (max-time + retry-delay) * retry seconds
+  default = "if test -n \"$ENDPOINT\"; then curl --silent --fail --retry 90 --retry-delay 10 --retry-connrefused --max-time 11 --insecure --output /dev/null $ENDPOINT/healthz; fi"
+}
+
+variable "local_exec_interpreter" {
+  type        = list(string)
+  description = "shell to use for local_exec"
+  default     = ["/bin/sh", "-c"]
+}
+
 #-------------------------------
 # Node Groups
 #-------------------------------
