@@ -2,16 +2,12 @@
 # VPC-CNI Custom Networking ENIConfig
 #################################################################################
 
-locals {
-  cluster_endpoint_data = join("", module.aws_eks.cluster_endpoint)
-}
-
 resource "null_resource" "wait_for_cluster" {
   provisioner "local-exec" {
     command     = var.wait_for_cluster_command
     interpreter = var.local_exec_interpreter
     environment = {
-      ENDPOINT = local.cluster_endpoint_data
+      ENDPOINT = module.aws_eks.cluster_endpoint
     }
   }
 }
