@@ -34,12 +34,12 @@ module "loki_s3_bucket" {
   region                     = var.region
   policy_name_prefix         = "${local.loki_name_prefix}-s3-policy"
   kms_key_alias              = local.loki_name_prefix
-  kubernetes_service_account = "logging-${local.loki_name_prefix}-sa"
+  kubernetes_service_account = "logging-loki" #Must be logging-loki to match BigBang deployment
   kubernetes_namespace       = "logging"
   irsa_iam_role_name         = "${module.eks.cluster_name}-logging-loki-sa-role"
   eks_oidc_provider_arn      = module.eks.oidc_provider_arn
   tags                       = local.tags
-  dynamodb_enabled           = true
+  dynamodb_enabled           = false
 }
 
 ###########################################################
