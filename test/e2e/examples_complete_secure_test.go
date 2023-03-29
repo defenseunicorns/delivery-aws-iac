@@ -97,7 +97,7 @@ func TestExamplesCompleteSecure(t *testing.T) {
 		bastionRegion := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "bastion_region")
 		err := applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsWithVPCAndBastionAndEKSTargets)
 		require.NoError(t, err)
-		time.Sleep(30 * time.Second)
+		time.Sleep(3 * time.Minute)
 		err = applyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsNoTargets)
 		require.NoError(t, err)
 	})
