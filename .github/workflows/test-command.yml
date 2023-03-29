@@ -147,6 +147,8 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: ${{ github.event.client_payload.pull_request.head.sha || github.sha }}
           aws-region: us-east-1
+          # 21600 seconds == 6 hours
+          role-duration-seconds: 21600
 
       - name: "Run E2E tests"
         env:
