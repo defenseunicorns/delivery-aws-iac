@@ -134,3 +134,41 @@ resource "kubernetes_storage_class_v1" "efs" {
     module.eks_blueprints_kubernetes_addons
   ]
 }
+
+#---------------------------------------------------------------
+# EFS Add-On
+#---------------------------------------------------------------
+module "efs" {
+  source  = "terraform-aws-modules/efs/aws"
+  version = "~> 1.0"
+
+  count = var.enable_efs ? 1 : 0
+
+  creation_token = local.name
+  name           = "efs-${var.name}"
+
+  # Mount targets / security group
+  mount_targets = {
+    for k, v in zipmap(local.availability_zone_name, var.private_subnet_ids) : k => { subnet_id = v }
+  }
+
+  security_group_description = "${local.cluster_name} EFS security group"
+  security_group_vpc_id      = var.vpc_id
+  security_group_rules = [
+    {
+      type        = "ingress"
+      from_port   = 2049
+      to_port     = 2049
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      type        = "egress"
+      from_port   = 2049
+      to_port     = 2049
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+
+    }
+  ]
+}

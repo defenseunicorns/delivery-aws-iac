@@ -102,12 +102,6 @@ variable "enable_self_managed_nodegroups" {
   type        = bool
 }
 
-variable "enable_efs" {
-  description = "Enable EFS"
-  type        = bool
-  default     = false
-
-}
 ###########################################################
 ################## EKS Addons Config ######################
 
@@ -221,6 +215,14 @@ variable "cluster_autoscaler_helm_config" {
   description = "Cluster Autoscaler Helm Chart config"
   type        = any
   default     = {}
+}
+
+#----------------Cluster Autoscaler-------------------------
+variable "enable_efs" {
+  description = "Enable EFS"
+  type        = bool
+  default     = false
+
 }
 
 ###########################################################
