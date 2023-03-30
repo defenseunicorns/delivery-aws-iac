@@ -3,7 +3,7 @@
 #---------------------------------------------------------------
 
 module "aws_eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=48ced6b0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v19.11.0"
 
   cluster_name    = local.cluster_name
   cluster_version = var.cluster_version
@@ -19,9 +19,6 @@ module "aws_eks" {
   eks_managed_node_groups          = var.eks_managed_node_groups
 
   cluster_addons = local.cluster_addons
-
-  wait_for_cluster_command = var.wait_for_cluster_command
-  local_exec_interpreter   = var.local_exec_interpreter
 
   #----------------------------------------------------------------------------------------------------------#
   # Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).

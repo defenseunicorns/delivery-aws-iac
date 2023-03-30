@@ -89,8 +89,8 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	teststructure.RunTestStage(t, "SETUP", func() {
 		terraform.Init(t, terraformOptionsNoTargets)
 		terraform.Apply(t, terraformOptionsWithVPCAndBastionTargets)
-		// Give the bastion a couple minutes to be ready to accept an sshuttle connection
-		time.Sleep(3 * time.Minute)
+		// Give the bastion a couple of minutes to be ready to accept a sshuttle connection
+		time.Sleep(6 * time.Minute)
 		bastionInstanceID := terraform.Output(t, terraformOptionsWithVPCAndBastionTargets, "bastion_instance_id")
 		//nolint:godox
 		// TODO: Figure out how to parse the input variables to get the bastion password rather than having to hardcode it
