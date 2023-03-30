@@ -248,8 +248,7 @@ module "eks" {
   #"native" EKS Add-Ons
   #---------------------------------------------------------------
 
-  # VPC CNI
-  amazon_eks_vpc_cni = var.amazon_eks_vpc_cni
+  cluster_addons = var.cluster_addons
 
   #---------------------------------------------------------------
   # EKS Blueprints - EKS Add-Ons
@@ -278,4 +277,8 @@ module "eks" {
   # EKS Cluster Autoscaler
   enable_cluster_autoscaler      = var.enable_cluster_autoscaler
   cluster_autoscaler_helm_config = var.cluster_autoscaler_helm_config
+
+  #Calico
+  enable_calico      = var.enable_calico
+  calico_helm_config = var.calico_helm_config
 }

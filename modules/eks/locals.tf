@@ -34,13 +34,14 @@ locals {
     )
   )
 
+  # local.cluster_addons value takes a list of addon configuration objects as input and returns a map of addon configuration objects
+  # configuration_values can either be json or hcl format. Will always be passed into the eks_aws module as json
   cluster_addons = {
-    vpc-cni = lookup(var.amazon_eks_vpc_cni, "enable", null) ? {
-      before_compute       = lookup(var.amazon_eks_vpc_cni, "before_compute", null)
-      most_recent          = lookup(var.amazon_eks_vpc_cni, "most_recent", null)
-      configuration_values = jsonencode({ env = (lookup(var.amazon_eks_vpc_cni, "configuration_values", null)) })
-      resolve_conflicts    = lookup(var.amazon_eks_vpc_cni, "resolve_conflicts", null)
-      preserve             = lookup(var.amazon_eks_vpc_cni, "preserve", null)
-    } : null
+    for addon in var.cluster_addons : addon.name => merge(
+      { for key, value in addon : key => value if key != "name" && key != "enable" && key != "configuration_values" },
+      lookup(addon, "configuration_values", null) != null ? {
+        configuration_values = jsonencode(try(jsondecode(addon.configuration_values), addon.configuration_values))
+      } : {}
+    ) if lookup(addon, "enable", false)
   }
 }

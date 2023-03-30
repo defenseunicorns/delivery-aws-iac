@@ -11,6 +11,10 @@ module "eks_blueprints_kubernetes_addons" {
   eks_cluster_version      = module.aws_eks.cluster_version
   auto_scaling_group_names = concat(lookup(module.aws_eks.self_managed_node_groups, "autoscaling_group_name", []), lookup(module.aws_eks.eks_managed_node_groups, "node_group_autoscaling_group_names", []))
 
+  # these are blueprints addons, if you install available "EKS Native" addons instead of through helm, look at adding logic to the local.cluster_addons variable that feeds into the eks module
+  # to check available "EKS Native" addons matching a specifc k8s cluster version you can run the below aws cli command:
+  # aws eks describe-addon-versions --kubernetes-version $cluster_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
+
   # EKS CoreDNS
   enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
   amazon_eks_coredns_config = var.amazon_eks_coredns_config
@@ -23,8 +27,6 @@ module "eks_blueprints_kubernetes_addons" {
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   amazon_eks_aws_ebs_csi_driver_config = var.amazon_eks_aws_ebs_csi_driver_config
 
-
-  # K8s Add-ons
   # EKS Metrics Server
   enable_metrics_server      = var.enable_metrics_server
   metrics_server_helm_config = var.metrics_server_helm_config
@@ -36,4 +38,8 @@ module "eks_blueprints_kubernetes_addons" {
   # EKS Cluster Autoscaler
   enable_cluster_autoscaler      = var.enable_cluster_autoscaler
   cluster_autoscaler_helm_config = var.cluster_autoscaler_helm_config
+
+  # Calico
+  enable_calico      = var.enable_calico
+  calico_helm_config = var.calico_helm_config
 }
