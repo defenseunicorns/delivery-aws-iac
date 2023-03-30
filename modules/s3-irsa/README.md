@@ -69,5 +69,6 @@ To view examples for how you can leverage this S3-IRSA Module, please see the [e
 | Name | Description |
 |------|-------------|
 | <a name="output_dynamodb_name"></a> [dynamodb\_name](#output\_dynamodb\_name) | Name of DynmoDB table |
+| <a name="output_irsa_role"></a> [irsa\_role](#output\_irsa\_role) | ARN of the IRSA Role |
 | <a name="output_s3_bucket"></a> [s3\_bucket](#output\_s3\_bucket) | S3 Bucket Name |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
