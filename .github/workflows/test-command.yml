@@ -45,7 +45,7 @@ jobs:
           printf "Event name is %s\n" "$EVENT_NAME"
           printf "Args are %s\n" "$ARGS"
           printf "\n\nslash_command is %s\n\n" "$DEBUG"
-          COMMANDS=(PING E2E)
+          COMMANDS=(PING E2E) #all options here
           if printf "%s" "${ARGS^^}" | grep -qE '\bALL\b'; then
             # "all" explicitly does not include "ping"
             for cmd in "${COMMANDS[@]}"; do
@@ -60,7 +60,7 @@ jobs:
             done
           fi
           for out in "${COMMANDS[@]}"; do
-            printf "::set-output name=%s::%s\n" "${out,,}" "${!out:-false}"
+            printf "%s=%s\n" "${out,,}" "${!out:-false}" >> $GITHUB_OUTPUT
             printf "%s=%s\n" "${out,,}" "${!out:-false}"
           done
 
@@ -140,6 +140,17 @@ jobs:
       - name: Load build harness
         run: |
           make docker-load-build-harness
+
+      - name: Get Terraform version from .tool-versions
+        id: get_tf_version
+        run: echo "tf_version=$(grep 'terraform ' .tool-versions)" >> $GITHUB_OUTPUT
+
+      - name: Init Terraform Cache
+        uses: actions/cache@v3
+        with:
+          path: "${{ github.workspace }}/.cache/.terraform.d/plugin-cache"
+          key: "${{ runner.os }}-terraform-plugins|${{ steps.get_tf_version.outputs.tf_version }}|${{ hashFiles('examples/complete/providers.tf') }}"
+          restore-keys: ${{ runner.os }}-terraform-plugins
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
