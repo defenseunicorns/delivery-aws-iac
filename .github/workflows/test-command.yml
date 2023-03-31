@@ -49,7 +49,7 @@ jobs:
           if printf "%s" "${ARGS^^}" | grep -qE '\bALL\b'; then
             # "all" explicitly does not include "ping"
             for cmd in "${COMMANDS[@]}"; do
-              [[ $cmd == "PING" ]] && ! { printf "%s" "${ARGS^^}" | grep -qE '\bPING\b'; } && ! { printf "%s" "${ARGS^^}" } && continue
+              [[ $cmd == "PING" ]] && ! { printf "%s" "${ARGS^^}" | grep -qE '\bPING\b'; } && continue
               printf -v "$cmd" "true"
             done
           else
