@@ -76,6 +76,7 @@ variable "cluster_name_prefix" {
   }
 }
 
+
 variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
@@ -226,7 +227,7 @@ variable "cluster_autoscaler_helm_config" {
   default     = {}
 }
 
-#----------------Cluster Autoscaler-------------------------
+#----------------Enable_EFS_CSI-------------------------
 variable "enable_efs" {
   description = "Enable EFS"
   type        = bool

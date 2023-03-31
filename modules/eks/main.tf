@@ -79,11 +79,19 @@ resource "aws_iam_role" "auth_eks_role" {
 EOF
 
 }
+#---------------------------------------------------------------
+# EFS Configurations
+#---------------------------------------------------------------
+
+resource "random_id" "efs_name" {
+  byte_length = 2
+  prefix      = "EFS-"
+}
 
 resource "kubernetes_storage_class_v1" "efs" {
   count = var.enable_efs ? 1 : 0
   metadata {
-    name = "efs"
+    name = lower(random_id.efs_name.hex)
   }
 
   storage_provisioner = "efs.csi.aws.com"
@@ -102,9 +110,6 @@ resource "kubernetes_storage_class_v1" "efs" {
   ]
 }
 
-#---------------------------------------------------------------
-# EFS Add-On
-#---------------------------------------------------------------
 module "efs" {
   source  = "terraform-aws-modules/efs/aws"
   version = "~> 1.0"
@@ -112,8 +117,7 @@ module "efs" {
   count = var.enable_efs ? 1 : 0
 
   creation_token = local.name
-  name           = "efs-${var.name}"
-
+  name           = lower(random_id.efs_name.hex)
   # Mount targets / security group
   mount_targets = {
     for k, v in zipmap(local.availability_zone_name, var.private_subnet_ids) : k => { subnet_id = v }

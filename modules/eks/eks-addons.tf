@@ -10,7 +10,6 @@ module "eks_blueprints_kubernetes_addons" {
   eks_oidc_provider        = module.aws_eks.oidc_provider
   eks_cluster_version      = module.aws_eks.cluster_version
   auto_scaling_group_names = concat(lookup(module.aws_eks.self_managed_node_groups, "autoscaling_group_name", []), lookup(module.aws_eks.eks_managed_node_groups, "node_group_autoscaling_group_names", []))
-
   # EKS CoreDNS
   enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
   amazon_eks_coredns_config = var.amazon_eks_coredns_config
@@ -28,7 +27,6 @@ module "eks_blueprints_kubernetes_addons" {
   # EKS Metrics Server
   enable_metrics_server      = var.enable_metrics_server
   metrics_server_helm_config = var.metrics_server_helm_config
-  enable_aws_efs_csi_driver  = true
 
   # EKS AWS node termination handler
   enable_aws_node_termination_handler      = var.enable_aws_node_termination_handler

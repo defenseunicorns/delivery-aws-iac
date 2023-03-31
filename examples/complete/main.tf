@@ -6,7 +6,6 @@ resource "random_id" "vpc_name" {
   byte_length = 2
   prefix      = var.vpc_name_prefix
 }
-
 resource "random_id" "cluster_name" {
   byte_length = 2
   prefix      = var.cluster_name_prefix
