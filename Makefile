@@ -29,15 +29,19 @@ _test-all:
 	mkdir -p .cache/go
 	mkdir -p .cache/go-build
 	mkdir -p .cache/tmp
+	mkdir -p .cache/.terraform.d/plugin-cache
 	echo "Running automated tests. This will take several minutes. At times it does not log anything to the console. If you interrupt the test run you will need to log into AWS console and manually delete any orphaned infrastructure."
 	docker run $(TTY_ARG) --rm \
 		-v "${PWD}:/app" \
 		-v "${PWD}/.cache/tmp:/tmp" \
 		-v "${PWD}/.cache/go:/root/go" \
 		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
+		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
 		--workdir "/app/test/e2e" \
 		-e GOPATH=/root/go \
 		-e GOCACHE=/root/.cache/go-build \
+		-e TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE=true \
+		-e TF_PLUGIN_CACHE_DIR=/root/.terraform.d/plugin-cache \
 		-e REPO_URL \
 		-e GIT_BRANCH \
 		-e AWS_REGION \
