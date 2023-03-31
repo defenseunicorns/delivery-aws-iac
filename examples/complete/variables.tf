@@ -103,12 +103,6 @@ variable "enable_self_managed_nodegroups" {
   type        = bool
 }
 
-variable "enable_efs" {
-  description = "Enable EFS"
-  type        = bool
-  default     = false
-
-}
 ###########################################################
 ################## EKS Addons Config ######################
 
