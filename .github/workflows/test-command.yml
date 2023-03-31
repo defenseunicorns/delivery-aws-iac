@@ -7,7 +7,7 @@ on:
     types: [test-command]
   push:
     branches:
-      - main
+      - feature/pipeline-terraform-plugin-cache
 
 permissions:
   id-token: write
@@ -222,8 +222,6 @@ jobs:
   #Run debug tests
   debug:
     runs-on: ubuntu-latest
-    needs: parse
-    if: needs.parse.outputs.run-debug == 'true'
     steps:
       # Update GitHub status for pending pipeline run
       - name: "Update GitHub Status for pending"
