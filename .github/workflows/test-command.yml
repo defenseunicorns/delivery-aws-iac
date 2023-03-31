@@ -151,7 +151,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: "${{ github.workspace }}/.cache/terraform"
-          key: "${{ runner.os }}-terraform-plugins|${{ steps.get_tf_version.outputs.tf_version }}|${{ hashFiles('**/versions.tf') }}"
+          key: "${{ runner.os }}-terraform-plugins|${{ steps.get_tf_version.outputs.tf_version }}|${{ hashFiles('examples/complete/providers.tf') }}"
           restore-keys: ${{ runner.os }}-terraform-plugins
 
       - name: Configure AWS Credentials
