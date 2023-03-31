@@ -143,9 +143,7 @@ jobs:
 
       - name: Get Terraform version from .tool-versions
         id: get_tf_version
-        run: |
-          tf_version_line=$(grep 'terraform ' .tool-versions)
-          echo "tf_version=$tf_version_line" >> $GITHUB_OUTPUT
+        run: echo "tf_version=$(grep 'terraform ' .tool-versions)" >> $GITHUB_OUTPUT
 
       - name: Init Terraform Cache
         uses: actions/cache@v3
