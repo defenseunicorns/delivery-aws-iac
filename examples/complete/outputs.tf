@@ -40,6 +40,12 @@ output "bastion_private_key" {
   sensitive   = true
 }
 
+output "bastion_private_dns" {
+  description = "The private DNS address of the bastion host"
+  value       = module.bastion.private_dns
+  sensitive   = true
+}
+
 output "dynamodb_name" {
   description = "Name of DynmoDB table"
   value       = module.loki_s3_bucket.dynamodb_name

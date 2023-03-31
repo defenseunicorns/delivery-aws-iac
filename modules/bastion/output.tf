@@ -8,6 +8,11 @@ output "private_ip" {
   description = "Private IP"
 }
 
+output "private_dns" {
+  value       = aws_instance.application.private_dns
+  description = "Private DNS"
+}
+
 output "public_ip" {
   value       = aws_instance.application.public_ip
   description = "Public IP"

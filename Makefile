@@ -41,6 +41,8 @@ _test-all: _create-folders
 		-v "${PWD}/.cache/go:/root/go" \
 		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
 		--workdir "/app/test/e2e" \
+		-e TF_LOG_PATH \
+		-e TF_LOG \
 		-e GOPATH=/root/go \
 		-e GOCACHE=/root/.cache/go-build \
 		-e AWS_REGION \
