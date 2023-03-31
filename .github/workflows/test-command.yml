@@ -46,11 +46,11 @@ jobs:
           printf "Event name is %s\n" "$EVENT_NAME"
           printf "Args are %s\n" "$ARGS"
           printf "\n\nslash_command is %s\n\n" "$DEBUG"
-          COMMANDS=(PING E2E)
+          COMMANDS=(PING E2E DEBUG) #all options here
           if printf "%s" "${ARGS^^}" | grep -qE '\bALL\b'; then
             # "all" explicitly does not include "ping" and "debug"
             for cmd in "${COMMANDS[@]}"; do
-              [[ $cmd == "PING" || $cmd == "DEBUG" ]] && ! { printf "%s" "${ARGS^^}" | grep -qE '\bPING\b'; } && continue
+              [[ $cmd == "PING" || $cmd == "DEBUG" ]] && ! { printf "%s" "${ARGS^^}" | grep -qE '\bPING\b'; } && ! { printf "%s" "${ARGS^^}" | grep -qE '\bDEBUG\b'; } && continue
               printf -v "$cmd" "true"
             done
           else
