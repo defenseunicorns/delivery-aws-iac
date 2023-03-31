@@ -266,3 +266,4 @@ jobs:
         id: debug_sanity_check
         run: |
           ls -lahrt ${{ github.workspace }}/.cache/terraform
+          echo "tf version string: ${{ steps.get_tf_version.outputs.tf_version }}"
