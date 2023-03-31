@@ -7,7 +7,7 @@ on:
     types: [test-command]
   push:
     branches:
-      - feature/pipeline-terraform-plugin-cache
+      - main
 
 permissions:
   id-token: write
@@ -19,7 +19,7 @@ defaults:
     shell: bash -e -o pipefail {0}
 
 jobs:
-  # Parse the command so we can decide which tests to run. Examples: "/test all", "/test validate", "/test e2e, /test debug"
+  # Parse the command so we can decide which tests to run. Examples: "/test all", "/test validate", "/test e2e"
   # We can do as many of these as we want to get as granular as we want.
   parse:
     runs-on: ubuntu-latest
@@ -27,7 +27,6 @@ jobs:
       run-ping: ${{ steps.parse.outputs.ping }}
       run-build: ${{ steps.parse.outputs.build }}
       run-e2e: ${{ steps.parse.outputs.e2e }}
-      run-debug: ${{ steps.parse.outputs.debug }}
     steps:
       - name: Parse Args
         id: parse
@@ -46,11 +45,11 @@ jobs:
           printf "Event name is %s\n" "$EVENT_NAME"
           printf "Args are %s\n" "$ARGS"
           printf "\n\nslash_command is %s\n\n" "$DEBUG"
-          COMMANDS=(PING E2E DEBUG) #all options here
+          COMMANDS=(PING E2E) #all options here
           if printf "%s" "${ARGS^^}" | grep -qE '\bALL\b'; then
-            # "all" explicitly does not include "ping" and "debug"
+            # "all" explicitly does not include "ping"
             for cmd in "${COMMANDS[@]}"; do
-              [[ $cmd == "PING" || $cmd == "DEBUG" ]] && ! { printf "%s" "${ARGS^^}" | grep -qE '\bPING\b'; } && ! { printf "%s" "${ARGS^^}" | grep -qE '\bDEBUG\b'; } && continue
+              [[ $cmd == "PING" ]] && ! { printf "%s" "${ARGS^^}" | grep -qE '\bPING\b'; } && ! { printf "%s" "${ARGS^^}" } && continue
               printf -v "$cmd" "true"
             done
           else
@@ -214,101 +213,6 @@ jobs:
           REPO_NAME: ${{ github.event.client_payload.github.payload.repository.name || github.event.repository.name }}
           GITHUB_TOKEN: ${{ secrets.PAT }}
           GITHUB_CONTEXT: "test / e2e (${{ github.event_name }})"
-          GITHUB_DESCRIPTION: "run cancelled"
-          GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
-          GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login || github.repository_owner }}
-
-  #Run debug tests
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      # Update GitHub status for pending pipeline run
-      - name: "Update GitHub Status for pending"
-        if: github.event_name == 'repository_dispatch'
-        uses: docker://cloudposse/github-status-updater
-        with:
-          args: "-action update_state -state pending -ref ${{ env.REPO_SHA }} -repo ${{ env.REPO_NAME }}"
-        env:
-          REPO_SHA: ${{ github.event.client_payload.pull_request.head.sha || github.sha }}
-          REPO_NAME: ${{ github.event.client_payload.github.payload.repository.name || github.event.repository.name }}
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          GITHUB_CONTEXT: "test / e2e (${{ github.event_name }})"
-          GITHUB_DESCRIPTION: "started by @${{ github.event.client_payload.github.actor || github.actor }}"
-          GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
-          GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login || github.repository_owner }}
-
-      # Checkout the code from GitHub Pull Request
-      - name: "Checkout the code"
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.PAT }}
-          repository: ${{ github.event.client_payload.pull_request.head.repo.full_name || github.repository }}
-          ref: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
-
-      - name: Get Terraform version from .tool-versions
-        id: get_tf_version
-        run: |
-          tf_version_line=$(grep 'terraform ' .tool-versions)
-          echo "tf_version=$tf_version_line" >> $GITHUB_OUTPUT
-
-      - name: Init Terraform Cache
-        uses: actions/cache@v3
-        with:
-          path: "${{ github.workspace }}/.cache/terraform"
-          key: "${{ runner.os }}-terraform-plugins|${{ steps.get_tf_version.outputs.tf_version }}|${{ hashFiles('**/versions.tf') }}"
-          restore-keys: ${{ runner.os }}-terraform-plugins
-
-      - name: Get Terraform version from .tool-versions
-        id: debug_sanity_check
-        run: |
-          ls -lahrt ${{ github.workspace }}/.cache/terraform
-          echo "tf version string: ${{ steps.get_tf_version.outputs.tf_version }}"
-
-        # Update GitHub status for failing pipeline run
-      - name: "Update GitHub Status for failure"
-        if: ${{ failure() && github.event_name == 'repository_dispatch' }}
-        uses: docker://cloudposse/github-status-updater
-        with:
-          args: "-action update_state -state failure -ref ${{ env.REPO_SHA }} -repo ${{ env.REPO_NAME }}"
-        env:
-          REPO_SHA: ${{ github.event.client_payload.pull_request.head.sha || github.sha }}
-          REPO_NAME: ${{ github.event.client_payload.github.payload.repository.name || github.event.repository.name }}
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          GITHUB_CONTEXT: "test / debug (${{ github.event_name }})"
-          GITHUB_DESCRIPTION: "run failed"
-          GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
-          GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login || github.repository_owner }}
-
-      # Update GitHub status for successful pipeline run
-      - name: "Update GitHub Status for success"
-        if: github.event_name == 'repository_dispatch'
-        uses: docker://cloudposse/github-status-updater
-        with:
-          args: "-action update_state -state success -ref ${{ env.REPO_SHA }} -repo ${{ env.REPO_NAME }}"
-        env:
-          REPO_SHA: ${{ github.event.client_payload.pull_request.head.sha || github.sha }}
-          REPO_NAME: ${{ github.event.client_payload.github.payload.repository.name || github.event.repository.name }}
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          GITHUB_CONTEXT: "test / debug (${{ github.event_name }})"
-          GITHUB_DESCRIPTION: "run passed"
-          GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
-          GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login || github.repository_owner }}
-
-      # Update GitHub status for cancelled pipeline run
-      - name: "Update GitHub Status for cancelled"
-        if: ${{ cancelled() && github.event_name == 'repository_dispatch' }}
-        uses: docker://cloudposse/github-status-updater
-        with:
-          args: "-action update_state -state error -ref ${{ env.REPO_SHA }} -repo ${{ env.REPO_NAME }}"
-        env:
-          REPO_SHA: ${{ github.event.client_payload.pull_request.head.sha || github.sha }}
-          REPO_NAME: ${{ github.event.client_payload.github.payload.repository.name || github.event.repository.name }}
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          GITHUB_CONTEXT: "test / debug (${{ github.event_name }})"
           GITHUB_DESCRIPTION: "run cancelled"
           GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
