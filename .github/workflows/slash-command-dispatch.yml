@@ -4,6 +4,7 @@ on:
     types: [created]
 jobs:
   slashCommandDispatch:
+    if: ${{ github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     steps:
       - name: Slash Command Dispatch
