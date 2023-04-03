@@ -264,6 +264,8 @@ variable "cluster_autoscaler_helm_config" {
   }
 }
 
+#----------------Calico-------------------------
+
 variable "enable_calico" {
   description = "Enable Calico add-on"
   type        = bool

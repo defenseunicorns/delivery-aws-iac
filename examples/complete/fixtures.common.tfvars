@@ -36,7 +36,6 @@ cluster_version     = "1.23"
 ############## Big Bang Dependencies ######################
 
 keycloak_enabled = true
-# other_addon_enabled = true
 
 
 #################### Keycloak ###########################
@@ -51,26 +50,24 @@ kc_db_instance_class        = "db.t4g.large"
 
 # #################### EKS Addon #########################
 # add other "eks native" marketplace addons and configs to this list
-cluster_addons = [
-  {
-    name              = "vpc-cni"
-    enable            = true
-    before_compute    = true
-    most_recent       = true
-    resolve_conflicts = "OVERWRITE"
-    preserve          = true
-    configuration_values = {
+cluster_addons = {
+  vpc-cni = {
+    most_recent    = true
+    before_compute = true
+    configuration_values = jsonencode({
       env = {
         AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
         ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone"
         ENABLE_PREFIX_DELEGATION           = "true"
         WARM_PREFIX_TARGET                 = "1"
       }
-    }
-    timeouts = {
-      create = "10m"
-      update = "10m"
-      delete = "10m"
-    }
+    })
   }
-]
+}
+
+#################### Blueprints addons ###################
+enable_cluster_autoscaler            = true
+enable_amazon_eks_aws_ebs_csi_driver = true
+enable_metrics_server                = true
+enable_aws_node_termination_handler  = true
+enable_calico                        = true

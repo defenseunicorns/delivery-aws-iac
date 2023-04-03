@@ -105,18 +105,18 @@ variable "enable_self_managed_nodegroups" {
 ###########################################################
 ################## EKS Addons Config ######################
 
-# variable "cluster_addons" {
-#   description = <<-EOD
-#   Nested of eks native add-ons and their associated parameters.
-#   See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on for supported values.
-#   See https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/complete/main.tf#L44-L60 for upstream example.
+variable "cluster_addons" {
+  description = <<-EOD
+  Nested of eks native add-ons and their associated parameters.
+  See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on for supported values.
+  See https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/complete/main.tf#L44-L60 for upstream example.
 
-#   to see available eks marketplace addons available for your cluster's version run:
-#   aws eks describe-addon-versions --kubernetes-version $k8s_cluster_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
-# EOD
-#   type        = any
-#   default     = {}
-# }
+  to see available eks marketplace addons available for your cluster's version run:
+  aws eks describe-addon-versions --kubernetes-version $k8s_cluster_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
+EOD
+  type        = any
+  default     = {}
+}
 
 #----------------AWS CoreDNS-------------------------
 variable "enable_amazon_eks_coredns" {
@@ -200,7 +200,7 @@ variable "cluster_autoscaler_helm_config" {
 variable "enable_calico" {
   description = "Enable Calico add-on"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "calico_helm_config" {
