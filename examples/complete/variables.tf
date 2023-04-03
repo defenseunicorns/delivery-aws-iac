@@ -103,12 +103,6 @@ variable "enable_self_managed_nodegroups" {
   type        = bool
 }
 
-variable "enable_efs" {
-  description = "Enable EFS"
-  type        = bool
-  default     = false
-
-}
 ###########################################################
 ################## EKS Addons Config ######################
 
@@ -229,9 +223,9 @@ variable "cluster_autoscaler_helm_config" {
 
 #----------------Enable_EFS_CSI-------------------------
 variable "enable_efs" {
-  description = "Enable EFS"
+  description = "Enable EFS CSI add-on"
   type        = bool
-  default     = false
+  default     = true
 
 }
 

@@ -27,7 +27,6 @@ module "eks_blueprints_kubernetes_addons" {
   # EKS Metrics Server
   enable_metrics_server      = var.enable_metrics_server
   metrics_server_helm_config = var.metrics_server_helm_config
-  enable_aws_efs_csi_driver  = true
 
   # EKS AWS node termination handler
   enable_aws_node_termination_handler      = var.enable_aws_node_termination_handler
@@ -37,4 +36,3 @@ module "eks_blueprints_kubernetes_addons" {
   enable_cluster_autoscaler      = var.enable_cluster_autoscaler
   cluster_autoscaler_helm_config = var.cluster_autoscaler_helm_config
 }
-

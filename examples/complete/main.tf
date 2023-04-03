@@ -197,7 +197,6 @@ module "eks" {
   source_security_group_id        = module.bastion.security_group_ids[0]
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
   cluster_endpoint_private_access = true
-  enable_efs                      = true
   vpc_cni_custom_subnet           = module.vpc.intra_subnets
   aws_admin_usernames             = var.aws_admin_usernames
   cluster_version                 = var.cluster_version
