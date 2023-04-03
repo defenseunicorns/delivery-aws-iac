@@ -29,6 +29,7 @@ _create-folders:
 	mkdir -p .cache/go
 	mkdir -p .cache/go-build
 	mkdir -p .cache/tmp
+	mkdir -p .cache/.terraform.d/plugin-cache
 
 .PHONY: _test-all
 _test-all: _create-folders
@@ -40,11 +41,14 @@ _test-all: _create-folders
 		-v "${PWD}/.cache/tmp:/tmp" \
 		-v "${PWD}/.cache/go:/root/go" \
 		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
+		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
 		--workdir "/app/test/e2e" \
 		-e TF_LOG_PATH \
 		-e TF_LOG \
 		-e GOPATH=/root/go \
 		-e GOCACHE=/root/.cache/go-build \
+		-e TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE=true \
+		-e TF_PLUGIN_CACHE_DIR=/root/.terraform.d/plugin-cache \
 		-e AWS_REGION \
 		-e AWS_DEFAULT_REGION \
 		-e AWS_ACCESS_KEY_ID \
