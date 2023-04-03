@@ -1,5 +1,5 @@
-region                         = "us-east-2"
-region2                        = "us-east-1"
+region                         = "us-east-1"
+region2                        = "us-east-2"
 enable_eks_managed_nodegroups  = true
 enable_self_managed_nodegroups = true
 bastion_tenancy                = "default"
