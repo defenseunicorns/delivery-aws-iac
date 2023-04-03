@@ -225,7 +225,7 @@ variable "cluster_autoscaler_helm_config" {
 variable "enable_efs" {
   description = "Enable EFS CSI add-on"
   type        = bool
-  default     = true
+  default     = false
 
 }
 
