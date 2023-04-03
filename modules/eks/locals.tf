@@ -8,17 +8,11 @@ locals {
     [for admin_user in var.aws_admin_usernames : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:user/${admin_user}"],
     [data.aws_caller_identity.current.arn]
   ))
-  aws_auth_users = distinct(concat([for admin_user in var.aws_admin_usernames : {
+  aws_auth_users = [for admin_user in var.aws_admin_usernames : {
     userarn  = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:user/${admin_user}"
     username = admin_user
     groups   = ["system:masters"]
-    }],
-    [{
-      userarn  = data.aws_caller_identity.current.arn
-      username = split("/", data.aws_caller_identity.current.arn)[1]
-      groups   = ["system:masters"]
-    }]
-  ))
+  }]
 
   # if using EKS Managed Node Groups you can not also create the aws-auth configmap because eks does it for you - it will already exist when TF tries to create it and you will receive an error.
   # the following logic determines if the aws-auth configmap should be created or not by checking if eks_managed_node_groups would be created based on inputs to the upstream eks module
@@ -34,14 +28,4 @@ locals {
     )
   )
 
-  # local.cluster_addons value takes a list of addon configuration objects as input and returns a map of addon configuration objects
-  # configuration_values can either be json or hcl format. Will always be passed into the eks_aws module as json
-  cluster_addons = {
-    for addon in var.cluster_addons : addon.name => merge(
-      { for key, value in addon : key => value if key != "name" && key != "enable" && key != "configuration_values" },
-      lookup(addon, "configuration_values", null) != null ? {
-        configuration_values = jsonencode(try(jsondecode(addon.configuration_values), addon.configuration_values))
-      } : {}
-    ) if lookup(addon, "enable", false)
-  }
 }

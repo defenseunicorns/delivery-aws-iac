@@ -248,7 +248,26 @@ module "eks" {
   #"native" EKS Add-Ons
   #---------------------------------------------------------------
 
-  cluster_addons = var.cluster_addons
+  cluster_addons = {
+    vpc-cni = {
+      most_recent    = true
+      before_compute = true
+      configuration_values = jsonencode({
+        env = {
+          AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
+          ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone"
+          ENABLE_PREFIX_DELEGATION           = "true"
+          WARM_PREFIX_TARGET                 = "1"
+        }
+      })
+    }
+    # coredns = {
+    #   most_recent = true
+    # }
+    # kube-proxy = {
+    #   most_recent = true
+    # }
+  }
 
   #---------------------------------------------------------------
   # EKS Blueprints - EKS Add-Ons

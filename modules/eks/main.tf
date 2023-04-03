@@ -18,7 +18,7 @@ module "aws_eks" {
   self_managed_node_groups         = var.self_managed_node_groups
   eks_managed_node_groups          = var.eks_managed_node_groups
 
-  cluster_addons = local.cluster_addons
+  cluster_addons = var.cluster_addons
 
   #----------------------------------------------------------------------------------------------------------#
   # Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).

@@ -105,50 +105,19 @@ variable "enable_self_managed_nodegroups" {
 ###########################################################
 ################## EKS Addons Config ######################
 
-variable "cluster_addons" {
-  description = <<-EOD
-  List of eks native add-ons to enable/disable and their associated parameters.
-  See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on for supported values.
+# variable "cluster_addons" {
+#   description = <<-EOD
+#   Nested of eks native add-ons and their associated parameters.
+#   See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on for supported values.
+#   See https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/complete/main.tf#L44-L60 for upstream example.
 
-  to see available eks marketplace addons available for your cluster's version run:
-  aws eks describe-addon-versions --kubernetes-version $k8s_cluster_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
+#   to see available eks marketplace addons available for your cluster's version run:
+#   aws eks describe-addon-versions --kubernetes-version $k8s_cluster_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
+# EOD
+#   type        = any
+#   default     = {}
+# }
 
-
-
-  name - String - (Required) The name of the add-on. Valid values are from the marketplace, matching your k8s version
-  enable - Boolean - (Optional) Whether to enable the add-on. If false, will ignore the entire block.
-  before_compute - Boolean - (Optional) Whether to create the add-on before the compute resources.
-  most_recent - Boolean - (Optional) Whether to use the most recent version of the add-on.
-  resolve_conflicts - String - (Optional) How to resolve parameter value conflicts between the add-on and the cluster.
-  configuration_values - HCL map or JSON string - will always be passed into the eks_aws module as json - (Optional) A map of configuration values for the add-on.
-  preserve - Boolean - (Optional) Whether to preserve the add-on's objects when the add-on is deleted.
-  timeouts - map - (Optional) A map of timeouts for the add-on.
-EOD
-  type        = any
-  default = [
-    {
-      name              = "vpc-cni"
-      enable            = true
-      before_compute    = true
-      most_recent       = true
-      resolve_conflicts = "OVERWRITE"
-      preserve          = true
-      configuration_values = {
-        env = {
-          AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
-          ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone"
-          ENABLE_PREFIX_DELEGATION           = "true"
-          WARM_PREFIX_TARGET                 = "1"
-        }
-      }
-      timeouts = {
-        create = "10m"
-        update = "10m"
-        delete = "10m"
-      }
-    },
-  ]
-}
 #----------------AWS CoreDNS-------------------------
 variable "enable_amazon_eks_coredns" {
   description = "Enable Amazon EKS CoreDNS add-on"
