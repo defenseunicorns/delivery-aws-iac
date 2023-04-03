@@ -74,14 +74,21 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	defer func() {
 		t.Helper()
 		teststructure.RunTestStage(t, "TEARDOWN", func() {
-			bastionInstanceID := terraform.Output(t, terraformOptionsWithEKSTarget, "bastion_instance_id")
+			bastionInstanceID, outputBastionInstanceIDErr := terraform.OutputE(t, terraformOptionsWithEKSTarget, "bastion_instance_id")
+			// We are intentionally using `assert` here and not `require`. We want the rest of this function to run even if there are errors.
+			assert.NoError(t, outputBastionInstanceIDErr)
 			//nolint:godox
 			// TODO: Figure out how to parse the input variables to get the bastion password rather than having to hardcode it
 			bastionPassword := "my-password"
-			vpcCidr := terraform.Output(t, terraformOptionsWithEKSTarget, "vpc_cidr")
-			bastionRegion := terraform.Output(t, terraformOptionsWithEKSTarget, "bastion_region")
-			err := destroyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsWithEKSTarget)
-			assert.NoError(t, err)
+			vpcCidr, outputVpcCidrErr := terraform.OutputE(t, terraformOptionsWithEKSTarget, "vpc_cidr")
+			assert.NoError(t, outputVpcCidrErr)
+			bastionRegion, outputBastionRegionErr := terraform.OutputE(t, terraformOptionsWithEKSTarget, "bastion_region")
+			assert.NoError(t, outputBastionRegionErr)
+			if outputBastionInstanceIDErr == nil && outputVpcCidrErr == nil && outputBastionRegionErr == nil {
+				// We can only destroy using sshuttle if the bastion exists and is functional. If we get, for example, an error saying there is not enough capacity in the chosen AZ, the bastion will have never been deployed and this will fail because `terraform output` didn't return anything.
+				err := destroyWithSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr, terraformOptionsWithEKSTarget)
+				assert.NoError(t, err)
+			}
 			terraform.Destroy(t, terraformOptionsNoTargets)
 		})
 	}()
