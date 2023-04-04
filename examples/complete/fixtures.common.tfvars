@@ -1,8 +1,10 @@
 ###########################################################
 ################## Global Settings ########################
 
-region  = "us-east-1" # target AWS region
-region2 = "us-east-2" # RDS backup target AWS region
+# Setting region per test case to avoid AWS service quota limits
+#region  = "us-east-2" # target AWS region
+#region2 = "us-east-1" # RDS backup target AWS region
+
 # default_tags = {
 #   Environment = "dev"
 #   Project     = "ci-eks"

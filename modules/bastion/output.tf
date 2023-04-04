@@ -8,6 +8,11 @@ output "private_ip" {
   description = "Private IP"
 }
 
+output "private_dns" {
+  value       = aws_instance.application.private_dns
+  description = "Private DNS"
+}
+
 output "public_ip" {
   value       = aws_instance.application.public_ip
   description = "Public IP"
@@ -55,4 +60,9 @@ output "bastion_role_name" {
 output "bastion_role_arn" {
   value       = aws_iam_role.bastion_ssm_role.arn
   description = "Bastion Role ARN"
+}
+
+output "region" {
+  value       = data.aws_region.current.name
+  description = "Region the bastion was deployed to"
 }
