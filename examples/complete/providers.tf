@@ -48,13 +48,6 @@ terraform {
   }
 }
 
-data "aws_eks_cluster" "example" {
-  name = module.eks.cluster_name
-  depends_on = [
-    module.eks.cluster_status
-  ]
-}
-
 provider "aws" {
   region = var.region
   # default_tags {
@@ -71,34 +64,34 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.example.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.example.certificate_authority[0].data)
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
   exec {
-    api_version = "client.authentication.k8s.io/v1"
-    args        = ["eks", "get-token", "--cluster-name", local.cluster_name]
-    command     = "aws"
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "/bin/sh"
+    args        = ["-c", "for i in $(seq 1 30); do curl -s -k -f ${module.eks.cluster_endpoint}/healthz > /dev/null && break || sleep 10; done && aws eks --region ${var.region} get-token --cluster-name ${local.cluster_name}"]
   }
 }
 
 provider "helm" {
   kubernetes {
-    host                   = data.aws_eks_cluster.example.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.example.certificate_authority[0].data)
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
     exec {
-      api_version = "client.authentication.k8s.io/v1"
-      args        = ["eks", "get-token", "--cluster-name", local.cluster_name]
-      command     = "aws"
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "/bin/sh"
+      args        = ["-c", "for i in $(seq 1 30); do curl -s -k -f ${module.eks.cluster_endpoint}/healthz > /dev/null && break || sleep 10; done && aws eks --region ${var.region} get-token --cluster-name ${local.cluster_name}"]
     }
   }
 }
 
 provider "kubectl" {
   apply_retry_count      = 5
-  host                   = data.aws_eks_cluster.example.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.example.certificate_authority[0].data)
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
-    args        = ["eks", "get-token", "--cluster-name", local.cluster_name]
-    command     = "aws"
+    command     = "/bin/sh"
+    args        = ["-c", "for i in $(seq 1 30); do curl -s -k -f ${module.eks.cluster_endpoint}/healthz > /dev/null && break || sleep 10; done && aws eks --region ${var.region} get-token --cluster-name ${local.cluster_name}"]
   }
 }
