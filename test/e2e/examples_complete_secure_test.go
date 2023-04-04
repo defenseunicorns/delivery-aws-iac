@@ -85,8 +85,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	teststructure.RunTestStage(t, "SETUP", func() {
 		terraform.Init(t, terraformOptionsNoTargets)
 		terraform.Apply(t, terraformOptionsWithVPCAndBastionTargets)
-		// Wait 6 minutes for the bastion to be ready to accept connections
-		time.Sleep(6 * time.Minute)
 		bastionInstanceID := terraform.Output(t, terraformOutputOptions, "bastion_instance_id")
 		bastionPrivateDNS := terraform.Output(t, terraformOutputOptions, "bastion_private_dns")
 		//nolint:godox
@@ -131,42 +129,41 @@ func destroyWithSshuttle(t *testing.T, bastionInstanceID string, bastionPrivateD
 
 func runSshuttleInBackground(t *testing.T, bastionInstanceID string, bastionPrivateDNS string, bastionRegion string, bastionPassword string, vpcCidr string) (*exec.Cmd, error) {
 	t.Helper()
-	doLog(bastionPrivateDNS)
-	sshuttleCmd, err := startSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr)
-	if err != nil {
-		return nil, fmt.Errorf("failed to start sshuttle: %w", err)
+	// Check that SShuttle is actually working by querying the bastion's private DNS, which will only work if sshuttle is working.
+	// If it works, it will return exit code 52 ("Empty reply from server"). Failure will most likely result in exit code 28 ("Couldn't connect to server"), but any result other than exit code 52 should be treated as a failure.
+	// We'll retry a few times in case the bastion is still starting up.
+	retryAttempts := 25
+	var sshuttleCmd *exec.Cmd
+	for i := 0; i < retryAttempts; i++ {
+		sshuttleCmd, err := startSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to start sshuttle: %w", err)
+		}
+		time.Sleep(20 * time.Second) // It takes a few seconds for sshuttle to start up
+		curlCmd := exec.Command("curl", "-v", bastionPrivateDNS)
+		// We don't care about the output, just the exit code. Since we are looking for exit code 52, we should expect an error here.
+		err = curlCmd.Run()
+		if err != nil {
+			doLog(err)
+		}
+		if curlCmd.ProcessState.ExitCode() == 52 {
+			// Success! sshuttle is working.
+			return sshuttleCmd, nil
+		}
+		// Failure. Try again.
+		doLog(fmt.Sprintf("sshuttle failed to start up. Retrying... (attempt %d of %d)", i+1, retryAttempts))
+		err = stopSshuttle(t, sshuttleCmd)
+		if err != nil {
+			doLog(err)
+		}
 	}
-	return sshuttleCmd, nil
+	// If we get here, we got through our for loop without verifying that sshuttle was working, so we should stop it and return an error.
+	err := stopSshuttle(t, sshuttleCmd)
+	if err != nil {
+		doLog(err)
+	}
+	return nil, fmt.Errorf("failed to start sshuttle: could not verify that sshuttle was working")
 }
-
-// func runSshuttleInBackground(t *testing.T, bastionInstanceID string, bastionPrivateDNS string, bastionRegion string, bastionPassword string, vpcCidr string) (*exec.Cmd, error) {
-// 	t.Helper()
-// 	// Check that SShuttle is actually working by querying the bastion's private DNS, which will only work if sshuttle is working.
-// 	// If it works, it will return exit code 52 ("Empty reply from server"). Failure will most likely result in exit code 28 ("Couldn't connect to server"), but any result other than exit code 52 should be treated as a failure.
-// 	// We'll retry a few times in case the bastion is still starting up.
-// 	retryAttempts := 20
-// 	var sshuttleCmd *exec.Cmd
-// 	for i := 0; i < retryAttempts; i++ {
-// 		sshuttleCmd, err := startSshuttle(t, bastionInstanceID, bastionRegion, bastionPassword, vpcCidr)
-// 		if err != nil {
-// 			return nil, fmt.Errorf("failed to start sshuttle: %w", err)
-// 		}
-// 		time.Sleep(15 * time.Second) // It takes a few seconds for sshuttle to start up
-// 		curlCmd := exec.Command("curl", "-v", bastionPrivateDNS)
-// 		// We don't care about the output, just the exit code. Since we are looking for exit code 52, we should expect an error here.
-// 		_ = curlCmd.Run()
-// 		if curlCmd.ProcessState.ExitCode() == 52 {
-// 			// Success! sshuttle is working.
-// 			return sshuttleCmd, nil
-// 		}
-// 		// Failure. Try again.
-// 		doLog(fmt.Sprintf("sshuttle failed to start up. Retrying... (attempt %d of %d)", i+1, retryAttempts))
-// 		_ = stopSshuttle(t, sshuttleCmd)
-// 	}
-// 	// If we get here, we got through our for loop without verifying that sshuttle was working, so we should stop it and return an error.
-// 	_ = stopSshuttle(t, sshuttleCmd)
-// 	return nil, fmt.Errorf("failed to start sshuttle: could not verify that sshuttle was working")
-// }
 
 func startSshuttle(t *testing.T, bastionInstanceID string, bastionRegion string, bastionPassword string, vpcCidr string) (*exec.Cmd, error) {
 	t.Helper()
@@ -179,6 +176,12 @@ func startSshuttle(t *testing.T, bastionInstanceID string, bastionRegion string,
 
 func stopSshuttle(t *testing.T, cmd *exec.Cmd) error {
 	t.Helper()
+	if cmd == nil {
+		return fmt.Errorf("failed to stop sshuttle: cmd is nil")
+	}
+	if cmd.Process == nil {
+		return fmt.Errorf("failed to stop sshuttle: cmd.Process is nil")
+	}
 	if err := cmd.Process.Kill(); err != nil {
 		return fmt.Errorf("failed to stop sshuttle: %w", err)
 	}
