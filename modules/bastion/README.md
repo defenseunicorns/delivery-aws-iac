@@ -163,6 +163,7 @@ No modules.
 | <a name="output_bastion_role_name"></a> [bastion\_role\_name](#output\_bastion\_role\_name) | Bastion Role Name |
 | <a name="output_instance_id"></a> [instance\_id](#output\_instance\_id) | Instance Id |
 | <a name="output_primary_network_interface_id"></a> [primary\_network\_interface\_id](#output\_primary\_network\_interface\_id) | Primary Network Interface Id |
+| <a name="output_private_dns"></a> [private\_dns](#output\_private\_dns) | Private DNS |
 | <a name="output_private_ip"></a> [private\_ip](#output\_private\_ip) | Private IP |
 | <a name="output_private_key"></a> [private\_key](#output\_private\_key) | n/a |
 | <a name="output_public_ip"></a> [public\_ip](#output\_public\_ip) | Public IP |
