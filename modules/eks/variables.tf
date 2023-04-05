@@ -238,6 +238,10 @@ variable "enable_efs" {
 
 }
 
+variable "cidr_blocks" {
+  type = list(string)
+}
+
 #----------------Metrics Server-------------------------
 variable "enable_metrics_server" {
   description = "Enable metrics server add-on"

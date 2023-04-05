@@ -126,21 +126,11 @@ module "efs" {
 
   security_group_description = "${local.cluster_name} EFS security group"
   security_group_vpc_id      = var.vpc_id
-  security_group_rules = [
-    {
-      type        = "ingress"
-      from_port   = 2049
-      to_port     = 2049
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    },
-    {
-      type        = "egress"
-      from_port   = 2049
-      to_port     = 2049
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-
+  security_group_rules = {
+    vpc = {
+      # relying on the defaults provdied for EFS/NFS (2049/TCP + ingress)
+      description = "NFS ingress from VPC private subnets"
+      cidr_blocks = var.cidr_blocks
     }
-  ]
+  }
 }

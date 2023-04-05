@@ -22,6 +22,8 @@ module "eks_blueprints_kubernetes_addons" {
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   amazon_eks_aws_ebs_csi_driver_config = var.amazon_eks_aws_ebs_csi_driver_config
 
+  # EKS EFS CSI Driver
+  enable_aws_efs_csi_driver = var.enable_efs
 
   # K8s Add-ons
   # EKS Metrics Server
