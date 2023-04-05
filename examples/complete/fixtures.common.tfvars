@@ -52,18 +52,22 @@ kc_db_instance_class        = "db.t4g.large"
 # add other "eks native" marketplace addons and configs to this list
 cluster_addons = {
   vpc-cni = {
-    most_recent    = true
-    before_compute = true
-    configuration_values = jsonencode({
-      env = {
-        AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
-        ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone"
-        ENABLE_PREFIX_DELEGATION           = "true"
-        WARM_PREFIX_TARGET                 = "1"
+    most_recent          = true
+    before_compute       = true
+    configuration_values = <<-JSON
+      {
+        "env": {
+          "AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG": "true",
+          "ENABLE_PREFIX_DELEGATION": "true",
+          "ENI_CONFIG_LABEL_DEF": "topology.kubernetes.io/zone",
+          "WARM_PREFIX_TARGET": "1",
+          "ANNOTATE_POD_IP": "true"
+        }
       }
-    })
+    JSON
   }
 }
+
 
 #################### Blueprints addons ###################
 enable_cluster_autoscaler            = true
