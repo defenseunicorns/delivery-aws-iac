@@ -11,9 +11,7 @@ module "eks_blueprints_kubernetes_addons" {
   eks_cluster_version      = module.aws_eks.cluster_version
   auto_scaling_group_names = concat(lookup(module.aws_eks.self_managed_node_groups, "autoscaling_group_name", []), lookup(module.aws_eks.eks_managed_node_groups, "node_group_autoscaling_group_names", []))
 
-  # these are blueprints addons, if you install available "EKS Native" addons instead of through helm, look at adding logic to the local.cluster_addons variable that feeds into the eks module
-  # to check available "EKS Native" addons matching a specifc k8s cluster version you can run the below aws cli command:
-  # aws eks describe-addon-versions --kubernetes-version $cluster_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
+  # these are blueprints "self-managed" addons
 
   # EKS CoreDNS
   enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
