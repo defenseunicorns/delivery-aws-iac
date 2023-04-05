@@ -9,9 +9,9 @@ module "eks_blueprints_kubernetes_addons" {
   eks_cluster_endpoint     = module.aws_eks.cluster_endpoint
   eks_oidc_provider        = module.aws_eks.oidc_provider
   eks_cluster_version      = module.aws_eks.cluster_version
-  auto_scaling_group_names = concat(lookup(module.aws_eks.self_managed_node_groups, "autoscaling_group_name", []), lookup(module.aws_eks.eks_managed_node_groups, "node_group_autoscaling_group_names", []))
+  auto_scaling_group_names = concat(module.aws_eks.self_managed_node_groups_autoscaling_group_names, module.aws_eks.eks_managed_node_groups_autoscaling_group_names)
 
-  # these are blueprints "self-managed" addons
+  # blueprints addons
 
   # EKS CoreDNS
   enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
