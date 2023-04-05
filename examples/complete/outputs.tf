@@ -64,9 +64,11 @@ output "dynamodb_name" {
 output "vpc_cidr" {
   description = "The CIDR block of the VPC"
   value       = module.vpc.vpc_cidr_block
+  sensitive   = true
 }
 
 output "eks_cluster_name" {
   description = "The name of the EKS cluster"
   value       = module.eks.cluster_name
+  sensitive   = true
 }
