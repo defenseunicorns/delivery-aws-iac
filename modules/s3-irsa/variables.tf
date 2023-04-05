@@ -87,3 +87,21 @@ variable "dynamodb_enabled" {
   type        = bool
   default     = false
 }
+
+variable "enable_access_logging" {
+  description = "If true, set up access logging of the S3 bucket to a different S3 bucket, provided by the variables `logging_bucket_id` and `logging_bucket_path`"
+  type        = bool
+  default     = false
+}
+
+variable "access_logging_bucket_id" {
+  description = "The ID of the S3 bucket to which access logs are written"
+  type        = string
+  default     = null
+}
+
+variable "access_logging_bucket_path" {
+  description = "The path to write access logs to in the logging bucket. Ex: 'logs/'"
+  type        = string
+  default     = null
+}
