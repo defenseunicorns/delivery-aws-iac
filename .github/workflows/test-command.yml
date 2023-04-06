@@ -70,19 +70,6 @@ jobs:
     needs: parse
     if: needs.parse.outputs.run-ping == 'true'
     steps:
-      # Update GitHub status for dispatch events
-      - name: "Update GitHub Status for this ref"
-        uses: "docker://cloudposse/github-status-updater"
-        with:
-          args: "-action update_state -state success -ref ${{ github.event.client_payload.pull_request.head.sha }} -repo ${{ github.event.client_payload.github.payload.repository.name }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          GITHUB_CONTEXT: "test / ping (${{ github.event_name }})"
-          GITHUB_DESCRIPTION: "pong"
-          GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref }}
-          GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login }}
-
       - name: Create URL to the run output
         id: vars
         run: echo "run-url=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
@@ -98,6 +85,19 @@ jobs:
             [Command run output][1]
 
             [1]: ${{ steps.vars.outputs.run-url }}
+
+      # Update GitHub status for dispatch events
+      - name: "Update GitHub Status for this ref"
+        uses: "docker://cloudposse/github-status-updater"
+        with:
+          args: "-action update_state -state success -ref ${{ github.event.client_payload.pull_request.head.sha }} -repo ${{ github.event.client_payload.github.payload.repository.name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GITHUB_CONTEXT: "test / ping (${{ github.event_name }})"
+          GITHUB_DESCRIPTION: "pong"
+          GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref }}
+          GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login }}
 
   # Run the E2E tests
   e2e:
