@@ -141,6 +141,14 @@ module "vpc" {
 }
 
 ###########################################################
+################## ACCESS LOGGING #########################
+
+resource "aws_s3_bucket" "access_logs" {
+  # checkov:skip=CKV_AWS_144: Cross region replication is overkill
+
+}
+
+###########################################################
 ##################### Bastion #############################
 
 data "aws_ami" "amazonlinux2" {

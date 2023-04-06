@@ -38,16 +38,16 @@ resource "aws_s3_bucket_versioning" "versioning" {
 }
 
 resource "aws_s3_bucket_logging" "logging" {
-  count = var.enable_access_logging ? 1 : 0
+  count = var.access_logging_enabled ? 1 : 0
 
   bucket = module.s3_bucket.s3_bucket_id
 
   target_bucket = var.access_logging_bucket_id
-  target_prefix = var.access_logging_bucket_path
+  target_prefix = var.access_logging_bucket_prefix
 
   lifecycle {
     precondition {
-      condition     = var.access_logging_bucket_id != null && var.access_logging_bucket_path != null
+      condition     = var.access_logging_bucket_id != null && var.access_logging_bucket_prefix != null
       error_message = "access_logging_bucket_id and access_logging_bucket_path must be set to enable access logging."
     }
   }

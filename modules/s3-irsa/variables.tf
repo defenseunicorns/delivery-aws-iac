@@ -88,7 +88,7 @@ variable "dynamodb_enabled" {
   default     = false
 }
 
-variable "enable_access_logging" {
+variable "access_logging_enabled" {
   description = "If true, set up access logging of the S3 bucket to a different S3 bucket, provided by the variables `logging_bucket_id` and `logging_bucket_path`"
   type        = bool
   default     = false
@@ -100,8 +100,8 @@ variable "access_logging_bucket_id" {
   default     = null
 }
 
-variable "access_logging_bucket_path" {
-  description = "The path to write access logs to in the logging bucket. Ex: 'logs/'"
+variable "access_logging_bucket_prefix" {
+  description = "The prefix to use for all log object keys. Ex: 'logs/'"
   type        = string
   default     = null
 }

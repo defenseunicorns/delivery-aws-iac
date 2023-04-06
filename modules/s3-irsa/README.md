@@ -50,10 +50,10 @@ To view examples for how you can leverage this S3-IRSA Module, please see the [e
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_access_logging_bucket_id"></a> [access\_logging\_bucket\_id](#input\_access\_logging\_bucket\_id) | The ID of the S3 bucket to which access logs are written | `string` | `null` | no |
-| <a name="input_access_logging_bucket_path"></a> [access\_logging\_bucket\_path](#input\_access\_logging\_bucket\_path) | The path to write access logs to in the logging bucket. Ex: 'logs/' | `string` | `null` | no |
+| <a name="input_access_logging_bucket_prefix"></a> [access\_logging\_bucket\_prefix](#input\_access\_logging\_bucket\_prefix) | The prefix to use for all log object keys. Ex: 'logs/' | `string` | `null` | no |
+| <a name="input_access_logging_enabled"></a> [access\_logging\_enabled](#input\_access\_logging\_enabled) | If true, set up access logging of the S3 bucket to a different S3 bucket, provided by the variables `logging_bucket_id` and `logging_bucket_path` | `bool` | `false` | no |
 | <a name="input_dynamodb_enabled"></a> [dynamodb\_enabled](#input\_dynamodb\_enabled) | Is dynamoDB enabled | `bool` | `false` | no |
 | <a name="input_eks_oidc_provider_arn"></a> [eks\_oidc\_provider\_arn](#input\_eks\_oidc\_provider\_arn) | EKS OIDC Provider ARN e.g., arn:aws:iam::<ACCOUNT-ID>:oidc-provider/<var.eks\_oidc\_provider> | `string` | n/a | yes |
-| <a name="input_enable_access_logging"></a> [enable\_access\_logging](#input\_enable\_access\_logging) | If true, set up access logging of the S3 bucket to a different S3 bucket, provided by the variables `logging_bucket_id` and `logging_bucket_path` | `bool` | `false` | no |
 | <a name="input_irsa_iam_permissions_boundary"></a> [irsa\_iam\_permissions\_boundary](#input\_irsa\_iam\_permissions\_boundary) | IAM permissions boundary for IRSA roles | `string` | `""` | no |
 | <a name="input_irsa_iam_policies"></a> [irsa\_iam\_policies](#input\_irsa\_iam\_policies) | IAM Policies for IRSA IAM role | `list(string)` | `[]` | no |
 | <a name="input_irsa_iam_role_name"></a> [irsa\_iam\_role\_name](#input\_irsa\_iam\_role\_name) | IAM role name for IRSA | `string` | `""` | no |
