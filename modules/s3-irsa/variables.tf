@@ -68,11 +68,9 @@ variable "policy_name_prefix" {
   default     = "irsa-policy"
 }
 
-variable "kms_key_alias" {
-  description = "KMS key alias"
+variable "kms_key_arn" {
   type        = string
-  // TODO: Evaluate whether "" is ever a valid value for this variable.
-  default = ""
+  description = "KMS Key ARN to use for encryption"
 }
 
 variable "name_dynamodb" {
@@ -89,7 +87,7 @@ variable "dynamodb_enabled" {
 }
 
 variable "access_logging_enabled" {
-  description = "If true, set up access logging of the S3 bucket to a different S3 bucket, provided by the variables `logging_bucket_id` and `logging_bucket_path`"
+  description = "If true, set up access logging of the S3 bucket to a different S3 bucket, provided by the variables `logging_bucket_id` and `logging_bucket_path`. Caution: Enabling this will likely cause LOTS of access logs, as one is generated each time the bucket is accessed and Loki will be hitting the bucket a lot!"
   type        = bool
   default     = false
 }
@@ -103,5 +101,5 @@ variable "access_logging_bucket_id" {
 variable "access_logging_bucket_prefix" {
   description = "The prefix to use for all log object keys. Ex: 'logs/'"
   type        = string
-  default     = null
+  default     = "s3-irsa-bucket-access-logs/"
 }

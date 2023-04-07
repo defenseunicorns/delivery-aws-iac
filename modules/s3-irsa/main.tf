@@ -7,6 +7,10 @@ data "aws_caller_identity" "current" {}
 
 data "aws_partition" "current" {}
 
+data "aws_kms_key" "default" {
+  key_id = var.kms_key_arn
+}
+
 #####################################################
 ################## Loki S3 Bucket ###################
 module "s3_bucket" {
@@ -23,7 +27,7 @@ module "s3_bucket" {
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
-        kms_master_key_id = aws_kms_key.objects.arn
+        kms_master_key_id = data.aws_kms_key.default.arn
         sse_algorithm     = "aws:kms"
       }
     }
@@ -40,8 +44,7 @@ resource "aws_s3_bucket_versioning" "versioning" {
 resource "aws_s3_bucket_logging" "logging" {
   count = var.access_logging_enabled ? 1 : 0
 
-  bucket = module.s3_bucket.s3_bucket_id
-
+  bucket        = module.s3_bucket.s3_bucket_id
   target_bucket = var.access_logging_bucket_id
   target_prefix = var.access_logging_bucket_prefix
 
@@ -53,17 +56,6 @@ resource "aws_s3_bucket_logging" "logging" {
       error_message = "access_logging_bucket_id and access_logging_bucket_path must be set to enable access logging."
     }
   }
-}
-
-resource "aws_kms_key" "objects" {
-  enable_key_rotation     = true
-  description             = "KMS key is used to encrypt bucket objects"
-  deletion_window_in_days = 7
-}
-
-resource "aws_kms_alias" "a" {
-  name          = "alias/${var.kms_key_alias}"
-  target_key_id = aws_kms_key.objects.key_id
 }
 
 data "aws_iam_policy_document" "irsa_policy" {
@@ -80,7 +72,7 @@ data "aws_iam_policy_document" "irsa_policy" {
       "kms:GenerateDataKey",
       "kms:Decrypt"
     ]
-    resources = [aws_kms_key.objects.arn]
+    resources = [data.aws_kms_key.default.arn]
   }
 }
 
@@ -174,7 +166,7 @@ resource "aws_dynamodb_table" "loki_dynamodb" {
 
   server_side_encryption {
     enabled     = true
-    kms_key_arn = aws_kms_key.objects.arn
+    kms_key_arn = data.aws_kms_key.default.arn
   }
 }
 

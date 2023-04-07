@@ -7,11 +7,13 @@ resource "random_id" "default" {
 }
 
 locals {
-  vpc_name         = "${var.name_prefix}-${lower(random_id.default.hex)}"
-  cluster_name     = "${var.name_prefix}-${lower(random_id.default.hex)}"
-  bastion_name     = "${var.name_prefix}-bastion-${lower(random_id.default.hex)}"
-  loki_name_prefix = "${var.name_prefix}-loki-${lower(random_id.default.hex)}"
+  vpc_name                   = "${var.name_prefix}-${lower(random_id.default.hex)}"
+  cluster_name               = "${var.name_prefix}-${lower(random_id.default.hex)}"
+  bastion_name               = "${var.name_prefix}-bastion-${lower(random_id.default.hex)}"
+  loki_name_prefix           = "${var.name_prefix}-loki-${lower(random_id.default.hex)}"
   access_logging_name_prefix = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
+  kms_key_alias_name_prefix  = "${var.name_prefix}-${lower(random_id.default.hex)}"
+  access_log_sqs_queue_name  = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
 
   account = data.aws_caller_identity.current.account_id
 
@@ -158,20 +160,21 @@ module "bastion" {
   name                           = local.bastion_name
   vpc_id                         = module.vpc.vpc_id
   subnet_id                      = module.vpc.private_subnets[0]
-  aws_region                     = var.region
-  access_log_bucket_name_prefix  = "${local.bastion_name}-accesslogs"
+  region                         = var.region
+  access_logs_bucket_name        = aws_s3_bucket.access_log_bucket.id
   session_log_bucket_name_prefix = "${local.bastion_name}-sessionlogs"
+  kms_key_arn                    = aws_kms_key.default.arn
   ssh_user                       = var.bastion_ssh_user
   ssh_password                   = var.bastion_ssh_password
-  assign_public_ip               = false # var.assign_public_ip
+  assign_public_ip               = false
   enable_log_to_s3               = true
   enable_log_to_cloudwatch       = true
   vpc_endpoints_enabled          = true
   tenancy                        = var.bastion_tenancy
   zarf_version                   = var.zarf_version
-  tags = {
+  tags = merge(local.tags, {
     Function = "bastion-ssm"
-  }
+  })
 }
 
 ###########################################################
