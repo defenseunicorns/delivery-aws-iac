@@ -11,12 +11,13 @@ locals {
   cluster_name     = "${var.name_prefix}-${lower(random_id.default.hex)}"
   bastion_name     = "${var.name_prefix}-bastion-${lower(random_id.default.hex)}"
   loki_name_prefix = "${var.name_prefix}-loki-${lower(random_id.default.hex)}"
+  access_logging_name_prefix = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
 
   account = data.aws_caller_identity.current.account_id
 
   tags = {
     Blueprint  = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
-    GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
+    GithubRepo = "github.com/defenseunicorns/iac"
   }
 
   eks_managed_node_groups = {
@@ -127,14 +128,6 @@ module "vpc" {
   create_database_subnet_route_table = true
 
   instance_tenancy = "default"
-}
-
-###########################################################
-################## ACCESS LOGGING #########################
-
-resource "aws_s3_bucket" "access_logs" {
-  # checkov:skip=CKV_AWS_144: Cross region replication is overkill
-
 }
 
 ###########################################################
