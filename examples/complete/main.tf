@@ -2,25 +2,15 @@ data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
-resource "random_id" "vpc_name" {
+resource "random_id" "default" {
   byte_length = 2
-  prefix      = var.vpc_name_prefix
-}
-resource "random_id" "cluster_name" {
-  byte_length = 2
-  prefix      = var.cluster_name_prefix
-}
-
-resource "random_id" "bastion_name" {
-  byte_length = 2
-  prefix      = var.bastion_name_prefix
 }
 
 locals {
-  vpc_name         = lower(random_id.vpc_name.hex)
-  cluster_name     = lower(random_id.cluster_name.hex)
-  bastion_name     = lower(random_id.bastion_name.hex)
-  loki_name_prefix = "${lower(random_id.cluster_name.hex)}-loki"
+  vpc_name         = "${var.name_prefix}-${lower(random_id.default.hex)}"
+  cluster_name     = "${var.name_prefix}-${lower(random_id.default.hex)}"
+  bastion_name     = "${var.name_prefix}-bastion-${lower(random_id.default.hex)}"
+  loki_name_prefix = "${var.name_prefix}-loki-${lower(random_id.default.hex)}"
 
   account = data.aws_caller_identity.current.account_id
 

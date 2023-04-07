@@ -86,6 +86,48 @@ resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
               "log_stream_name" : "ssm-user-commands",
               "retention_in_days" : 60
             },
+            {
+              "file_path" : "/var/log/messages",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_stream_name" : "Syslog",
+              "retention_in_days" : 60
+            },
+            {
+              "file_path" : "/var/log/boot.log*",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_stream_name" : "Syslog",
+              "retention_in_days" : 60
+            },
+            {
+              "file_path" : "/var/log/secure",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_stream_name" : "Syslog",
+              "retention_in_days" : 60
+            },
+            {
+              "file_path" : "/var/log/messages",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_stream_name" : "Syslog",
+              "retention_in_days" : 60
+            },
+            {
+              "file_path" : "/var/log/cron*",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_stream_name" : "Syslog",
+              "retention_in_days" : 60
+            },
+            {
+              "file_path" : "/var/log/cloud-init-output.log",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_stream_name" : "Syslog",
+              "retention_in_days" : 60
+            },
+            {
+              "file_path" : "/var/log/dmesg",
+              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_stream_name" : "Syslog",
+              "retention_in_days" : 60
+            },
           ]
         }
       }
