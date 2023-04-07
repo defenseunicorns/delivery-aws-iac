@@ -39,7 +39,7 @@ module "aws_eks" {
     }
   }
 
-  create_aws_auth_configmap = local.create_aws_auth_configmap
+  create_aws_auth_configmap = var.create_aws_auth_configmap
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
 
   kms_key_administrators = distinct(concat(local.admin_arns, var.kms_key_administrators))
