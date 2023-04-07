@@ -11,7 +11,7 @@ data "aws_partition" "current" {}
 ################## Loki S3 Bucket ###################
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "v3.6.0"
+  version = "v3.8.2"
 
   bucket_prefix           = var.name_prefix
   block_public_acls       = true
@@ -44,6 +44,8 @@ resource "aws_s3_bucket_logging" "logging" {
 
   target_bucket = var.access_logging_bucket_id
   target_prefix = var.access_logging_bucket_prefix
+
+  depends_on = [module.s3_bucket.s3_bucket_id]
 
   lifecycle {
     precondition {
