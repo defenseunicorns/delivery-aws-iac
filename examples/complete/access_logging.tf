@@ -10,7 +10,7 @@ resource "aws_kms_key" "default" {
   multi_region            = true
 }
 
-resource "aws_kms_alias" "ssmkey" {
+resource "aws_kms_alias" "default" {
   name_prefix   = local.kms_key_alias_name_prefix
   target_key_id = aws_kms_key.default.key_id
 
