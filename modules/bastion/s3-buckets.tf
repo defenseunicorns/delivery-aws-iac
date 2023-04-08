@@ -146,11 +146,11 @@ resource "aws_s3_bucket" "session_logs_bucket" {
 
 }
 
-resource "aws_s3_bucket_acl" "session_logs_bucket" {
-  bucket = aws_s3_bucket.session_logs_bucket.id
+# resource "aws_s3_bucket_acl" "session_logs_bucket" {
+#   bucket = aws_s3_bucket.session_logs_bucket.id
 
-  acl = "private"
-}
+#   acl = "private"
+# }
 
 resource "aws_s3_bucket_versioning" "session_logs_bucket" {
   bucket = aws_s3_bucket.session_logs_bucket.id

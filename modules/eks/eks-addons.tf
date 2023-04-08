@@ -2,15 +2,20 @@
 # EKS Add-Ons
 #---------------------------------------------------------------
 
+locals {
+  self_managed_node_group_names = [for key, value in module.aws_eks.self_managed_node_groups : lookup(value, "autoscaling_group_name", "")]
+}
+
 module "eks_blueprints_kubernetes_addons" {
   source = "git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git//modules/kubernetes-addons?ref=v4.27.0"
 
-  eks_cluster_id           = module.aws_eks.cluster_name
-  eks_cluster_endpoint     = module.aws_eks.cluster_endpoint
-  eks_oidc_provider        = module.aws_eks.oidc_provider
-  eks_cluster_version      = module.aws_eks.cluster_version
-  auto_scaling_group_names = concat(module.aws_eks.self_managed_node_groups_autoscaling_group_names, module.aws_eks.eks_managed_node_groups_autoscaling_group_names)
+  eks_cluster_id       = module.aws_eks.cluster_name
+  eks_cluster_endpoint = module.aws_eks.cluster_endpoint
+  eks_oidc_provider    = module.aws_eks.oidc_provider
+  eks_cluster_version  = module.aws_eks.cluster_version
 
+  # only used for aws_node_termination_handler, if this list is empty, then enable_aws_node_termination_handler should also be false.
+  auto_scaling_group_names = local.self_managed_node_group_names
   # blueprints addons
 
   # EKS CoreDNS
