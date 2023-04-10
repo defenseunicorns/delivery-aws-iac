@@ -92,7 +92,7 @@ kubectl get nodes
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.47.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.62.0 |
 | <a name="requirement_cloudinit"></a> [cloudinit](#requirement\_cloudinit) | >= 2.0.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.5.1 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 2.4.1 |
@@ -108,7 +108,7 @@ kubectl get nodes
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.47.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.62.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 3.1.0 |
 
 ## Modules
