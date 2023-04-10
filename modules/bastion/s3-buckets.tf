@@ -137,7 +137,7 @@ resource "aws_s3_bucket_notification" "access_log_bucket_notification" {
   }
 }
 
-# Create S3 bucket for session logs with versioning, encryption, blocked public acess enabled
+# Create S3 bucket for session logs with versioning, encryption, blocked public access enabled
 resource "aws_s3_bucket" "session_logs_bucket" {
   # checkov:skip=CKV_AWS_144: Cross region replication overkill
   bucket_prefix = "${var.session_log_bucket_name_prefix}-"
@@ -177,6 +177,10 @@ resource "aws_s3_bucket_public_access_block" "session_logs_bucket" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+
+  # The ACL needs to be added before this public access block can be applied. If the public access block gets applied first, then the ACL gets is not able to be added, leading to a race condition.
+  # https://stackoverflow.com/questions/71080354/getting-the-bucket-does-not-allow-acls-error
+  depends_on = [aws_s3_bucket_acl.session_logs_bucket]
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "session_logs_bucket" {

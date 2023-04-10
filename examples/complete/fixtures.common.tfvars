@@ -9,18 +9,17 @@ tags = {
   Environment = "dev"
   Project     = "du-iac-cicd"
 }
+name_prefix               = "ex-complete"
 manage_aws_auth_configmap = true
 
 ###########################################################
 #################### VPC Config ###########################
 
-vpc_cidr        = "10.200.0.0/16"
-vpc_name_prefix = "ex-complete-vpc-"
+vpc_cidr = "10.200.0.0/16"
 
 ###########################################################
 ################## Bastion Config #########################
 
-bastion_name_prefix  = "ex-complete-bastion-"
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
 zarf_version         = "v0.24.0-rc4"
@@ -28,8 +27,7 @@ zarf_version         = "v0.24.0-rc4"
 ###########################################################
 #################### EKS Config ###########################
 
-cluster_name_prefix = "ex-complete-eks-"
-cluster_version     = "1.23"
+cluster_version = "1.23"
 
 ###########################################################
 ############## Big Bang Dependencies ######################

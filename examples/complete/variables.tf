@@ -11,6 +11,16 @@ variable "region2" {
   type        = string
 }
 
+variable "name_prefix" {
+  description = "The prefix to use when naming all resources"
+  type        = string
+  default     = "ex-complete"
+  validation {
+    condition     = length(var.name_prefix) <= 20
+    error_message = "The name prefix cannot be more than 20 characters"
+  }
+}
+
 variable "aws_admin_usernames" {
   description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin"
   type        = list(string)
@@ -42,16 +52,6 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "vpc_name_prefix" {
-  description = "The name to use for the VPC"
-  type        = string
-  default     = "my-vpc"
-  validation {
-    condition     = length(var.vpc_name_prefix) <= 20
-    error_message = "The VPC name prefix cannot be more than 20 characters"
-  }
-}
-
 variable "create_database_subnet_group" {
   description = "Whether to create a database subnet group"
   type        = bool
@@ -70,16 +70,6 @@ variable "eks_worker_tenancy" {
   description = "The tenancy of the EKS worker nodes"
   type        = string
   default     = "default"
-}
-
-variable "cluster_name_prefix" {
-  description = "The name to use for the EKS cluster"
-  type        = string
-  default     = "my-eks"
-  validation {
-    condition     = length(var.cluster_name_prefix) <= 20
-    error_message = "The EKS cluster name prefix cannot be more than 20 characters"
-  }
 }
 
 variable "cluster_version" {
@@ -222,16 +212,6 @@ variable "bastion_tenancy" {
   description = "The tenancy of the bastion"
   type        = string
   default     = "default"
-}
-
-variable "bastion_name_prefix" {
-  description = "The name to use for the bastion"
-  type        = string
-  default     = "my-bastion"
-  validation {
-    condition     = length(var.bastion_name_prefix) <= 20
-    error_message = "The Bastion name prefix cannot be more than 20 characters"
-  }
 }
 
 variable "bastion_instance_type" {
