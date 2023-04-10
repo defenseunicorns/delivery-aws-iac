@@ -45,4 +45,6 @@ module "eks_blueprints_kubernetes_addons" {
   # Calico
   enable_calico      = var.enable_calico
   calico_helm_config = var.calico_helm_config
+
+  tags = var.tags
 }

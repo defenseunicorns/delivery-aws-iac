@@ -29,8 +29,8 @@ variable "manage_aws_auth_configmap" {
   default     = false
 }
 
-variable "default_tags" {
-  description = "A map of default tags to apply to all resources"
+variable "tags" {
+  description = "A map of tags to apply to all resources"
   type        = map(string)
   default     = {}
 }

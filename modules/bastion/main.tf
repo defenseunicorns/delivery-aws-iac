@@ -53,9 +53,10 @@ resource "aws_instance" "application" {
 
   subnet_id = var.subnet_name != "" ? data.aws_subnet.subnet_by_name[0].id : var.subnet_id
 
-  tags = {
-    Name = var.name
-  }
+  tags = merge(
+    var.tags,
+    { Name = var.name }
+  )
 }
 
 resource "tls_private_key" "bastion_key" {

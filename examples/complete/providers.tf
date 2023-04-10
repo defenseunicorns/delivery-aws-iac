@@ -50,17 +50,17 @@ terraform {
 
 provider "aws" {
   region = var.region
-  # default_tags {
-  #   tags = var.default_tags
-  # }
+  default_tags {
+    tags = var.tags
+  }
 }
 
 provider "aws" {
   alias  = "region2"
   region = var.region2
-  # default_tags {
-  #   tags = var.default_tags
-  # }
+  default_tags {
+    tags = var.tags
+  }
 }
 
 provider "kubernetes" {

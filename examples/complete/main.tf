@@ -25,10 +25,12 @@ locals {
 
   account = data.aws_caller_identity.current.account_id
 
-  tags = {
-    Blueprint  = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
-    GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
-  }
+  tags = merge(
+    var.tags,
+    {
+      RootTFModule = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
+    }
+  )
 
   eks_managed_node_groups = {
     # Managed Node groups with minimum config
@@ -104,10 +106,6 @@ locals {
 
       instance_type = "m5.xlarge"
       #capacity_type = "" # Optional Use this only for SPOT capacity as  capacity_type = "spot". Only for eks_managed_node_groups
-
-      tags = {
-        subnet_type = "private"
-      }
     }
   }
 }
@@ -179,9 +177,9 @@ module "bastion" {
   vpc_endpoints_enabled          = true
   tenancy                        = var.bastion_tenancy
   zarf_version                   = var.zarf_version
-  tags = {
-    Function = "bastion-ssm"
-  }
+  tags = merge(
+    local.tags,
+  { Function = "bastion-ssm" })
 }
 
 ###########################################################
@@ -231,17 +229,24 @@ module "eks" {
       AmazonSSMManagedInstanceCore = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
     # enable discovery of autoscaling groups by cluster-autoscaler
-    autoscaling_group_tags = {
-      "k8s.io/cluster-autoscaler/enabled" : true,
-      "k8s.io/cluster-autoscaler/${local.cluster_name}" : "owned"
-    }
+    autoscaling_group_tags = merge(
+      local.tags,
+      {
+        "k8s.io/cluster-autoscaler/enabled" : true,
+        "k8s.io/cluster-autoscaler/${local.cluster_name}" : "owned"
+    })
     metadata_options = {
       #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template#metadata-options
       http_endpoint               = "enabled"
       http_put_response_hop_limit = 2
       http_tokens                 = "optional" # set to "enabled" to enforce IMDSv2, default for upstream terraform-aws-eks module
     }
+    tags = {
+      subnet_type = "private"
+    }
   }
+
+  tags = local.tags
 
   self_managed_node_groups = local.self_managed_node_groups
 

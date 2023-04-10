@@ -41,11 +41,12 @@ data "aws_iam_policy_document" "ecr" {
 
 locals {
 
-  tags = {
-    Example    = var.name
-    GithubRepo = "terraform-aws-vpc"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = merge(
+    var.tags,
+    {
+      GithubRepo = "terraform-aws-vpc"
+      GithubOrg  = "terraform-aws-modules"
+  })
 }
 
 ################################################################################

@@ -56,6 +56,8 @@ module "aws_eks" {
       groups   = ["system:masters"]
     }
   ]
+
+  tags = var.tags
 }
 
 resource "aws_iam_role" "auth_eks_role" {

@@ -44,7 +44,7 @@ variable "eks_oidc_provider_arn" {
 }
 
 variable "tags" {
-  description = "Additional tags (e.g. `map('BusinessUnit`,`XYZ`)"
+  description = "A map of tags to apply to all resources"
   type        = map(string)
   default     = {}
 }

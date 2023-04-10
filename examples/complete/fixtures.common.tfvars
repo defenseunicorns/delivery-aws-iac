@@ -5,11 +5,10 @@
 #region  = "us-east-2" # target AWS region
 #region2 = "us-east-1" # RDS backup target AWS region
 
-# default_tags = {
-#   Environment = "dev"
-#   Project     = "ci-eks"
-#   Owner       = "ci"
-# }
+tags = {
+  Environment = "dev"
+  Project     = "du-iac-cicd"
+}
 manage_aws_auth_configmap = true
 
 ###########################################################
