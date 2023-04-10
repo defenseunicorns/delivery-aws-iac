@@ -69,8 +69,18 @@ cluster_addons = {
 
 
 #################### Blueprints addons ###################
-enable_cluster_autoscaler            = true
+#wait false for all addons, as it times out on teardown in the test pipeline
+enable_cluster_autoscaler      = true
+cluster_autoscaler_helm_config = { wait = false }
+
 enable_amazon_eks_aws_ebs_csi_driver = true
-enable_metrics_server                = true
-enable_aws_node_termination_handler  = true
-enable_calico                        = true
+amazon_eks_aws_ebs_csi_driver_config = { wait = false }
+
+enable_metrics_server      = true
+metrics_server_helm_config = { wait = false }
+
+enable_aws_node_termination_handler      = true
+aws_node_termination_handler_helm_config = { wait = false }
+
+enable_calico      = true
+calico_helm_config = { wait = false }
