@@ -12,7 +12,7 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempFolder,
-		Upgrade:      true,
+		Upgrade:      false,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
 			"fixtures.insecure.tfvars",
@@ -25,7 +25,7 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 func setupTestExamplesCompleteInsecure(t *testing.T, terraformOptions *terraform.Options) {
 	t.Helper()
 	teststructure.RunTestStage(t, "SETUP", func() {
-		terraform.Apply(t, terraformOptions)
+		terraform.InitAndApply(t, terraformOptions)
 	})
 }
 
