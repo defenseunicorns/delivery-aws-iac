@@ -125,6 +125,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "access_log_bucket" {
       days = var.access_log_expire_days
     }
   }
+  depends_on = [
+    aws_s3_bucket_versioning.access_log_bucket
+  ]
 }
 
 resource "aws_s3_bucket_notification" "access_log_bucket_notification" {
@@ -151,13 +154,20 @@ resource "aws_s3_bucket_ownership_controls" "session_logs_bucket" {
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
+  depends_on = [
+    aws_s3_bucket.session_logs_bucket,
+    aws_s3_bucket_public_access_block.session_logs_bucket
+  ]
 }
 
 resource "aws_s3_bucket_acl" "session_logs_bucket" {
-  depends_on = [aws_s3_bucket_ownership_controls.session_logs_bucket]
 
   bucket = aws_s3_bucket.session_logs_bucket.id
   acl    = "private"
+
+  depends_on = [
+    aws_s3_bucket_ownership_controls.session_logs_bucket
+  ]
 }
 
 resource "aws_s3_bucket_versioning" "session_logs_bucket" {
@@ -185,10 +195,6 @@ resource "aws_s3_bucket_public_access_block" "session_logs_bucket" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
-
-  # The ACL needs to be added before this public access block can be applied. If the public access block gets applied first, then the ACL gets is not able to be added, leading to a race condition.
-  # https://stackoverflow.com/questions/71080354/getting-the-bucket-does-not-allow-acls-error
-  depends_on = [aws_s3_bucket_acl.session_logs_bucket]
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "session_logs_bucket" {
@@ -207,6 +213,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "session_logs_bucket" {
       days = var.log_expire_days
     }
   }
+  depends_on = [
+    aws_s3_bucket_versioning.session_logs_bucket
+  ]
 }
 
 resource "aws_s3_bucket_notification" "session_logs_bucket_notification" {
