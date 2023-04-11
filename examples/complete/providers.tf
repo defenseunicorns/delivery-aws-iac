@@ -50,17 +50,17 @@ terraform {
 
 provider "aws" {
   region = var.region
-  default_tags {
-    tags = var.tags
-  }
+  # default_tags {
+  #   tags = var.tags #bug https://github.com/hashicorp/terraform-provider-aws/issues/19583#issuecomment-855773246
+  # }
 }
 
 provider "aws" {
   alias  = "region2"
   region = var.region2
-  default_tags {
-    tags = var.tags
-  }
+  # default_tags {
+  #   tags = var.tags #bug https://github.com/hashicorp/terraform-provider-aws/issues/19583#issuecomment-855773246
+  # }
 }
 
 provider "kubernetes" {
