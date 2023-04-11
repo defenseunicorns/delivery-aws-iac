@@ -24,9 +24,12 @@ import (
 func TestExamplesCompleteSecure(t *testing.T) {
 	t.Parallel()
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
+	terraformInitOptions := &terraform.Options{
+		TerraformDir: tempFolder,
+		Upgrade:      true,
+	}
 	terraformOptionsNoTargets := &terraform.Options{
 		TerraformDir: tempFolder,
-		Upgrade:      false,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
 			"fixtures.secure.tfvars",
@@ -34,7 +37,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	}
 	terraformOptionsWithVPCAndBastionTargets := &terraform.Options{
 		TerraformDir: tempFolder,
-		Upgrade:      false,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
 			"fixtures.secure.tfvars",
@@ -46,7 +48,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	}
 	terraformOptionsWithEKSTarget := &terraform.Options{
 		TerraformDir: tempFolder,
-		Upgrade:      false,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
 			"fixtures.secure.tfvars",
@@ -83,7 +84,7 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	}()
 	// setupTestExamplesCompleteSecure(t, terraformOptionsNoTargets, terraformOptionsWithVPCAndBastionTargets)
 	teststructure.RunTestStage(t, "SETUP", func() {
-		terraform.Init(t, terraformOptionsNoTargets)
+		terraform.Init(t, terraformInitOptions)
 		terraform.Apply(t, terraformOptionsWithVPCAndBastionTargets)
 		bastionInstanceID := terraform.Output(t, terraformOutputOptions, "bastion_instance_id")
 		bastionPrivateDNS := terraform.Output(t, terraformOutputOptions, "bastion_private_dns")
