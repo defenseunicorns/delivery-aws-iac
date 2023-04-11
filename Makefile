@@ -60,7 +60,7 @@ _test-all: _create-folders
 		-e SKIP_TEST \
 		-e SKIP_TEARDOWN \
 		$(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) \
-		bash -c 'asdf install && cd examples/complete && terraform init && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
+		bash -c 'asdf install && cd examples/complete && terraform init -upgrade=true && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
 
 .PHONY: bastion-connect
 bastion-connect: _create-folders ## To be used after deploying "secure mode" of examples/complete. It (a) creates a tunnel through the bastion host using sshuttle, and (b) sets up the KUBECONFIG so that the EKS cluster is able to be interacted with. Requires the standard AWS cred environment variables to be set. We recommend using 'aws-vault' to set them.
