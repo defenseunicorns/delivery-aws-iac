@@ -2,14 +2,15 @@ package e2e_test
 
 import (
 	"fmt"
+	"os/exec"
+	"testing"
+	"time"
+
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	teststructure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"os/exec"
-	"testing"
-	"time"
 )
 
 // This test deploys the complete example in "secure mode". Secure mode is:
@@ -24,9 +25,12 @@ import (
 func TestExamplesCompleteSecure(t *testing.T) {
 	t.Parallel()
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
-	terraformOptionsNoTargets := &terraform.Options{
+	terraformInitOptions := &terraform.Options{
 		TerraformDir: tempFolder,
 		Upgrade:      false,
+	}
+	terraformOptionsNoTargets := &terraform.Options{
+		TerraformDir: tempFolder,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
 			"fixtures.secure.tfvars",
@@ -34,7 +38,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	}
 	terraformOptionsWithVPCAndBastionTargets := &terraform.Options{
 		TerraformDir: tempFolder,
-		Upgrade:      false,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
 			"fixtures.secure.tfvars",
@@ -46,7 +49,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	}
 	terraformOptionsWithEKSTarget := &terraform.Options{
 		TerraformDir: tempFolder,
-		Upgrade:      false,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
 			"fixtures.secure.tfvars",
@@ -83,7 +85,7 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	}()
 	// setupTestExamplesCompleteSecure(t, terraformOptionsNoTargets, terraformOptionsWithVPCAndBastionTargets)
 	teststructure.RunTestStage(t, "SETUP", func() {
-		terraform.Init(t, terraformOptionsNoTargets)
+		terraform.Init(t, terraformInitOptions)
 		terraform.Apply(t, terraformOptionsWithVPCAndBastionTargets)
 		bastionInstanceID := terraform.Output(t, terraformOutputOptions, "bastion_instance_id")
 		bastionPrivateDNS := terraform.Output(t, terraformOutputOptions, "bastion_private_dns")
