@@ -125,6 +125,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "access_log_bucket" {
       days = var.access_log_expire_days
     }
   }
+  depends_on = [
+    aws_s3_bucket_versioning.access_log_bucket
+  ]
 }
 
 resource "aws_s3_bucket_notification" "access_log_bucket_notification" {
@@ -151,13 +154,19 @@ resource "aws_s3_bucket_ownership_controls" "session_logs_bucket" {
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
+  depends_on = [
+    aws_s3_bucket.session_logs_bucket,
+    aws_s3_bucket_public_access_block.session_logs_bucket
+  ]
 }
 
 resource "aws_s3_bucket_acl" "session_logs_bucket" {
-  depends_on = [aws_s3_bucket_ownership_controls.session_logs_bucket]
-
   bucket = aws_s3_bucket.session_logs_bucket.id
   acl    = "private"
+
+  depends_on = [
+    aws_s3_bucket_ownership_controls.session_logs_bucket
+  ]
 }
 
 resource "aws_s3_bucket_versioning" "session_logs_bucket" {
@@ -203,6 +212,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "session_logs_bucket" {
       days = var.log_expire_days
     }
   }
+  depends_on = [
+    aws_s3_bucket_versioning.session_logs_bucket
+  ]
 }
 
 resource "aws_s3_bucket_notification" "session_logs_bucket_notification" {
