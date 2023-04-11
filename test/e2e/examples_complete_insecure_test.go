@@ -25,7 +25,7 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 func setupTestExamplesCompleteInsecure(t *testing.T, terraformOptions *terraform.Options) {
 	t.Helper()
 	teststructure.RunTestStage(t, "SETUP", func() {
-		terraform.InitAndApply(t, terraformOptions)
+		terraform.Apply(t, terraformOptions)
 	})
 }
 

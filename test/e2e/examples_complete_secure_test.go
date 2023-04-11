@@ -24,10 +24,6 @@ import (
 func TestExamplesCompleteSecure(t *testing.T) {
 	t.Parallel()
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
-	terraformInitOptions := &terraform.Options{
-		TerraformDir: tempFolder,
-		Upgrade:      true,
-	}
 	terraformOptionsNoTargets := &terraform.Options{
 		TerraformDir: tempFolder,
 		VarFiles: []string{
@@ -84,7 +80,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	}()
 	// setupTestExamplesCompleteSecure(t, terraformOptionsNoTargets, terraformOptionsWithVPCAndBastionTargets)
 	teststructure.RunTestStage(t, "SETUP", func() {
-		terraform.Init(t, terraformInitOptions)
 		terraform.Apply(t, terraformOptionsWithVPCAndBastionTargets)
 		bastionInstanceID := terraform.Output(t, terraformOutputOptions, "bastion_instance_id")
 		bastionPrivateDNS := terraform.Output(t, terraformOutputOptions, "bastion_private_dns")
