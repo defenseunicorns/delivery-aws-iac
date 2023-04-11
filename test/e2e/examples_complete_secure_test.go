@@ -2,14 +2,15 @@ package e2e_test
 
 import (
 	"fmt"
+	"os/exec"
+	"testing"
+	"time"
+
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	teststructure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"os/exec"
-	"testing"
-	"time"
 )
 
 // This test deploys the complete example in "secure mode". Secure mode is:
