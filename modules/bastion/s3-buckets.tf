@@ -104,6 +104,10 @@ resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
 
   target_bucket = aws_s3_bucket.access_log_bucket.id
   target_prefix = "log/"
+  depends_on = [
+    aws_s3_bucket.access_log_bucket,
+    aws_s3_bucket.session_logs_bucket
+  ]
 }
 
 resource "aws_s3_bucket_public_access_block" "access_log_bucket" {
