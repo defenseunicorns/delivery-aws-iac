@@ -12,7 +12,7 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempFolder,
-		Upgrade:      true,
+		Upgrade:      false,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
 			"fixtures.insecure.tfvars",
