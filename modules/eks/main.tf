@@ -96,12 +96,12 @@ resource "kubernetes_storage_class_v1" "efs" {
   }
 
   storage_provisioner = "efs.csi.aws.com"
+  reclaim_policy      = var.reclaim_policy
   parameters = {
     provisioningMode = "efs-ap" # Dynamic provisioning
     fileSystemId     = module.efs[0].id
     directoryPerms   = "700"
   }
-
   mount_options = [
     "iam"
   ]

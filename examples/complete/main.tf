@@ -258,7 +258,8 @@ module "eks" {
   amazon_eks_aws_ebs_csi_driver_config = var.amazon_eks_aws_ebs_csi_driver_config
 
   # EKS EFS CSI Driver
-  enable_efs = var.enable_efs
+  enable_efs     = var.enable_efs
+  reclaim_policy = var.reclaim_policy
 
   # EKS Metrics Server
   enable_metrics_server      = var.enable_metrics_server

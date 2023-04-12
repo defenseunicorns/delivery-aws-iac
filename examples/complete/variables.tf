@@ -218,6 +218,12 @@ variable "enable_efs" {
 
 }
 
+variable "reclaim_policy" {
+  description = "Reclaim policy for EFS storage class, valid options are Delete and Retain"
+  type        = string
+  default     = "Delete"
+}
+
 ###########################################################
 ################## Bastion Config #########################
 variable "bastion_tenancy" {
