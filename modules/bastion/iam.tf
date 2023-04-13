@@ -95,12 +95,12 @@ data "aws_iam_policy_document" "ssm_s3_cwl_access" {
       "kms:Encrypt",
     ]
 
-    resources = [aws_kms_key.ssmkey.arn]
+    resources = [data.aws_kms_key.default.arn]
   }
 }
 
 resource "aws_iam_policy" "ssm_s3_cwl_access" {
-  name   = "${var.name}-ssm_s3_cwl_access-${var.aws_region}"
+  name   = "${var.name}-ssm_s3_cwl_access-${var.region}"
   path   = "/"
   policy = data.aws_iam_policy_document.ssm_s3_cwl_access.json
 }
@@ -120,19 +120,19 @@ data "aws_iam_policy_document" "ssm_ec2_access" {
       "kms:Decrypt",
       "kms:Encrypt",
     ]
-    resources = [aws_kms_key.ssmkey.arn]
+    resources = [data.aws_kms_key.default.arn]
   }
   statement {
     actions = ["ssm:StartSession"]
     resources = [
-      "arn:${data.aws_partition.current.partition}:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.application.id}",
+      "arn:${data.aws_partition.current.partition}:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.application.id}",
       "arn:${data.aws_partition.current.partition}:ssm:*:*:document/AWS-StartSSHSession"
     ]
   }
 }
 # Create a custom policy for the bastion and attachment
 resource "aws_iam_policy" "ssm_ec2_access" {
-  name   = "ssm-${var.name}-${var.aws_region}"
+  name   = "ssm-${var.name}-${var.region}"
   path   = "/"
   policy = data.aws_iam_policy_document.ssm_ec2_access.json
 }
@@ -173,7 +173,7 @@ resource "aws_iam_role_policy_attachment" "s3_companion_cube" {
 }
 
 resource "aws_iam_policy" "s3_readonly_policy" {
-  name   = "${local.bucket_prefix}-s3-readonly"
+  name   = "${var.name}-s3-readonly"
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -201,7 +201,7 @@ resource "aws_iam_role_policy_attachment" "s3_logging_cube" {
 }
 
 resource "aws_iam_policy" "s3_logging_policy" {
-  name   = "${local.bucket_prefix}-s3-logging"
+  name   = "${var.name}-s3-logging"
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -214,8 +214,8 @@ resource "aws_iam_policy" "s3_logging_policy" {
               "s3:PutObject"
             ],
             "Resource": [
-              "${aws_s3_bucket.access_log_bucket.arn}/*",
-              "${aws_s3_bucket.access_log_bucket.arn}"
+              "${data.aws_s3_bucket.access_logs_bucket.arn}/*",
+              "${data.aws_s3_bucket.access_logs_bucket.arn}"
             ]
         }
     ]
@@ -241,7 +241,7 @@ resource "aws_iam_policy" "terraform_policy" {
   # checkov:skip=CKV_AWS_290: TODO: Tighten this policy up. It currently allows actions that can be used to for resource exposure without constraint. Ref: https://docs.bridgecrew.io/docs/ensure-iam-policies-do-not-allow-write-access-without-constraint
   # checkov:skip=CKV_AWS_111: TODO: Fix CKV_AWS_290. It is identical to this policy.
 
-  name   = "${local.bucket_prefix}-terraform-policy"
+  name   = "${var.name}-terraform-policy"
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -393,58 +393,4 @@ resource "aws_iam_policy" "terraform_policy" {
     ]
 }
 EOF
-}
-# Create custom policy for KMS
-data "aws_iam_policy_document" "kms_access" {
-  # checkov:skip=CKV_AWS_111: todo reduce perms on key
-  # checkov:skip=CKV_AWS_109: todo be more specific with resources
-  statement {
-    sid = "KMS Key Default"
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root"
-      ]
-    }
-
-    actions = [
-      "kms:*",
-    ]
-
-    resources = ["*"]
-  }
-  statement {
-    sid = "CloudWatchLogsEncryption"
-    principals {
-      type        = "Service"
-      identifiers = ["logs.${var.aws_region}.amazonaws.com"]
-    }
-    actions = [
-      "kms:Encrypt*",
-      "kms:Decrypt*",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:Describe*",
-    ]
-
-    resources = ["*"]
-  }
-  statement {
-    sid = "Cloudtrail KMS permissions"
-    principals {
-      type = "Service"
-      identifiers = [
-        "cloudtrail.amazonaws.com"
-      ]
-    }
-    actions = [
-      "kms:Encrypt*",
-      "kms:Decrypt*",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:Describe*",
-    ]
-    resources = ["*"]
-  }
-
 }

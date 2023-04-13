@@ -27,16 +27,6 @@ output "security_group_ids" {
   description = "Security Group Ids"
 }
 
-output "access_bucket_name" {
-  value       = aws_s3_bucket.access_log_bucket.id
-  description = "Access Bucket Name"
-}
-
-output "access_bucket_arn" {
-  value       = aws_s3_bucket.access_log_bucket.arn
-  description = "Access Bucket ARN"
-}
-
 output "session_logs_bucket_name" {
   value       = aws_s3_bucket.session_logs_bucket.id
   description = "Session Logs Bucket Name"
