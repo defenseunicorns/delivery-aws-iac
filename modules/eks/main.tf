@@ -18,7 +18,7 @@ module "aws_eks" {
   self_managed_node_groups         = var.self_managed_node_groups
   eks_managed_node_groups          = var.eks_managed_node_groups
 
-  cluster_addons = local.cluster_addons
+  cluster_addons = var.cluster_addons
 
   #----------------------------------------------------------------------------------------------------------#
   # Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
@@ -39,7 +39,7 @@ module "aws_eks" {
     }
   }
 
-  create_aws_auth_configmap = local.create_aws_auth_configmap
+  create_aws_auth_configmap = var.create_aws_auth_configmap
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
 
   kms_key_administrators = distinct(concat(local.admin_arns, var.kms_key_administrators))
@@ -56,6 +56,8 @@ module "aws_eks" {
       groups   = ["system:masters"]
     }
   ]
+
+  tags = var.tags
 }
 
 resource "aws_iam_role" "auth_eks_role" {

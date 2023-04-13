@@ -17,10 +17,13 @@ locals {
 
   account = data.aws_caller_identity.current.account_id
 
-  tags = {
-    Blueprint  = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
-    GithubRepo = "github.com/defenseunicorns/iac"
-  }
+  tags = merge(
+    var.tags,
+    {
+      RootTFModule = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
+      GithubRepo   = "github.com/defenseunicorns/iac"
+    }
+  )
 
   eks_managed_node_groups = {
     # Managed Node groups with minimum config
@@ -96,10 +99,6 @@ locals {
 
       instance_type = "m5.xlarge"
       #capacity_type = "" # Optional Use this only for SPOT capacity as  capacity_type = "spot". Only for eks_managed_node_groups
-
-      tags = {
-        subnet_type = "private"
-      }
     }
   }
 }
@@ -172,9 +171,9 @@ module "bastion" {
   vpc_endpoints_enabled          = true
   tenancy                        = var.bastion_tenancy
   zarf_version                   = var.zarf_version
-  tags = merge(local.tags, {
-    Function = "bastion-ssm"
-  })
+  tags = merge(
+    local.tags,
+  { Function = "bastion-ssm" })
 }
 
 ###########################################################
@@ -198,6 +197,7 @@ module "eks" {
   bastion_role_name               = module.bastion.bastion_role_name
 
   # If using EKS Managed Node Groups, the aws-auth ConfigMap is created by eks itself and terraform can not create it
+  create_aws_auth_configmap = var.create_aws_auth_configmap
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
 
   ######################## EKS Managed Node Group ###################################
@@ -223,17 +223,24 @@ module "eks" {
       AmazonSSMManagedInstanceCore = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
     # enable discovery of autoscaling groups by cluster-autoscaler
-    autoscaling_group_tags = {
-      "k8s.io/cluster-autoscaler/enabled" : true,
-      "k8s.io/cluster-autoscaler/${local.cluster_name}" : "owned"
-    }
+    autoscaling_group_tags = merge(
+      local.tags,
+      {
+        "k8s.io/cluster-autoscaler/enabled" : true,
+        "k8s.io/cluster-autoscaler/${local.cluster_name}" : "owned"
+    })
     metadata_options = {
       #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template#metadata-options
       http_endpoint               = "enabled"
       http_put_response_hop_limit = 2
       http_tokens                 = "optional" # set to "enabled" to enforce IMDSv2, default for upstream terraform-aws-eks module
     }
+    tags = {
+      subnet_type = "private"
+    }
   }
+
+  tags = local.tags
 
   self_managed_node_groups = local.self_managed_node_groups
 
@@ -241,8 +248,7 @@ module "eks" {
   #"native" EKS Add-Ons
   #---------------------------------------------------------------
 
-  # VPC CNI
-  amazon_eks_vpc_cni = var.amazon_eks_vpc_cni
+  cluster_addons = var.cluster_addons
 
   #---------------------------------------------------------------
   # EKS Blueprints - EKS Add-Ons
@@ -271,4 +277,8 @@ module "eks" {
   # EKS Cluster Autoscaler
   enable_cluster_autoscaler      = var.enable_cluster_autoscaler
   cluster_autoscaler_helm_config = var.cluster_autoscaler_helm_config
+
+  #Calico
+  enable_calico      = var.enable_calico
+  calico_helm_config = var.calico_helm_config
 }
