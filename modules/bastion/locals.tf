@@ -2,7 +2,7 @@ locals {
   role_name                 = "${var.name}-role"
   add_custom_policy_to_role = var.policy_content != null
 
-  bucket_prefix = var.name
+  sqs_queue_name = "${var.name}-s3-event-notification-queue"
 
   # ssh access
   keys_update_frequency      = "*/5 * * * *"
@@ -16,7 +16,7 @@ locals {
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
-      cidr_blocks = var.allowed_public_ips # admin IPs or private IP (internal) of Software Defined Perimter
+      cidr_blocks = var.allowed_public_ips # admin IPs or private IP (internal) of Software Defined Perimeter
       description = "SSH access"
       },
     ]

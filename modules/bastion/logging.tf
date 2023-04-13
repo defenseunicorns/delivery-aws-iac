@@ -1,17 +1,18 @@
-# Create a log group for ssh accesss
-resource "aws_cloudwatch_log_group" "ssh-access-log-group" {
+# Create a log group for ssh access
+resource "aws_cloudwatch_log_group" "ssh_access_log_group" {
   name              = "/aws/events/${var.name}-ssh-access"
   retention_in_days = 60
-  kms_key_id        = aws_kms_key.ssmkey.arn
+  kms_key_id        = data.aws_kms_key.default.arn
 }
 
 # Create a cloudtrail and event rule to monitor bastion access over ssh
 resource "aws_cloudtrail" "ssh-access" {
   # checkov:skip=CKV_AWS_252: SNS not currently needed
   # checkov:skip=CKV2_AWS_10: Cloudwatch logs already being used with cloudtrail
-  name                       = "${var.name}-ssh-access"
-  s3_bucket_name             = aws_s3_bucket.access_log_bucket.id
-  kms_key_id                 = aws_kms_key.ssmkey.arn
+  name           = "${var.name}-ssh-access"
+  s3_bucket_name = data.aws_s3_bucket.access_logs_bucket.id
+  kms_key_id     = data.aws_kms_key.default.arn
+  # TODO: Evaluate whether we really need this to be multi-region. There is a hard limit of 5 cloudtrails per region that we are not able to increase.
   is_multi_region_trail      = true
   enable_log_file_validation = true
   event_selector {
@@ -19,13 +20,12 @@ resource "aws_cloudtrail" "ssh-access" {
     include_management_events = true
   }
   depends_on = [
-    aws_s3_bucket_policy.cloudwatch-s3-policy,
-    aws_kms_key.ssmkey,
-    aws_cloudwatch_log_group.ssh-access-log-group
+    aws_s3_bucket_policy.cloudwatch_s3_policy,
+    aws_cloudwatch_log_group.ssh_access_log_group
   ]
 }
 
-resource "aws_cloudwatch_event_rule" "ssh-access" {
+resource "aws_cloudwatch_event_rule" "ssh_access" {
   name        = "${var.name}-ssh-access"
   description = "filters ssm access logs and sends usable data to a cloudwatch log group"
 
@@ -41,10 +41,10 @@ resource "aws_cloudwatch_event_rule" "ssh-access" {
 EOF
 }
 
-resource "aws_cloudwatch_event_target" "ssm-target" {
-  rule      = aws_cloudwatch_event_rule.ssh-access.name
+resource "aws_cloudwatch_event_target" "ssm_target" {
+  rule      = aws_cloudwatch_event_rule.ssh_access.name
   target_id = "${var.name}-ssh-access-target"
-  arn       = aws_cloudwatch_log_group.ssh-access-log-group.arn
+  arn       = aws_cloudwatch_log_group.ssh_access_log_group.arn
 }
 
 # Create a cloudwatch agent configuration file and log group
@@ -200,14 +200,14 @@ resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
 resource "aws_cloudwatch_log_group" "ec2_cloudwatch_logs" {
   name              = "ec2-cloudwatch-logging-${var.name}"
   retention_in_days = 60
-  kms_key_id        = aws_kms_key.ssmkey.arn
+  kms_key_id        = data.aws_kms_key.default.arn
 }
 
 # Create cloudwatch log group for ssm
 resource "aws_cloudwatch_log_group" "session_manager_log_group" {
   name_prefix       = "${var.cloudwatch_log_group_name}-"
   retention_in_days = var.cloudwatch_logs_retention
-  kms_key_id        = aws_kms_key.ssmkey.arn
+  kms_key_id        = data.aws_kms_key.default.arn
 
   tags = var.tags
 }

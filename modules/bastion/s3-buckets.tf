@@ -1,14 +1,7 @@
 #####################################################
 ##################### S3 Bucket #####################
 
-# Create S3 bucket for access logs with versioning, encryption, blocked public access enabled
-resource "aws_s3_bucket" "access_log_bucket" {
-  # checkov:skip=CKV_AWS_144: Cross region replication is overkill
-  bucket_prefix = "${var.access_log_bucket_name_prefix}-"
-  force_destroy = true
-  tags          = var.tags
-}
-data "aws_iam_policy_document" "cloudwatch-policy" {
+data "aws_iam_policy_document" "cloudwatch_policy" {
 
   statement {
     sid    = "AWSCloudTrailAclCheck"
@@ -24,7 +17,7 @@ data "aws_iam_policy_document" "cloudwatch-policy" {
     ]
 
     resources = [
-      aws_s3_bucket.access_log_bucket.arn
+      data.aws_s3_bucket.access_logs_bucket.arn
     ]
 
     condition {
@@ -32,7 +25,7 @@ data "aws_iam_policy_document" "cloudwatch-policy" {
       variable = "AWS:SourceArn"
 
       values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/${var.name}-ssh-access",
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${var.region}:${data.aws_caller_identity.current.account_id}:trail/${var.name}-ssh-access",
       ]
     }
   }
@@ -51,7 +44,7 @@ data "aws_iam_policy_document" "cloudwatch-policy" {
     ]
 
     resources = [
-      "arn:${data.aws_partition.current.partition}:s3:::${aws_s3_bucket.access_log_bucket.id}/*",
+      "arn:${data.aws_partition.current.partition}:s3:::${data.aws_s3_bucket.access_logs_bucket.id}/*",
     ]
 
     condition {
@@ -68,76 +61,15 @@ data "aws_iam_policy_document" "cloudwatch-policy" {
       variable = "AWS:SourceArn"
 
       values = [
-        "arn:${data.aws_partition.current.partition}:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/${var.name}-ssh-access",
+        "arn:${data.aws_partition.current.partition}:cloudtrail:${var.region}:${data.aws_caller_identity.current.account_id}:trail/${var.name}-ssh-access",
       ]
     }
   }
 }
 
-resource "aws_s3_bucket_policy" "cloudwatch-s3-policy" {
-  bucket = aws_s3_bucket.access_log_bucket.bucket
-  policy = data.aws_iam_policy_document.cloudwatch-policy.json
-
-}
-
-resource "aws_s3_bucket_versioning" "access_log_bucket" {
-  bucket = aws_s3_bucket.access_log_bucket.id
-
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "access_log_bucket" {
-  bucket = aws_s3_bucket.access_log_bucket.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.ssmkey.arn
-      sse_algorithm     = "aws:kms"
-    }
-  }
-}
-
-resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
-  bucket = aws_s3_bucket.session_logs_bucket.id
-
-  target_bucket = aws_s3_bucket.access_log_bucket.id
-  target_prefix = "log/"
-}
-
-resource "aws_s3_bucket_public_access_block" "access_log_bucket" {
-  bucket                  = aws_s3_bucket.access_log_bucket.id
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-resource "aws_s3_bucket_lifecycle_configuration" "access_log_bucket" {
-  bucket = aws_s3_bucket.access_log_bucket.id
-
-  rule {
-    id     = "delete_after_X_days"
-    status = "Enabled"
-
-    expiration {
-      days = var.access_log_expire_days
-    }
-  }
-  depends_on = [
-    aws_s3_bucket_versioning.access_log_bucket
-  ]
-}
-
-resource "aws_s3_bucket_notification" "access_log_bucket_notification" {
-  count  = var.enable_event_queue ? 1 : 0
-  bucket = aws_s3_bucket.access_log_bucket.id
-
-  queue {
-    queue_arn = aws_sqs_queue.queue[0].arn
-    events    = ["s3:ObjectCreated:*"]
-  }
+resource "aws_s3_bucket_policy" "cloudwatch_s3_policy" {
+  bucket = data.aws_s3_bucket.access_logs_bucket.id
+  policy = data.aws_iam_policy_document.cloudwatch_policy.json
 }
 
 # Create S3 bucket for session logs with versioning, encryption, blocked public access enabled
@@ -149,15 +81,11 @@ resource "aws_s3_bucket" "session_logs_bucket" {
 
 }
 
-resource "aws_s3_bucket_ownership_controls" "session_logs_bucket" {
+resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
   bucket = aws_s3_bucket.session_logs_bucket.id
-  rule {
-    object_ownership = "BucketOwnerPreferred"
-  }
-  depends_on = [
-    aws_s3_bucket.session_logs_bucket,
-    aws_s3_bucket_public_access_block.session_logs_bucket
-  ]
+
+  target_bucket = data.aws_s3_bucket.access_logs_bucket.id
+  target_prefix = var.access_logs_target_prefix
 }
 
 resource "aws_s3_bucket_acl" "session_logs_bucket" {
@@ -166,6 +94,17 @@ resource "aws_s3_bucket_acl" "session_logs_bucket" {
 
   depends_on = [
     aws_s3_bucket_ownership_controls.session_logs_bucket
+  ]
+}
+
+resource "aws_s3_bucket_ownership_controls" "session_logs_bucket" {
+  bucket = aws_s3_bucket.session_logs_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+  depends_on = [
+    aws_s3_bucket.session_logs_bucket,
+    aws_s3_bucket_public_access_block.session_logs_bucket
   ]
 }
 
@@ -182,7 +121,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "session_logs_buck
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.ssmkey.arn
+      kms_master_key_id = data.aws_kms_key.default.arn
       sse_algorithm     = "aws:kms"
     }
   }
@@ -212,17 +151,18 @@ resource "aws_s3_bucket_lifecycle_configuration" "session_logs_bucket" {
       days = var.log_expire_days
     }
   }
+
   depends_on = [
     aws_s3_bucket_versioning.session_logs_bucket
   ]
 }
 
 resource "aws_s3_bucket_notification" "session_logs_bucket_notification" {
-  count  = var.enable_event_queue ? 1 : 0
+  count  = var.enable_sqs_events_on_bastion_login ? 1 : 0
   bucket = aws_s3_bucket.session_logs_bucket.id
 
   queue {
-    queue_arn = aws_sqs_queue.queue[0].arn
+    queue_arn = aws_sqs_queue.bastion_login_queue[0].arn
     events    = ["s3:ObjectCreated:*"]
   }
 }

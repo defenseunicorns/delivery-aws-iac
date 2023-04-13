@@ -3,27 +3,20 @@ locals {
   eks_oidc_issuer_url = replace(var.eks_oidc_provider_arn, "/^(.*provider/)/", "")
 }
 
+data "aws_kms_key" "default" {
+  key_id = var.kms_key_arn
+}
+
 data "aws_iam_policy_document" "sops" {
 
   statement {
     actions   = ["kms:Encrypt", "kms:Decrypt", "kms:DescribeKey", "kms:GenerateRandom"]
-    resources = [aws_kms_key.sops.arn]
+    resources = [data.aws_kms_key.default.arn]
   }
   statement {
     actions   = ["kms:GenerateRandom"]
     resources = ["*"]
   }
-}
-
-resource "aws_kms_key" "sops" {
-  enable_key_rotation     = true
-  description             = "KMS key is used to encrypt / decrypt sops files in git"
-  deletion_window_in_days = 7
-}
-
-resource "aws_kms_alias" "a" {
-  name          = "alias/${var.kms_key_alias}"
-  target_key_id = aws_kms_key.sops.key_id
 }
 
 resource "aws_iam_policy" "sops_policy" {
