@@ -8,6 +8,12 @@ variable "name" {
   type        = string
 }
 
+variable "tags" {
+  description = "A map of tags to apply to all resources"
+  type        = map(string)
+  default     = {}
+}
+
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string

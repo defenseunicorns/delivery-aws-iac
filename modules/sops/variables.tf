@@ -15,8 +15,8 @@ variable "policy_name_prefix" {
 }
 
 variable "tags" {
+  description = "A map of tags to apply to all resources"
   type        = map(string)
-  description = "Tags to apply to resources"
   default     = {}
 }
 

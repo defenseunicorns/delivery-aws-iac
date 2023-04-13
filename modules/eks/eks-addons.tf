@@ -2,14 +2,21 @@
 # EKS Add-Ons
 #---------------------------------------------------------------
 
+locals {
+  self_managed_node_group_names = [for key, value in module.aws_eks.self_managed_node_groups : lookup(value, "autoscaling_group_name", "")]
+}
+
 module "eks_blueprints_kubernetes_addons" {
   source = "git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git//modules/kubernetes-addons?ref=v4.27.0"
 
-  eks_cluster_id           = module.aws_eks.cluster_name
-  eks_cluster_endpoint     = module.aws_eks.cluster_endpoint
-  eks_oidc_provider        = module.aws_eks.oidc_provider
-  eks_cluster_version      = module.aws_eks.cluster_version
-  auto_scaling_group_names = concat(lookup(module.aws_eks.self_managed_node_groups, "autoscaling_group_name", []), lookup(module.aws_eks.eks_managed_node_groups, "node_group_autoscaling_group_names", []))
+  eks_cluster_id       = module.aws_eks.cluster_name
+  eks_cluster_endpoint = module.aws_eks.cluster_endpoint
+  eks_oidc_provider    = module.aws_eks.oidc_provider
+  eks_cluster_version  = module.aws_eks.cluster_version
+
+  # only used for aws_node_termination_handler, if this list is empty, then enable_aws_node_termination_handler should also be false.
+  auto_scaling_group_names = local.self_managed_node_group_names
+  # blueprints addons
 
   # EKS CoreDNS
   enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
@@ -23,8 +30,6 @@ module "eks_blueprints_kubernetes_addons" {
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   amazon_eks_aws_ebs_csi_driver_config = var.amazon_eks_aws_ebs_csi_driver_config
 
-
-  # K8s Add-ons
   # EKS Metrics Server
   enable_metrics_server      = var.enable_metrics_server
   metrics_server_helm_config = var.metrics_server_helm_config
@@ -36,4 +41,10 @@ module "eks_blueprints_kubernetes_addons" {
   # EKS Cluster Autoscaler
   enable_cluster_autoscaler      = var.enable_cluster_autoscaler
   cluster_autoscaler_helm_config = var.cluster_autoscaler_helm_config
+
+  # Calico
+  enable_calico      = var.enable_calico
+  calico_helm_config = var.calico_helm_config
+
+  tags = var.tags
 }

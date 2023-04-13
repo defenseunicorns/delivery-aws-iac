@@ -27,14 +27,20 @@ variable "aws_admin_usernames" {
   default     = []
 }
 
+variable "create_aws_auth_configmap" {
+  description = "Determines whether to create the aws-auth configmap. NOTE - this is only intended for scenarios where the configmap does not exist (i.e. - when using only self-managed node groups). Most users should use `manage_aws_auth_configmap`"
+  type        = bool
+  default     = false
+}
+
 variable "manage_aws_auth_configmap" {
   description = "Determines whether to manage the aws-auth configmap"
   type        = bool
   default     = false
 }
 
-variable "default_tags" {
-  description = "A map of default tags to apply to all resources"
+variable "tags" {
+  description = "A map of tags to apply to all resources"
   type        = map(string)
   default     = {}
 }
@@ -119,41 +125,17 @@ variable "enable_self_managed_nodegroups" {
 ###########################################################
 ################## EKS Addons Config ######################
 
-#----------------AWS EKS VPC CNI-------------------------
-variable "amazon_eks_vpc_cni" {
+variable "cluster_addons" {
   description = <<-EOD
-    The VPC CNI add-on configuration.
-    enable - (Optional) Whether to enable the add-on. Defaults to false.
-    before_compute - (Optional) Whether to create the add-on before the compute resources. Defaults to true.
-    most_recent - (Optional) Whether to use the most recent version of the add-on. Defaults to true.
-    resolve_conflicts - (Optional) How to resolve parameter value conflicts between the add-on and the cluster. Defaults to OVERWRITE. Valid values: OVERWRITE, NONE, PRESERVE.
-    configuration_values - (Optional) A map of configuration values for the add-on. See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on for supported values.
-    preserve - (Optional) Whether to preserve the add-on's objects when the add-on is deleted. Defaults to false.
-  EOD
-  type = object({
-    enable               = bool
-    before_compute       = bool
-    most_recent          = bool
-    resolve_conflicts    = string
-    configuration_values = map(any) # hcl format later to be json encoded
-    preserve             = bool
-  })
-  default = {
-    before_compute    = true
-    enable            = false
-    most_recent       = true
-    resolve_conflicts = "OVERWRITE"
-    preserve          = false
-    configuration_values = {
-      # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
-      AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
-      ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone" # allows vpc-cni to use topology labels to determine which subnet to deploy an ENI in
+  Nested of eks native add-ons and their associated parameters.
+  See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_add-on for supported values.
+  See https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/complete/main.tf#L44-L60 for upstream example.
 
-      # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
-      ENABLE_PREFIX_DELEGATION = "true"
-      WARM_PREFIX_TARGET       = "1"
-    }
-  }
+  to see available eks marketplace addons available for your cluster's version run:
+  aws eks describe-addon-versions --kubernetes-version $k8s_cluster_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
+EOD
+  type        = any
+  default     = {}
 }
 
 #----------------AWS CoreDNS-------------------------
@@ -233,6 +215,20 @@ variable "cluster_autoscaler_helm_config" {
   type        = any
   default     = {}
 }
+
+#----------------Calico-------------------------
+variable "enable_calico" {
+  description = "Enable Calico add-on"
+  type        = bool
+  default     = true
+}
+
+variable "calico_helm_config" {
+  description = "Calico Helm Chart config"
+  type        = any
+  default     = {}
+}
+
 
 ###########################################################
 ################## Bastion Config #########################
