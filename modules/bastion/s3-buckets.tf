@@ -1,11 +1,6 @@
 #####################################################
 ##################### S3 Bucket #####################
 
-resource "aws_s3_bucket_policy" "cloudwatch_s3_policy" {
-  bucket = data.aws_s3_bucket.access_logs_bucket.id
-  policy = data.aws_iam_policy_document.cloudwatch_policy.json
-}
-
 data "aws_iam_policy_document" "cloudwatch_policy" {
 
   statement {
@@ -72,6 +67,11 @@ data "aws_iam_policy_document" "cloudwatch_policy" {
   }
 }
 
+resource "aws_s3_bucket_policy" "cloudwatch_s3_policy" {
+  bucket = data.aws_s3_bucket.access_logs_bucket.id
+  policy = data.aws_iam_policy_document.cloudwatch_policy.json
+}
+
 # Create S3 bucket for session logs with versioning, encryption, blocked public access enabled
 resource "aws_s3_bucket" "session_logs_bucket" {
   # checkov:skip=CKV_AWS_144: Cross region replication overkill
@@ -90,8 +90,22 @@ resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
 
 resource "aws_s3_bucket_acl" "session_logs_bucket" {
   bucket = aws_s3_bucket.session_logs_bucket.id
+  acl    = "private"
 
-  acl = "private"
+  depends_on = [
+    aws_s3_bucket_ownership_controls.session_logs_bucket
+  ]
+}
+
+resource "aws_s3_bucket_ownership_controls" "session_logs_bucket" {
+  bucket = aws_s3_bucket.session_logs_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+  depends_on = [
+    aws_s3_bucket.session_logs_bucket,
+    aws_s3_bucket_public_access_block.session_logs_bucket
+  ]
 }
 
 resource "aws_s3_bucket_versioning" "session_logs_bucket" {
@@ -137,6 +151,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "session_logs_bucket" {
       days = var.log_expire_days
     }
   }
+
+  depends_on = [
+    aws_s3_bucket_versioning.session_logs_bucket
+  ]
 }
 
 resource "aws_s3_bucket_notification" "session_logs_bucket_notification" {
