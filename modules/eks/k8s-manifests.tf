@@ -11,10 +11,9 @@ kind: ENIConfig
 metadata:
   name: ${each.key}
 spec:
-  subnet : ${each.value}
-  securityGroups :
-    - ${module.aws_eks.cluster_primary_security_group_id}
-    - ${module.aws_eks.node_security_group_id}
+  subnet: ${each.value}
+  securityGroups:
+    ${indent(4, join("\n", [for sg in compact([module.aws_eks.cluster_primary_security_group_id, module.aws_eks.node_security_group_id, module.aws_eks.cluster_security_group_id]) : "- ${sg}"]))}
 YAML
 
   depends_on = [

@@ -15,8 +15,8 @@ variable "policy_name_prefix" {
 }
 
 variable "tags" {
+  description = "A map of tags to apply to all resources"
   type        = map(string)
-  description = "Tags to apply to resources"
   default     = {}
 }
 
@@ -62,10 +62,9 @@ variable "sops_iam_policies" {
   default     = []
 }
 
-variable "kms_key_alias" {
+variable "kms_key_arn" {
   type        = string
-  description = "KMS key alias"
-  default     = "sops"
+  description = "KMS Key ARN to use for encryption"
 }
 
 variable "vpc_id" {

@@ -5,11 +5,10 @@
 #region  = "us-east-2" # target AWS region
 #region2 = "us-east-1" # RDS backup target AWS region
 
-# default_tags = {
-#   Environment = "dev"
-#   Project     = "ci-eks"
-#   Owner       = "ci"
-# }
+tags = {
+  Environment = "dev"
+  Project     = "du-iac-cicd"
+}
 name_prefix               = "ex-complete"
 manage_aws_auth_configmap = true
 
@@ -34,7 +33,6 @@ cluster_version = "1.23"
 ############## Big Bang Dependencies ######################
 
 keycloak_enabled = true
-# other_addon_enabled = true
 
 
 #################### Keycloak ###########################
@@ -47,20 +45,40 @@ kc_db_allocated_storage     = 20
 kc_db_max_allocated_storage = 100
 kc_db_instance_class        = "db.t4g.large"
 
-#################### EKS Addon #########################
-amazon_eks_vpc_cni = {
-  enable            = true
-  before_compute    = true
-  most_recent       = true
-  resolve_conflicts = "OVERWRITE"
-  preserve          = false
-  configuration_values = {
-    # Reference https://aws.github.io/aws-eks-best-practices/reliability/docs/networkmanagement/#cni-custom-networking
-    AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
-    ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone" # allows vpc-cni to use topology labels to determine which subnet to deploy an ENI in
-
-    # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
-    ENABLE_PREFIX_DELEGATION = "true"
-    WARM_PREFIX_TARGET       = "1"
+# #################### EKS Addon #########################
+# add other "eks native" marketplace addons and configs to this list
+cluster_addons = {
+  vpc-cni = {
+    most_recent          = true
+    before_compute       = true
+    configuration_values = <<-JSON
+      {
+        "env": {
+          "AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG": "true",
+          "ENABLE_PREFIX_DELEGATION": "true",
+          "ENI_CONFIG_LABEL_DEF": "topology.kubernetes.io/zone",
+          "WARM_PREFIX_TARGET": "1",
+          "ANNOTATE_POD_IP": "true"
+        }
+      }
+    JSON
   }
 }
+
+
+#################### Blueprints addons ###################
+#wait false for all addons, as it times out on teardown in the test pipeline
+enable_cluster_autoscaler      = true
+cluster_autoscaler_helm_config = { wait = false }
+
+enable_amazon_eks_aws_ebs_csi_driver = true
+amazon_eks_aws_ebs_csi_driver_config = { wait = false }
+
+enable_metrics_server      = true
+metrics_server_helm_config = { wait = false }
+
+enable_aws_node_termination_handler      = true
+aws_node_termination_handler_helm_config = { wait = false }
+
+enable_calico      = true
+calico_helm_config = { wait = false }

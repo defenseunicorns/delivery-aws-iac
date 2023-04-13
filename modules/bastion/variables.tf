@@ -1,11 +1,6 @@
 # Global Vars
 
-# variable "aws_profile" {
-#   type        = string
-#   description = "AWS Profile"
-# }
-
-variable "aws_region" {
+variable "region" {
   type        = string
   description = "AWS Region"
 }
@@ -13,6 +8,28 @@ variable "aws_region" {
 variable "vpc_id" {
   type        = string
   description = "VPC id"
+}
+
+variable "kms_key_arn" {
+  type        = string
+  description = "KMS Key ARN to use for encryption"
+}
+
+variable "access_logs_bucket_name" {
+  type        = string
+  description = "Name of S3 bucket to use to store access logs"
+}
+
+variable "access_logs_target_prefix" {
+  type        = string
+  description = "Prefix for all log object keys for the access log."
+  default     = "bastion-session-logs/"
+}
+
+variable "enable_sqs_events_on_bastion_login" {
+  description = "If true, generates an SQS event whenever an object is created in the Session Logs S3 bucket, which happens whenever someone logs in to the Bastion."
+  type        = bool
+  default     = false
 }
 
 ### Bastion Module
@@ -36,7 +53,7 @@ variable "ami_id" {
 
 variable "allowed_public_ips" {
   type        = list(string)
-  description = "List of public IPs to allow SSH access from"
+  description = "List of public IPs or private IP (internal) of Software Defined Perimeter to allow SSH access from"
   default     = []
 }
 
@@ -58,12 +75,6 @@ variable "ami_canonical_owner" {
   default     = null
 }
 
-variable "ec2_key_name" {
-  type        = string
-  description = "Name of keypair to associate with instance"
-  default     = null
-}
-
 variable "security_group_ids" {
   type        = list(any)
   description = "List of security groups to associate with instance"
@@ -79,24 +90,6 @@ variable "subnet_id" {
 variable "subnet_name" {
   type        = string
   description = "Names of subnets to deploy the instance in"
-  default     = ""
-}
-
-variable "requires_eip" {
-  type        = bool
-  description = "Whether or not the instance should have an Elastic IP associated to it"
-  default     = false
-}
-
-variable "user_data" {
-  type        = string
-  description = "(Optional) The user data to provide when launching the instance"
-  default     = ""
-}
-
-variable "role_name" {
-  type        = string
-  description = "Name to give IAM role created for instance profile"
   default     = ""
 }
 
@@ -171,27 +164,6 @@ variable "log_expire_days" {
   default     = 365
 }
 
-variable "access_log_bucket_name_prefix" {
-  description = "Name prefix of S3 bucket to store access logs from session logs bucket"
-  type        = string
-  validation {
-    condition     = length(var.access_log_bucket_name_prefix) <= 37
-    error_message = "Bucket name prefixes may not be longer than 37 characters."
-  }
-}
-
-variable "access_log_expire_days" {
-  description = "Number of days to wait before deleting access logs"
-  type        = number
-  default     = 30
-}
-
-variable "acl" {
-  description = "The canned ACL to apply. Defaults to 'private'"
-  type        = string
-  default     = "private"
-}
-
 variable "enable_log_to_s3" {
   description = "Enable Session Manager to Log to S3"
   type        = bool
@@ -204,38 +176,8 @@ variable "enable_log_to_cloudwatch" {
   default     = true
 }
 
-variable "versioning_enabled" {
-  description = "Enable versioning. Once you version-enable a bucket, it can never return to an unversioned state. You can, however, suspend versioning on that bucket."
-  type        = bool
-  default     = true
-}
-
-variable "force_destroy" {
-  description = "A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error"
-  type        = bool
-  default     = true
-}
-
-variable "logging" {
-  description = "Map containing access bucket logging configuration."
-  type        = map(string)
-  default     = {}
-}
-
-variable "enable_event_queue" {
-  description = "Toggle to optionally generate events on object writes, and add them to an SQS queue. Defaults to false"
-  type        = bool
-  default     = false
-}
-
 variable "enable_kms_key_rotation" {
   description = "Toggle to optionally enable kms key rotation. Defaults to true"
-  type        = bool
-  default     = true
-}
-
-variable "bucket_public_access_block" {
-  description = "Toggle to optionally block public s3 access. Defaults to true"
   type        = bool
   default     = true
 }
@@ -248,36 +190,8 @@ variable "ssh_user" {
   default = "ubuntu"
 }
 
-variable "enable_hourly_cron_updates" {
-  default = "false"
-}
-
-variable "keys_update_frequency" {
-  default = ""
-}
-
-variable "user_data_file" {
-  default = "templates/user_data.sh"
-}
-
 variable "additional_user_data_script" {
   default = ""
-}
-
-variable "ssh_public_key_names" {
-  default = ["user1", "user2", "admin"]
-  type    = list(string)
-}
-
-variable "cluster_sops_policy_arn" {
-  description = "value of the policy arn for the cluster sops policy"
-  default     = ""
-}
-
-variable "add_sops_policy" {
-  description = "value of the policy arn for the cluster sops policy"
-  type        = bool
-  default     = false
 }
 
 variable "ssm_enabled" {
@@ -291,27 +205,10 @@ variable "ssh_password" {
   type        = string
 }
 
-variable "ssmkey_arn" {
-  description = "SSM key arn"
-  default     = ""
-}
-
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
   default     = {}
-}
-
-variable "kms_key_deletion_window" {
-  description = "Waiting period for scheduled KMS Key deletion.  Can be 7-30 days."
-  type        = number
-  default     = 7
-}
-
-variable "kms_key_alias" {
-  description = "Alias prefix of the KMS key.  Must start with alias/ followed by a name"
-  type        = string
-  default     = "alias/ssm-key"
 }
 
 variable "cloudwatch_logs_retention" {
