@@ -16,7 +16,7 @@ module "eks_blueprints_kubernetes_addons" {
 
   # only used for aws_node_termination_handler, if this list is empty, then enable_aws_node_termination_handler should also be false.
   auto_scaling_group_names = local.self_managed_node_group_names
-  
+
   # blueprints addons
 
   # EKS CoreDNS
@@ -35,7 +35,7 @@ module "eks_blueprints_kubernetes_addons" {
   enable_aws_efs_csi_driver = var.enable_efs
 
   # K8s Add-ons
-  
+
   # EKS Metrics Server
   enable_metrics_server      = var.enable_metrics_server
   metrics_server_helm_config = var.metrics_server_helm_config
