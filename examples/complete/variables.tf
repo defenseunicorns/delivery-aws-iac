@@ -46,6 +46,12 @@ variable "vpc_cidr" {
   type        = string
 }
 
+variable "secondary_cidr_blocks" {
+  description = "A list of secondary CIDR blocks for the VPC"
+  type        = list(string)
+  default     = []
+}
+
 variable "create_database_subnet_group" {
   description = "Whether to create a database subnet group"
   type        = bool

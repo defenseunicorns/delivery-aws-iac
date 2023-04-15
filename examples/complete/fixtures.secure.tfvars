@@ -1,5 +1,6 @@
 region                         = "us-east-2"
 region2                        = "us-east-1"
+secondary_cidr_blocks          = ["100.64.0.0/8"] #https://aws.amazon.com/blogs/containers/optimize-ip-addresses-usage-by-pods-in-your-amazon-eks-cluster/
 enable_eks_managed_nodegroups  = false
 enable_self_managed_nodegroups = true
 bastion_tenancy                = "dedicated"

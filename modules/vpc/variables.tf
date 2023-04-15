@@ -97,3 +97,9 @@ variable "single_nat_gateway" {
   type        = bool
   default     = true
 }
+
+variable "secondary_cidr_blocks" {
+  description = "List of secondary CIDR blocks for the VPC"
+  type        = list(string)
+  default     = []
+}

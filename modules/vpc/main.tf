@@ -55,8 +55,9 @@ locals {
 module "vpc" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v3.19.0"
 
-  name = var.name
-  cidr = var.vpc_cidr
+  name                  = var.name
+  cidr                  = var.vpc_cidr
+  secondary_cidr_blocks = var.secondary_cidr_blocks
 
   azs              = var.azs
   public_subnets   = var.public_subnets

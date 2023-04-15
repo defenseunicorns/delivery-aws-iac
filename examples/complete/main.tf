@@ -108,16 +108,17 @@ module "vpc" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v<insert tagged version>"
   source = "../../modules/vpc"
 
-  region             = var.region
-  name               = local.vpc_name
-  vpc_cidr           = var.vpc_cidr
-  azs                = ["${var.region}a", "${var.region}b", "${var.region}c"]
-  public_subnets     = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k)]
-  private_subnets    = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 4)]
-  database_subnets   = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 8)]
-  intra_subnets      = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 12)]
-  single_nat_gateway = true
-  enable_nat_gateway = true
+  region                = var.region
+  name                  = local.vpc_name
+  vpc_cidr              = var.vpc_cidr
+  secondary_cidr_blocks = var.secondary_cidr_blocks
+  azs                   = ["${var.region}a", "${var.region}b", "${var.region}c"]
+  public_subnets        = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k)]
+  private_subnets       = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 4)]
+  database_subnets      = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 8)]
+  intra_subnets         = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.secondary_cidr_blocks, 5, k)]
+  single_nat_gateway    = true
+  enable_nat_gateway    = true
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
