@@ -5,6 +5,8 @@ locals {
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "this" {
+  # checkov:skip=CKV_AWS_18: "Ensure the S3 bucket has access logging enabled" -- TODO: Offer ability to send logs to a separate bucket
+
   count         = var.use_external_s3_bucket ? 0 : 1
   bucket_prefix = var.name
   force_destroy = true
@@ -103,4 +105,10 @@ resource "aws_cloudtrail" "this" {
     include_management_events = true
   }
   tags = var.tags
+}
+
+resource "aws_cloudwatch_log_group" "this" {
+  name_prefix       = "/aws/cloudtrail/${var.name}"
+  retention_in_days = var.log_retention_days
+  tags              = var.tags
 }
