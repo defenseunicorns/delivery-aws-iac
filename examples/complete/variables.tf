@@ -99,10 +99,10 @@ variable "eks_worker_tenancy" {
 variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
-  default     = "1.23"
+  default     = "1.26"
   validation {
-    condition     = contains(["1.23"], var.cluster_version)
-    error_message = "Kubernetes version must be equal to one that we support. Currently supported versions are: 1.23."
+    condition     = contains(["1.26"], var.cluster_version)
+    error_message = "Kubernetes version must be equal to one that we support. See EKS module variables for supported versions."
   }
 }
 
