@@ -43,68 +43,68 @@ resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
           "collect_list" : [
             {
               "file_path" : "/root/.bash_history",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "root-user-commands",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/home/ec2-user/.bash_history",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "ec2-user-commands",
               "retention_in_days" : 60
             },
 
             {
               "file_path" : "/var/log/secure",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "logins",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/home/ssm-user/.bash_history",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "ssm-user-commands",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/var/log/messages",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "Syslog",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/var/log/boot.log*",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "Syslog",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/var/log/secure",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "Syslog",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/var/log/messages",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "Syslog",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/var/log/cron*",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "Syslog",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/var/log/cloud-init-output.log",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "Syslog",
               "retention_in_days" : 60
             },
             {
               "file_path" : "/var/log/dmesg",
-              "log_group_name" : "ec2-cloudwatch-logging-${var.name}",
+              "log_group_name" : aws_cloudwatch_log_group.ec2_cloudwatch_logs.name,
               "log_stream_name" : "Syslog",
               "retention_in_days" : 60
             },
@@ -185,6 +185,7 @@ resource "aws_cloudwatch_log_group" "ec2_cloudwatch_logs" {
 
 # Create cloudwatch log group for ssm
 resource "aws_cloudwatch_log_group" "session_manager_log_group" {
+  count             = var.enable_log_to_cloudwatch ? 1 : 0
   name_prefix       = "${var.cloudwatch_log_group_name}-"
   retention_in_days = var.cloudwatch_logs_retention
   kms_key_id        = data.aws_kms_key.default.arn

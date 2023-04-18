@@ -12,7 +12,7 @@ resource "aws_ssm_document" "session_manager_prefs" {
     inputs = {
       s3BucketName                = var.enable_log_to_s3 ? aws_s3_bucket.session_logs_bucket.id : ""
       s3EncryptionEnabled         = var.enable_log_to_s3 ? true : false
-      cloudWatchLogGroupName      = var.enable_log_to_cloudwatch ? aws_cloudwatch_log_group.session_manager_log_group.name : ""
+      cloudWatchLogGroupName      = var.enable_log_to_cloudwatch ? aws_cloudwatch_log_group.session_manager_log_group[*].name : ""
       cloudWatchEncryptionEnabled = var.enable_log_to_cloudwatch ? true : false
       kmsKeyId                    = data.aws_kms_key.default.id
       shellProfile = {

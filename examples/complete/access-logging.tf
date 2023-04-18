@@ -13,7 +13,6 @@ resource "aws_kms_key" "default" {
 resource "aws_kms_alias" "default" {
   name_prefix   = local.kms_key_alias_name_prefix
   target_key_id = aws_kms_key.default.key_id
-
 }
 
 # Create custom policy for KMS
@@ -68,7 +67,6 @@ data "aws_iam_policy_document" "kms_access" {
     ]
     resources = ["*"]
   }
-
 }
 
 # Create S3 bucket for access logs with versioning, encryption, blocked public access enabled
