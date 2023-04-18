@@ -35,3 +35,19 @@ This project uses [pre-commit](https://pre-commit.com/) to run a set of checks o
 make run-pre-commit-hooks
 ```
 > NOTE: Sometimes file ownership of stuff in the `.cache` folder can get messed up. You can optionally add the `fix-cache-permissions` target to the above command to fix that. It is idempotent so it is safe to run it every time.
+
+### Backlog Management
+
+- We use [GitHub Issues](https://github.com/defenseunicorns/iac/issues) to manage our backlog.
+- Issues need to meet our Definition of Ready (see below). If it does not meet the Definition of Ready, we may close it and ask the requester to re-open it once it does.
+
+#### Definition of Ready for a Backlog Item
+
+To meet the Definition of Ready the issue needs to answer the following questions:
+- Who is requesting it?
+- What is being requested?
+- Why is it needed?
+- What is the impact? What will happen if the request is not fulfilled?
+- How do we know that we are done?
+
+This can take various forms, and we don't care which form the issue takes as long as it answers the questions above.
