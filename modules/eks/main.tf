@@ -8,10 +8,10 @@ module "aws_eks" {
   cluster_name    = local.cluster_name
   cluster_version = var.cluster_version
 
-  vpc_id                          = var.vpc_id
-  subnet_ids                      = var.private_subnet_ids
-  control_plane_subnet_ids        = var.control_plane_subnet_ids
-  public_subnet_ids               = var.public_subnet_ids
+  vpc_id                   = var.vpc_id
+  subnet_ids               = var.private_subnet_ids
+  control_plane_subnet_ids = var.control_plane_subnet_ids
+  # public_subnet_ids               = var.public_subnet_ids
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
 
