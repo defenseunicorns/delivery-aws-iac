@@ -4,6 +4,7 @@ Terraform module to provision a [CloudTrail](https://aws.amazon.com/cloudtrail/)
 
 ## Notes
 
+* This module should be used when bootstrapping a new AWS account, to set up a CloudTrail that monitors the activity in the account. It is not meant to be used as part of every terraform deployment in the account.
 * See [CloudTrail Best Practices](https://aws.amazon.com/blogs/mt/aws-cloudtrail-best-practices/) for more information on how to configure CloudTrail.
 * Provides the choice for the user to either provide an S3 bucket or create a new one with sensible defaults.
 * Simplifies the creation of the CloudTrail by using opinionated configuration. If you need more customizability please open an issue so we can add it.
