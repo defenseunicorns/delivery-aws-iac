@@ -216,6 +216,20 @@ variable "cluster_autoscaler_helm_config" {
   default     = {}
 }
 
+#----------------Enable_EFS_CSI-------------------------
+variable "enable_efs" {
+  description = "Enable EFS CSI add-on"
+  type        = bool
+  default     = false
+
+}
+
+variable "reclaim_policy" {
+  description = "Reclaim policy for EFS storage class, valid options are Delete and Retain"
+  type        = string
+  default     = "Delete"
+}
+
 #----------------Calico-------------------------
 variable "enable_calico" {
   description = "Enable Calico add-on"

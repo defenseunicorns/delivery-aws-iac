@@ -219,6 +219,24 @@ variable "amazon_eks_aws_ebs_csi_driver_config" {
   default     = {}
 }
 
+#----------------AWS EFS CSI Driver-------------------------
+variable "enable_efs" {
+  description = "Enable EFS CSI Driver add-on"
+  type        = bool
+  default     = false
+
+}
+
+variable "reclaim_policy" {
+  description = "Reclaim policy for EFS storage class, valid options are Delete and Retain"
+  type        = string
+  default     = "Delete"
+}
+
+variable "cidr_blocks" {
+  type = list(string)
+}
+
 #----------------Metrics Server-------------------------
 variable "enable_metrics_server" {
   description = "Enable metrics server add-on"

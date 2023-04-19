@@ -197,6 +197,7 @@ module "eks" {
   cluster_version                 = var.cluster_version
   bastion_role_arn                = module.bastion.bastion_role_arn
   bastion_role_name               = module.bastion.bastion_role_name
+  cidr_blocks                     = module.vpc.private_subnets_cidr_blocks
 
   # If using EKS Managed Node Groups, the aws-auth ConfigMap is created by eks itself and terraform can not create it
   create_aws_auth_configmap = var.create_aws_auth_configmap
@@ -267,6 +268,10 @@ module "eks" {
   # EKS EBS CSI Driver
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   amazon_eks_aws_ebs_csi_driver_config = var.amazon_eks_aws_ebs_csi_driver_config
+
+  # EKS EFS CSI Driver
+  enable_efs     = var.enable_efs
+  reclaim_policy = var.reclaim_policy
 
   # EKS Metrics Server
   enable_metrics_server      = var.enable_metrics_server

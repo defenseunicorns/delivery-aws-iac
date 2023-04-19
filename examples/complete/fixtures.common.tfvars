@@ -84,3 +84,5 @@ aws_node_termination_handler_helm_config = { wait = false }
 
 enable_calico      = true
 calico_helm_config = { wait = false }
+
+enable_efs = true
