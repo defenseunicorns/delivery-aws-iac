@@ -4,6 +4,6 @@ This repository is a collection of Terraform modules designed to help you quickl
 
 ## Supported Integrations
 
-- EKS > v1.26.x
-- Big Bang > v2.x.x
-- Zarf > v0.25.x
+- EKS >= v1.26.x
+- Big Bang >= v2.x.x
+- Zarf >= v0.25.x
