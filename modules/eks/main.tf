@@ -120,8 +120,7 @@ module "efs" {
 
   count = var.enable_efs ? 1 : 0
 
-  creation_token = local.name
-  name           = lower(random_id.efs_name.hex)
+  name = lower(random_id.efs_name.hex)
   # Mount targets / security group
   mount_targets = {
     for k, v in zipmap(local.availability_zone_name, var.private_subnet_ids) : k => { subnet_id = v }
