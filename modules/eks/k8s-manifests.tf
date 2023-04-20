@@ -12,11 +12,8 @@ resource "kubectl_manifest" "eni_config" {
       name = each.key
     }
     spec = {
-      securityGroups = [
-        module.aws_eks.cluster_primary_security_group_id,
-        module.aws_eks.node_security_group_id,
-      ]
-      subnet = each.value
+      securityGroups = compact([module.aws_eks.cluster_primary_security_group_id, module.aws_eks.node_security_group_id, module.aws_eks.cluster_security_group_id])
+      subnet         = each.value
     }
   })
 }
