@@ -22,6 +22,7 @@ module "s3_bucket" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+  force_destroy           = var.force_destroy
 
   tags = var.tags
   server_side_encryption_configuration = {

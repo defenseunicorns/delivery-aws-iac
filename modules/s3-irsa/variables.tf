@@ -103,3 +103,9 @@ variable "access_logging_bucket_prefix" {
   type        = string
   default     = "s3-irsa-bucket-access-logs/"
 }
+
+variable "force_destroy" {
+  description = "Option to set force destroy"
+  type        = bool
+  default     = false
+}
