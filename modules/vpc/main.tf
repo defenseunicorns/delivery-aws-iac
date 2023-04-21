@@ -143,13 +143,13 @@ module "vpc_endpoints" {
     ssm = {
       service             = "ssm"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     ssmmessages = {
       service             = "ssmmessages"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     #     lambda = {
@@ -160,63 +160,63 @@ module "vpc_endpoints" {
     sts = {
       service             = "sts"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     logs = {
       service             = "logs"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     ec2 = {
       service             = "ec2"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     ec2messages = {
       service             = "ec2messages"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     ecr_api = {
       service             = "ecr.api"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       policy              = data.aws_iam_policy_document.ecr.json
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     ecr_dkr = {
       service             = "ecr.dkr"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
       policy              = data.aws_iam_policy_document.ecr.json
     },
     kms = {
       service             = "kms"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     autoscaling = {
       service             = "autoscaling"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     elasticloadbalancing = {
       service             = "elasticloadbalancing"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
     },
     efs = {
       service             = "elasticfilesystem"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = flatten([module.vpc.private_subnets, module.vpc.intra_subnets])
       security_group_ids  = [aws_security_group.vpc_tls.id]
       route_table_ids     = flatten([module.vpc.intra_route_table_ids, module.vpc.private_route_table_ids, module.vpc.public_route_table_ids])
     }

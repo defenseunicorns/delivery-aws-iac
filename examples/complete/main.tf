@@ -159,7 +159,7 @@ module "bastion" {
   }
   name                           = local.bastion_name
   vpc_id                         = module.vpc.vpc_id
-  subnet_id                      = module.vpc.private_subnets[0]
+  subnet_id                      = module.vpc.intra_subnets[0]
   region                         = var.region
   access_logs_bucket_name        = aws_s3_bucket.access_log_bucket.id
   session_log_bucket_name_prefix = "${local.bastion_name}-sessionlogs"
