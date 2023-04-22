@@ -159,7 +159,7 @@ module "bastion" {
   }
   name                           = local.bastion_name
   vpc_id                         = module.vpc.vpc_id
-  subnet_id                      = module.vpc.intra_subnets[0]
+  subnet_id                      = module.vpc.private_subnets[0]
   region                         = var.region
   access_logs_bucket_name        = aws_s3_bucket.access_log_bucket.id
   session_log_bucket_name_prefix = "${local.bastion_name}-sessionlogs"
@@ -188,7 +188,7 @@ module "eks" {
   aws_account                     = local.account
   vpc_id                          = module.vpc.vpc_id
   private_subnet_ids              = module.vpc.private_subnets
-  control_plane_subnet_ids        = module.vpc.intra_subnets
+  control_plane_subnet_ids        = module.vpc.private_subnets
   source_security_group_id        = module.bastion.security_group_ids[0]
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
   cluster_endpoint_private_access = true
