@@ -38,10 +38,8 @@ data "aws_kms_key" "default" {
 
 resource "aws_instance" "application" {
   #checkov:skip=CKV2_AWS_41: IAM role is created in the module
-  ami           = var.ami_id != "" ? var.ami_id : data.aws_ami.from_filter[0].id
-  instance_type = var.instance_type
-  # key_name                    = var.ec2_key_name
-  key_name                    = aws_key_pair.bastion_key.key_name
+  ami                         = var.ami_id != "" ? var.ami_id : data.aws_ami.from_filter[0].id
+  instance_type               = var.instance_type
   vpc_security_group_ids      = length(local.security_group_configs) > 0 ? aws_security_group.sg.*.id : var.security_group_ids
   user_data                   = data.cloudinit_config.config.rendered
   iam_instance_profile        = local.role_name == "" ? null : aws_iam_instance_profile.bastion_ssm_profile.name
@@ -65,16 +63,6 @@ resource "aws_instance" "application" {
     var.tags,
     { Name = var.name }
   )
-}
-
-resource "tls_private_key" "bastion_key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "aws_key_pair" "bastion_key" {
-  key_name   = "${var.name}-key"
-  public_key = tls_private_key.bastion_key.public_key_openssh
 }
 
 resource "aws_network_interface_attachment" "attach" {

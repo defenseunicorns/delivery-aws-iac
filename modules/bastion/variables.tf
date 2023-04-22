@@ -176,12 +176,6 @@ variable "enable_log_to_cloudwatch" {
   default     = true
 }
 
-variable "enable_kms_key_rotation" {
-  description = "Toggle to optionally enable kms key rotation. Defaults to true"
-  type        = bool
-  default     = true
-}
-
 #####################################################
 ##################### user data #####################
 
