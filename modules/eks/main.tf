@@ -3,20 +3,23 @@
 #---------------------------------------------------------------
 
 module "aws_eks" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v19.11.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v19.13.1"
 
   cluster_name    = local.cluster_name
   cluster_version = var.cluster_version
 
-  vpc_id     = var.vpc_id
-  subnet_ids = var.private_subnet_ids
-  # public_subnet_ids  = var.public_subnet_ids
+  vpc_id                   = var.vpc_id
+  subnet_ids               = var.private_subnet_ids
+  control_plane_subnet_ids = var.control_plane_subnet_ids
+  # public_subnet_ids               = var.public_subnet_ids
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
 
   self_managed_node_group_defaults = var.self_managed_node_group_defaults
   self_managed_node_groups         = var.self_managed_node_groups
   eks_managed_node_groups          = var.eks_managed_node_groups
+
+  dataplane_wait_duration = var.dataplane_wait_duration
 
   cluster_addons = var.cluster_addons
 
