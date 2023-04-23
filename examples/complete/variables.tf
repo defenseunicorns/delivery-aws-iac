@@ -123,7 +123,7 @@ variable "enable_self_managed_nodegroups" {
 }
 
 variable "dataplane_wait_duration" {
-  description = "The duration to wait for the EKS cluster to become active"
+  description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed nodegroup(s), self-managed nodegroup(s), Fargate profile(s))"
   type        = string
   default     = "2m"
 }
