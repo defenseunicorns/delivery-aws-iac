@@ -41,11 +41,12 @@ data "aws_iam_policy_document" "ecr" {
 
 locals {
 
-  tags = {
-    Example    = var.name
-    GithubRepo = "terraform-aws-vpc"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = merge(
+    var.tags,
+    {
+      GithubRepo = "terraform-aws-vpc"
+      GithubOrg  = "terraform-aws-modules"
+  })
 }
 
 ################################################################################
@@ -210,7 +211,14 @@ module "vpc_endpoints" {
       private_dns_enabled = true
       subnet_ids          = module.vpc.private_subnets
       security_group_ids  = [aws_security_group.vpc_tls.id]
-    } #,
+    },
+    efs = {
+      service             = "elasticfilesystem"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [aws_security_group.vpc_tls.id]
+      route_table_ids     = flatten([module.vpc.intra_route_table_ids, module.vpc.private_route_table_ids, module.vpc.public_route_table_ids])
+    }
     #     codedeploy = {
     #       service             = "codedeploy"
     #       private_dns_enabled = true

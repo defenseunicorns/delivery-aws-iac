@@ -43,12 +43,6 @@ output "bastion_region" {
   sensitive   = true
 }
 
-output "bastion_private_key" {
-  description = "The private key for the bastion host"
-  value       = module.bastion.private_key
-  sensitive   = true
-}
-
 output "bastion_private_dns" {
   description = "The private DNS address of the bastion host"
   value       = module.bastion.private_dns

@@ -18,7 +18,7 @@ module "aws_eks" {
   self_managed_node_groups         = var.self_managed_node_groups
   eks_managed_node_groups          = var.eks_managed_node_groups
 
-  cluster_addons = local.cluster_addons
+  cluster_addons = var.cluster_addons
 
   #----------------------------------------------------------------------------------------------------------#
   # Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
@@ -39,7 +39,7 @@ module "aws_eks" {
     }
   }
 
-  create_aws_auth_configmap = local.create_aws_auth_configmap
+  create_aws_auth_configmap = var.create_aws_auth_configmap
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
 
   kms_key_administrators = distinct(concat(local.admin_arns, var.kms_key_administrators))
@@ -56,7 +56,11 @@ module "aws_eks" {
       groups   = ["system:masters"]
     }
   ]
+
+  tags = var.tags
 }
+
+
 
 resource "aws_iam_role" "auth_eks_role" {
   name               = "${var.name}-auth-eks-role"
@@ -77,4 +81,57 @@ resource "aws_iam_role" "auth_eks_role" {
 }
 EOF
 
+}
+#---------------------------------------------------------------
+# EFS Configurations
+#---------------------------------------------------------------
+
+resource "random_id" "efs_name" {
+  byte_length = 2
+  prefix      = "EFS-"
+}
+
+resource "kubernetes_storage_class_v1" "efs" {
+  count = var.enable_efs ? 1 : 0
+  metadata {
+    name = lower(random_id.efs_name.hex)
+  }
+
+  storage_provisioner = "efs.csi.aws.com"
+  reclaim_policy      = var.reclaim_policy
+  parameters = {
+    provisioningMode = "efs-ap" # Dynamic provisioning
+    fileSystemId     = module.efs[0].id
+    directoryPerms   = "700"
+  }
+  mount_options = [
+    "iam"
+  ]
+
+  depends_on = [
+    module.eks_blueprints_kubernetes_addons
+  ]
+}
+
+module "efs" {
+  source  = "terraform-aws-modules/efs/aws"
+  version = "~> 1.0"
+
+  count = var.enable_efs ? 1 : 0
+
+  name = lower(random_id.efs_name.hex)
+  # Mount targets / security group
+  mount_targets = {
+    for k, v in zipmap(local.availability_zone_name, var.private_subnet_ids) : k => { subnet_id = v }
+  }
+
+  security_group_description = "${local.cluster_name} EFS security group"
+  security_group_vpc_id      = var.vpc_id
+  security_group_rules = {
+    vpc = {
+      # relying on the defaults provdied for EFS/NFS (2049/TCP + ingress)
+      description = "NFS ingress from VPC private subnets"
+      cidr_blocks = var.cidr_blocks
+    }
+  }
 }

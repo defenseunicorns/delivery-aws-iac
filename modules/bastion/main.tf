@@ -28,12 +28,18 @@ data "aws_subnet" "subnet_by_name" {
   }
 }
 
+data "aws_s3_bucket" "access_logs_bucket" {
+  bucket = var.access_logs_bucket_name
+}
+
+data "aws_kms_key" "default" {
+  key_id = var.kms_key_arn
+}
+
 resource "aws_instance" "application" {
   #checkov:skip=CKV2_AWS_41: IAM role is created in the module
-  ami           = var.ami_id != "" ? var.ami_id : data.aws_ami.from_filter[0].id
-  instance_type = var.instance_type
-  # key_name                    = var.ec2_key_name
-  key_name                    = aws_key_pair.bastion_key.key_name
+  ami                         = var.ami_id != "" ? var.ami_id : data.aws_ami.from_filter[0].id
+  instance_type               = var.instance_type
   vpc_security_group_ids      = length(local.security_group_configs) > 0 ? aws_security_group.sg.*.id : var.security_group_ids
   user_data                   = data.cloudinit_config.config.rendered
   iam_instance_profile        = local.role_name == "" ? null : aws_iam_instance_profile.bastion_ssm_profile.name
@@ -53,18 +59,10 @@ resource "aws_instance" "application" {
 
   subnet_id = var.subnet_name != "" ? data.aws_subnet.subnet_by_name[0].id : var.subnet_id
 
-  tags = {
-    Name = var.name
-  }
-}
-
-resource "tls_private_key" "bastion_key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-resource "aws_key_pair" "bastion_key" {
-  key_name   = "${var.name}-key"
-  public_key = tls_private_key.bastion_key.public_key_openssh
+  tags = merge(
+    var.tags,
+    { Name = var.name }
+  )
 }
 
 resource "aws_network_interface_attachment" "attach" {
@@ -73,7 +71,6 @@ resource "aws_network_interface_attachment" "attach" {
   network_interface_id = var.eni_attachment_config[count.index].network_interface_id
   device_index         = var.eni_attachment_config[count.index].device_index
 }
-
 
 # Optional Security Group
 resource "aws_security_group" "sg" {
@@ -107,57 +104,10 @@ resource "aws_security_group" "sg" {
   }
 }
 
-
-resource "aws_kms_key" "key" {
-  count               = var.enable_event_queue ? 1 : 0
-  description         = "KMS key for ${local.bucket_prefix} queue"
-  enable_key_rotation = var.enable_kms_key_rotation
-  policy              = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "Enable IAM User Permissions",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "${data.aws_caller_identity.current.arn}"
-      },
-      "Action": "kms:*",
-      "Resource": "*"
-    },
-    {
-      "Sid": "S3 access",
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "s3.amazonaws.com"
-      },
-      "Action": [
-         "kms:GenerateDataKey",
-         "kms:Decrypt"
-      ],
-      "Resource":  "*"
-    },
-    {
-      "Sid": "Decrypt",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": [
-         "kms:Decrypt"
-      ],
-      "Resource":  "*",
-      "Condition": {
-        "StringEquals": { "aws:PrincipalAccount": "${data.aws_caller_identity.current.account_id}" }
-      }
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_sqs_queue" "queue" {
-  count                             = var.enable_event_queue ? 1 : 0
-  name                              = "${local.bucket_prefix}-s3-event-notification-queue"
-  kms_master_key_id                 = aws_kms_key.key[0].key_id
+resource "aws_sqs_queue" "bastion_login_queue" {
+  count                             = var.enable_sqs_events_on_bastion_login ? 1 : 0
+  name                              = local.sqs_queue_name
+  kms_master_key_id                 = data.aws_kms_key.default.arn
   kms_data_key_reuse_period_seconds = 300
   visibility_timeout_seconds        = 300
 
@@ -170,9 +120,9 @@ resource "aws_sqs_queue" "queue" {
       "Effect": "Allow",
       "Principal": "*",
       "Action": "sqs:SendMessage",
-      "Resource": "arn:${data.aws_partition.current.partition}:sqs:*:*:${local.bucket_prefix}-s3-event-notification-queue",
+      "Resource": "arn:${data.aws_partition.current.partition}:sqs:*:*:${local.sqs_queue_name}",
       "Condition": {
-        "ArnEquals": { "aws:SourceArn": "${aws_s3_bucket.access_log_bucket.arn}" }
+        "ArnEquals": { "aws:SourceArn": "${data.aws_s3_bucket.access_logs_bucket.arn}" }
       }
     }
   ]
@@ -192,9 +142,9 @@ data "cloudinit_config" "config" {
 
     content = templatefile("${path.module}/templates/user_data.sh.tpl",
       {
-        s3_bucket_name              = aws_s3_bucket.access_log_bucket.id           // var.s3_bucket_name
-        s3_bucket_uri               = "s3://${aws_s3_bucket.access_log_bucket.id}" // var.s3_bucket_uri
-        aws_region                  = var.aws_region
+        s3_bucket_name              = data.aws_s3_bucket.access_logs_bucket.id
+        s3_bucket_uri               = "s3://${data.aws_s3_bucket.access_logs_bucket.id}"
+        aws_region                  = var.region
         ssh_user                    = var.ssh_user
         keys_update_frequency       = local.keys_update_frequency
         enable_hourly_cron_updates  = local.enable_hourly_cron_updates

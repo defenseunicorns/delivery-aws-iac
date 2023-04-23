@@ -14,7 +14,7 @@ module "flux_sops" {
   cluster_name               = module.eks.cluster_name
   vpc_id                     = module.vpc.vpc_id
   policy_name_prefix         = "${module.eks.cluster_name}-flux-sops"
-  kms_key_alias              = "${module.eks.cluster_name}-flux-sops"
+  kms_key_arn                = aws_kms_key.default.arn
   kubernetes_service_account = "flux-system-sops-sa"
   kubernetes_namespace       = "flux-system"
   irsa_sops_iam_role_name    = "${module.eks.cluster_name}-flux-system-sa-role"
@@ -33,7 +33,7 @@ module "loki_s3_bucket" {
   name_prefix                = "${local.loki_name_prefix}-s3"
   region                     = var.region
   policy_name_prefix         = "${local.loki_name_prefix}-s3-policy"
-  kms_key_alias              = local.loki_name_prefix
+  kms_key_arn                = aws_kms_key.default.arn
   kubernetes_service_account = "logging-loki" #Must be logging-loki to match BigBang deployment
   kubernetes_namespace       = "logging"
   irsa_iam_role_name         = "${module.eks.cluster_name}-logging-loki-sa-role"

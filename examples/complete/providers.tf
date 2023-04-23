@@ -7,7 +7,7 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 4.47.0"
+      version = ">= 4.62.0"
     }
     cloudinit = {
       source  = "hashicorp/cloudinit"
@@ -51,7 +51,7 @@ terraform {
 provider "aws" {
   region = var.region
   # default_tags {
-  #   tags = var.default_tags
+  #   tags = var.tags #bug https://github.com/hashicorp/terraform-provider-aws/issues/19583#issuecomment-855773246
   # }
 }
 
@@ -59,7 +59,7 @@ provider "aws" {
   alias  = "region2"
   region = var.region2
   # default_tags {
-  #   tags = var.default_tags
+  #   tags = var.tags #bug https://github.com/hashicorp/terraform-provider-aws/issues/19583#issuecomment-855773246
   # }
 }
 
