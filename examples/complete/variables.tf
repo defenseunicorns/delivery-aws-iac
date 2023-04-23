@@ -122,6 +122,12 @@ variable "enable_self_managed_nodegroups" {
   type        = bool
 }
 
+variable "dataplane_wait_duration" {
+  description = "The duration to wait for the EKS cluster to become active"
+  type        = string
+  default     = "2m"
+}
+
 ###########################################################
 ################## EKS Addons Config ######################
 
