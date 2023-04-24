@@ -8,10 +8,10 @@ variable "cluster_name" {
 variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
-  default     = "1.23"
+  default     = "1.26"
   validation {
-    condition     = contains(["1.23"], var.cluster_version)
-    error_message = "Kubernetes version must be equal to one that we support. Currently supported versions are: 1.23."
+    condition     = contains(["1.26"], var.cluster_version)
+    error_message = "Kubernetes version must be equal to one that we support. See EKS module variables for supported versions."
   }
 }
 
@@ -134,6 +134,12 @@ variable "tenancy" {
   description = "Tenancy of the cluster"
   type        = string
   default     = "dedicated"
+}
+
+variable "dataplane_wait_duration" {
+  description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed nodegroup(s), self-managed nodegroup(s), Fargate profile(s))"
+  type        = string
+  default     = "2m"
 }
 
 #-------------------------------
