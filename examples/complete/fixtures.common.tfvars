@@ -16,19 +16,20 @@ iam_permissions_boundary  = "arn:aws:iam::810783286427:policy/unicorn-base-polic
 ###########################################################
 #################### VPC Config ###########################
 
-vpc_cidr = "10.200.0.0/16"
+vpc_cidr              = "10.200.0.0/16"
+secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containers/optimize-ip-addresses-usage-by-pods-in-your-amazon-eks-cluster/
 
 ###########################################################
 ################## Bastion Config #########################
 
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
-zarf_version         = "v0.24.0-rc4"
+zarf_version         = "v0.25.2"
 
 ###########################################################
 #################### EKS Config ###########################
 
-cluster_version = "1.23"
+cluster_version = "1.26"
 
 ###########################################################
 ############## Big Bang Dependencies ######################
@@ -59,29 +60,58 @@ cluster_addons = {
           "ENABLE_PREFIX_DELEGATION": "true",
           "ENI_CONFIG_LABEL_DEF": "topology.kubernetes.io/zone",
           "WARM_PREFIX_TARGET": "1",
-          "ANNOTATE_POD_IP": "true"
+          "ANNOTATE_POD_IP": "true",
+          "POD_SECURITY_GROUP_ENFORCING_MODE": "standard"
         }
       }
     JSON
+  }
+  coredns = {
+    preserve    = true
+    most_recent = true
+
+    timeouts = {
+      create = "25m"
+      delete = "10m"
+    }
+  }
+  kube-proxy = {
+    most_recent = true
   }
 }
 
 
 #################### Blueprints addons ###################
 #wait false for all addons, as it times out on teardown in the test pipeline
-enable_cluster_autoscaler      = true
-cluster_autoscaler_helm_config = { wait = false }
-
-enable_amazon_eks_aws_ebs_csi_driver = true
-amazon_eks_aws_ebs_csi_driver_config = { wait = false }
-
-enable_metrics_server      = true
-metrics_server_helm_config = { wait = false }
-
-enable_aws_node_termination_handler      = true
-aws_node_termination_handler_helm_config = { wait = false }
-
-enable_calico      = true
-calico_helm_config = { wait = false }
 
 enable_efs = true
+
+enable_amazon_eks_aws_ebs_csi_driver = true
+amazon_eks_aws_ebs_csi_driver_config = {
+  wait        = false
+  most_recent = true
+}
+
+enable_aws_node_termination_handler = true
+aws_node_termination_handler_helm_config = {
+  wait    = false
+  version = "v0.21.0"
+}
+
+enable_cluster_autoscaler = true
+cluster_autoscaler_helm_config = {
+  wait    = false
+  version = "v9.28.0"
+}
+
+enable_metrics_server = true
+metrics_server_helm_config = {
+  wait    = false
+  version = "v3.10.0"
+}
+
+enable_calico = true
+calico_helm_config = {
+  wait    = false
+  version = "v3.25.1"
+}

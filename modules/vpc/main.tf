@@ -56,8 +56,9 @@ locals {
 module "vpc" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v3.19.0"
 
-  name = var.name
-  cidr = var.vpc_cidr
+  name                  = var.name
+  cidr                  = var.vpc_cidr
+  secondary_cidr_blocks = var.secondary_cidr_blocks
 
   azs              = var.azs
   public_subnets   = var.public_subnets
@@ -303,7 +304,7 @@ resource "aws_security_group" "vpc_tls" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [module.vpc.vpc_cidr_block]
+    cidr_blocks = (concat([module.vpc.vpc_cidr_block], module.vpc.vpc_secondary_cidr_blocks))
   }
 
   egress {

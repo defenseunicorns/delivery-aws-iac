@@ -74,6 +74,12 @@ variable "vpc_cidr" {
   type        = string
 }
 
+variable "secondary_cidr_blocks" {
+  description = "A list of secondary CIDR blocks for the VPC"
+  type        = list(string)
+  default     = []
+}
+
 variable "create_database_subnet_group" {
   description = "Whether to create a database subnet group"
   type        = bool
@@ -97,10 +103,10 @@ variable "eks_worker_tenancy" {
 variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
-  default     = "1.23"
+  default     = "1.26"
   validation {
-    condition     = contains(["1.23"], var.cluster_version)
-    error_message = "Kubernetes version must be equal to one that we support. Currently supported versions are: 1.23."
+    condition     = contains(["1.26"], var.cluster_version)
+    error_message = "Kubernetes version must be equal to one that we support. See EKS module variables for supported versions."
   }
 }
 
@@ -120,6 +126,12 @@ variable "enable_self_managed_nodegroups" {
   type        = bool
 }
 
+variable "dataplane_wait_duration" {
+  description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed nodegroup(s), self-managed nodegroup(s), Fargate profile(s))"
+  type        = string
+  default     = "2m"
+}
+
 ###########################################################
 ################## EKS Addons Config ######################
 
@@ -132,32 +144,6 @@ variable "cluster_addons" {
   to see available eks marketplace addons available for your cluster's version run:
   aws eks describe-addon-versions --kubernetes-version $k8s_cluster_version --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
 EOD
-  type        = any
-  default     = {}
-}
-
-#----------------AWS CoreDNS-------------------------
-variable "enable_amazon_eks_coredns" {
-  description = "Enable Amazon EKS CoreDNS add-on"
-  type        = bool
-  default     = false
-}
-
-variable "amazon_eks_coredns_config" {
-  description = "Configuration for Amazon CoreDNS EKS add-on"
-  type        = any
-  default     = {}
-}
-
-#----------------AWS Kube Proxy-------------------------
-variable "enable_amazon_eks_kube_proxy" {
-  description = "Enable Kube Proxy add-on"
-  type        = bool
-  default     = false
-}
-
-variable "amazon_eks_kube_proxy_config" {
-  description = "ConfigMap for Amazon EKS Kube-Proxy add-on"
   type        = any
   default     = {}
 }

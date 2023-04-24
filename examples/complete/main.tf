@@ -110,16 +110,17 @@ module "vpc" {
   # source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v<insert tagged version>"
   source = "../../modules/vpc"
 
-  region             = var.region
-  name               = local.vpc_name
-  vpc_cidr           = var.vpc_cidr
-  azs                = ["${var.region}a", "${var.region}b", "${var.region}c"]
-  public_subnets     = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k)]
-  private_subnets    = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 4)]
-  database_subnets   = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 8)]
-  intra_subnets      = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 12)]
-  single_nat_gateway = true
-  enable_nat_gateway = true
+  region                = var.region
+  name                  = local.vpc_name
+  vpc_cidr              = var.vpc_cidr
+  secondary_cidr_blocks = var.secondary_cidr_blocks
+  azs                   = ["${var.region}a", "${var.region}b", "${var.region}c"]
+  public_subnets        = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k)]
+  private_subnets       = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 4)]
+  database_subnets      = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 8)]
+  intra_subnets         = [for k, v in module.vpc.azs : cidrsubnet(element(module.vpc.vpc_secondary_cidr_blocks, 0), 5, k)]
+  single_nat_gateway    = true
+  enable_nat_gateway    = true
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
@@ -187,8 +188,10 @@ module "eks" {
   aws_account                     = local.account
   vpc_id                          = module.vpc.vpc_id
   private_subnet_ids              = module.vpc.private_subnets
+  control_plane_subnet_ids        = module.vpc.private_subnets
   source_security_group_id        = module.bastion.security_group_ids[0]
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
+  dataplane_wait_duration         = var.dataplane_wait_duration
   cluster_endpoint_private_access = true
   vpc_cni_custom_subnet           = module.vpc.intra_subnets
   aws_admin_usernames             = var.aws_admin_usernames
@@ -255,31 +258,23 @@ module "eks" {
   # EKS Blueprints - EKS Add-Ons
   #---------------------------------------------------------------
 
-  # EKS CoreDNS
-  enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
-  amazon_eks_coredns_config = var.amazon_eks_coredns_config
-
-  # EKS kube-proxy
-  enable_amazon_eks_kube_proxy = var.enable_amazon_eks_kube_proxy
-  amazon_eks_kube_proxy_config = var.amazon_eks_kube_proxy_config
-
-  # EKS EBS CSI Driver
+  # AWS EKS EBS CSI Driver
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   amazon_eks_aws_ebs_csi_driver_config = var.amazon_eks_aws_ebs_csi_driver_config
 
-  # EKS EFS CSI Driver
+  # AWS EKS EFS CSI Driver
   enable_efs     = var.enable_efs
   reclaim_policy = var.reclaim_policy
 
-  # EKS Metrics Server
-  enable_metrics_server      = var.enable_metrics_server
-  metrics_server_helm_config = var.metrics_server_helm_config
-
-  # EKS AWS node termination handler
+  # AWS EKS node termination handler
   enable_aws_node_termination_handler      = var.enable_aws_node_termination_handler
   aws_node_termination_handler_helm_config = var.aws_node_termination_handler_helm_config
 
-  # EKS Cluster Autoscaler
+  # k8s Metrics Server
+  enable_metrics_server      = var.enable_metrics_server
+  metrics_server_helm_config = var.metrics_server_helm_config
+
+  # k8s Cluster Autoscaler
   enable_cluster_autoscaler      = var.enable_cluster_autoscaler
   cluster_autoscaler_helm_config = var.cluster_autoscaler_helm_config
 
