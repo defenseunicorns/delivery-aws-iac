@@ -11,6 +11,7 @@ tags = {
 }
 name_prefix               = "ex-complete"
 manage_aws_auth_configmap = true
+iam_permissions_boundary  = "arn:aws:iam::810783286427:policy/unicorn-base-policy"
 
 ###########################################################
 #################### VPC Config ###########################
