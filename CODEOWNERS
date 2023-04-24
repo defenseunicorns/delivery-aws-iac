@@ -1,11 +1,11 @@
-* @defenseunicorns/iac
+* @defenseunicorns/delivery-aws-iac
 
 # Docs & Examples
-*.md @defenseunicorns/iac
+*.md @defenseunicorns/delivery-aws-iac
 
 # Terraform Modules & Examples
-/modules/ @defenseunicorns/iac
-/examples/ @defenseunicorns/iac
+/modules/ @defenseunicorns/delivery-aws-iac
+/examples/ @defenseunicorns/delivery-aws-iac
 
 # Privileged Files
 /CODEOWNERS @defenseunicorns/iac-admin

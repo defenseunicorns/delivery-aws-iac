@@ -4,7 +4,7 @@ This repository contains Terraform configuration files that create resources for
 
 ## Examples
 
-To view examples for how you can leverage this SOPS, please see the [examples](https://github.com/defenseunicorns/iac/tree/main/examples) directory.
+To view examples for how you can leverage this SOPS, please see the [examples](https://github.com/defenseunicorns/delivery-aws-iac/tree/main/examples) directory.
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 

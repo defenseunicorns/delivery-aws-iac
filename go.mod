@@ -1,4 +1,4 @@
-module github.com/defenseunicorns/iac
+module github.com/defenseunicorns/delivery-aws-iac
 
 go 1.19
 
