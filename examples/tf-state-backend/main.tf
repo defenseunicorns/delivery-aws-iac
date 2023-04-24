@@ -7,6 +7,8 @@ provider "aws" {
 
 data "aws_partition" "current" {}
 
+data "aws_caller_identity" "current" {}
+
 locals {
   admin_arns = distinct(concat(
     [for admin_user in var.aws_admin_usernames : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:user/${admin_user}"],
