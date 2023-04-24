@@ -144,32 +144,6 @@ EOD
   default     = {}
 }
 
-#----------------AWS CoreDNS-------------------------
-variable "enable_amazon_eks_coredns" {
-  description = "Enable Amazon EKS CoreDNS add-on"
-  type        = bool
-  default     = false
-}
-
-variable "amazon_eks_coredns_config" {
-  description = "Configuration for Amazon CoreDNS EKS add-on"
-  type        = any
-  default     = {}
-}
-
-#----------------AWS Kube Proxy-------------------------
-variable "enable_amazon_eks_kube_proxy" {
-  description = "Enable Kube Proxy add-on"
-  type        = bool
-  default     = false
-}
-
-variable "amazon_eks_kube_proxy_config" {
-  description = "ConfigMap for Amazon EKS Kube-Proxy add-on"
-  type        = any
-  default     = {}
-}
-
 #----------------AWS EBS CSI Driver-------------------------
 variable "enable_amazon_eks_aws_ebs_csi_driver" {
   description = "Enable EKS Managed AWS EBS CSI Driver add-on; enable_amazon_eks_aws_ebs_csi_driver and enable_self_managed_aws_ebs_csi_driver are mutually exclusive"
