@@ -7,7 +7,7 @@ locals {
 }
 
 module "eks_blueprints_kubernetes_addons" {
-  source = "git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git//modules/kubernetes-addons?ref=v4.27.0"
+  source = "git::https://github.com/aws-ia/terraform-aws-eks-blueprints.git//modules/kubernetes-addons?ref=v4.29.0"
 
   eks_cluster_id       = module.aws_eks.cluster_name
   eks_cluster_endpoint = module.aws_eks.cluster_endpoint
@@ -18,14 +18,6 @@ module "eks_blueprints_kubernetes_addons" {
   auto_scaling_group_names = local.self_managed_node_group_names
 
   # blueprints addons
-
-  # EKS CoreDNS
-  enable_amazon_eks_coredns = var.enable_amazon_eks_coredns
-  amazon_eks_coredns_config = var.amazon_eks_coredns_config
-
-  # EKS kube-proxy
-  enable_amazon_eks_kube_proxy = var.enable_amazon_eks_kube_proxy
-  amazon_eks_kube_proxy_config = var.amazon_eks_kube_proxy_config
 
   # EKS EBS CSI Driver
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
