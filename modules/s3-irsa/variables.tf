@@ -103,3 +103,9 @@ variable "access_logging_bucket_prefix" {
   type        = string
   default     = "s3-irsa-bucket-access-logs/"
 }
+
+variable "force_destroy" {
+  description = "If true, destroys all objects in the bucket when the bucket is destroyed so that the bucket can be destroyed without error. Objects that are destroyed in this way are NOT recoverable."
+  type        = bool
+  default     = false
+}
