@@ -10,7 +10,7 @@
   ]
   bucket_prefix = "my-tfstate-backend"
   dynamodb_table_name = "my-tfstate-backend-lock"
-  force_delete = false
+  force_destroy = false
   default_tags = {
     Environment = "dev"
     Project     = "du-dev"
