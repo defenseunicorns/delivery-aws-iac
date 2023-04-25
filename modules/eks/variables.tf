@@ -139,7 +139,7 @@ variable "tenancy" {
 variable "dataplane_wait_duration" {
   description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed nodegroup(s), self-managed nodegroup(s), Fargate profile(s))"
   type        = string
-  default     = "2m"
+  default     = "4m"
 }
 
 #-------------------------------

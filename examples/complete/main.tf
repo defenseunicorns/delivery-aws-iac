@@ -191,7 +191,6 @@ module "eks" {
   control_plane_subnet_ids        = module.vpc.private_subnets
   source_security_group_id        = module.bastion.security_group_ids[0]
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
-  dataplane_wait_duration         = var.dataplane_wait_duration
   cluster_endpoint_private_access = true
   vpc_cni_custom_subnet           = module.vpc.intra_subnets
   aws_admin_usernames             = var.aws_admin_usernames
