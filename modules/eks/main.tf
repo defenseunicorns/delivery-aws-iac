@@ -8,10 +8,10 @@ module "aws_eks" {
   cluster_name    = local.cluster_name
   cluster_version = var.cluster_version
 
-  vpc_id                        = var.vpc_id
-  subnet_ids                    = var.private_subnet_ids
-  control_plane_subnet_ids      = var.control_plane_subnet_ids
-  iam_role_permissions_boundary = var.iam_role_permissions_boundary
+  vpc_id                          = var.vpc_id
+  subnet_ids                      = var.private_subnet_ids
+  control_plane_subnet_ids        = var.control_plane_subnet_ids
+  iam_role_permissions_boundary   = var.iam_role_permissions_boundary
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
 
@@ -66,9 +66,10 @@ module "aws_eks" {
 
 
 resource "aws_iam_role" "auth_eks_role" {
-  name               = "${var.name}-auth-eks-role"
-  description        = "EKS AuthConfig Role"
-  assume_role_policy = <<EOF
+  name                 = "${var.name}-auth-eks-role"
+  description          = "EKS AuthConfig Role"
+  permissions_boundary = var.iam_role_permissions_boundary
+  assume_role_policy   = <<EOF
 {
     "Version": "2012-10-17",
     "Statement": [

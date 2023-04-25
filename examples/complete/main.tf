@@ -129,7 +129,8 @@ module "vpc" {
   create_database_subnet_group       = true
   create_database_subnet_route_table = true
 
-  instance_tenancy = "default"
+  instance_tenancy                  = "default"
+  vpc_flow_log_permissions_boundary = var.iam_role_permissions_boundary
 }
 
 ###########################################################
@@ -172,6 +173,7 @@ module "bastion" {
   vpc_endpoints_enabled          = true
   tenancy                        = var.bastion_tenancy
   zarf_version                   = var.zarf_version
+  permissions_boundary           = var.iam_role_permissions_boundary
   tags = merge(
     local.tags,
   { Function = "bastion-ssm" })
@@ -189,6 +191,7 @@ module "eks" {
   vpc_id                          = module.vpc.vpc_id
   private_subnet_ids              = module.vpc.private_subnets
   control_plane_subnet_ids        = module.vpc.private_subnets
+  iam_role_permissions_boundary   = var.iam_role_permissions_boundary
   source_security_group_id        = module.bastion.security_group_ids[0]
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
   dataplane_wait_duration         = var.dataplane_wait_duration
