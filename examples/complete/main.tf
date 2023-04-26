@@ -32,21 +32,21 @@ locals {
       create = var.enable_eks_managed_nodegroups
       # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
       # so we need to disable it to use the default template provided by the AWS EKS managed node group service
-      use_custom_launch_template = false
-
-      disk_size = 50
+      use_custom_launch_template    = false
+      iam_role_permissions_boundary = var.iam_role_permissions_boundary
+      disk_size                     = 50
     }
   }
 
   self_managed_node_groups = {
     self_mg1 = {
-      create          = var.enable_self_managed_nodegroups
-      node_group_name = "self_mg1"
-      subnet_ids      = module.vpc.private_subnets
-
-      min_size     = 3
-      max_size     = 10
-      desired_size = 3
+      create                        = var.enable_self_managed_nodegroups
+      node_group_name               = "self_mg1"
+      subnet_ids                    = module.vpc.private_subnets
+      iam_role_permissions_boundary = var.iam_role_permissions_boundary
+      min_size                      = 3
+      max_size                      = 10
+      desired_size                  = 3
 
       # ami_id = "" # defaults to latest amazon linux 2 eks ami matching k8s version in the upstream module
       # create_iam_role           = true                                                    # Changing `create_iam_role=false` to bring your own IAM Role
