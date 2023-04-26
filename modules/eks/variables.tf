@@ -142,6 +142,12 @@ variable "dataplane_wait_duration" {
   default     = "2m"
 }
 
+variable "nodegroup_arn" {
+  description = "ARN of the nodegroup"
+  type        = string
+  default     = ""
+}
+
 #-------------------------------
 # Node Groups
 #-------------------------------

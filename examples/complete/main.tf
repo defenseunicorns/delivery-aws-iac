@@ -25,6 +25,8 @@ locals {
     }
   )
 
+  nodegroup_arn = try(module.eks.eks_managed_node_groups.arn, module.eks.self_managed_node_groups.arn, null)
+
   eks_managed_node_groups = {
     # Managed Node groups with minimum config
     # Default node group - as provided by AWS EKS
@@ -199,7 +201,7 @@ module "eks" {
   bastion_role_arn                = module.bastion.bastion_role_arn
   bastion_role_name               = module.bastion.bastion_role_name
   cidr_blocks                     = module.vpc.private_subnets_cidr_blocks
-
+  nodegroup_arn                   = local.nodegroup_arn
   # If using EKS Managed Node Groups, the aws-auth ConfigMap is created by eks itself and terraform can not create it
   create_aws_auth_configmap = var.create_aws_auth_configmap
   manage_aws_auth_configmap = var.manage_aws_auth_configmap

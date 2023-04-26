@@ -13,6 +13,7 @@ module "eks_blueprints_kubernetes_addons" {
   eks_cluster_endpoint = module.aws_eks.cluster_endpoint
   eks_oidc_provider    = module.aws_eks.oidc_provider
   eks_cluster_version  = module.aws_eks.cluster_version
+  data_plane_wait_arn  = var.nodegroup_arn
 
   # only used for aws_node_termination_handler, if this list is empty, then enable_aws_node_termination_handler should also be false.
   auto_scaling_group_names = local.self_managed_node_group_names
@@ -45,4 +46,8 @@ module "eks_blueprints_kubernetes_addons" {
   calico_helm_config = var.calico_helm_config
 
   tags = var.tags
+
+  depends_on = [
+    module.aws_eks.dataplane_wait_duration
+  ]
 }
