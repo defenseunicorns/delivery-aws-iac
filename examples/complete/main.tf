@@ -21,7 +21,7 @@ locals {
     var.tags,
     {
       RootTFModule = replace(basename(path.cwd), "_", "-") # tag names based on the directory name
-      GithubRepo   = "github.com/defenseunicorns/iac"
+      GithubRepo   = "github.com/defenseunicorns/delivery-aws-iac"
     }
   )
 
@@ -107,7 +107,7 @@ locals {
 ####################### VPC ###############################
 
 module "vpc" {
-  # source = "git::https://github.com/defenseunicorns/iac.git//modules/vpc?ref=v<insert tagged version>"
+  # source = "git::https://github.com/defenseunicorns/delivery-aws-iac.git//modules/vpc?ref=v<insert tagged version>"
   source = "../../modules/vpc"
 
   region                = var.region
@@ -148,7 +148,7 @@ data "aws_ami" "amazonlinux2" {
 }
 
 module "bastion" {
-  # source = "git::https://github.com/defenseunicorns/iac.git//modules/bastion?ref=v<insert tagged version>"
+  # source = "git::https://github.com/defenseunicorns/delivery-aws-iac.git//modules/bastion?ref=v<insert tagged version>"
   source = "../../modules/bastion"
 
   ami_id        = data.aws_ami.amazonlinux2.id
@@ -182,7 +182,7 @@ module "bastion" {
 ###########################################################
 ################### EKS Cluster ###########################
 module "eks" {
-  # source = "git::https://github.com/defenseunicorns/iac.git//modules/eks?ref=v<insert tagged version>"
+  # source = "git::https://github.com/defenseunicorns/delivery-aws-iac.git//modules/eks?ref=v<insert tagged version>"
   source = "../../modules/eks"
 
   name                            = local.cluster_name

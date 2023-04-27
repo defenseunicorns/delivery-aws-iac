@@ -38,7 +38,7 @@ make run-pre-commit-hooks
 
 ### Backlog Management
 
-- We use [GitHub Issues](https://github.com/defenseunicorns/iac/issues) to manage our backlog.
+- We use [GitHub Issues](https://github.com/defenseunicorns/delivery-aws-iac/issues) to manage our backlog.
 - Issues need to meet our Definition of Ready (see below). If it does not meet the Definition of Ready, we may close it and ask the requester to re-open it once it does.
 
 #### Definition of Ready for a Backlog Item
