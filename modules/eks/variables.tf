@@ -54,6 +54,12 @@ variable "name" {
   default = ""
 }
 
+variable "iam_role_permissions_boundary" {
+  description = "ARN of the policy that is used to set the permissions boundary for the IAM role"
+  type        = string
+  default     = null
+}
+
 variable "aws_auth_users" {
   description = "List of map of users to add to aws-auth configmap"
   type = list(object({

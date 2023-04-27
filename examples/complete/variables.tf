@@ -21,6 +21,12 @@ variable "name_prefix" {
   }
 }
 
+variable "iam_role_permissions_boundary" {
+  description = "ARN of the policy that is used to set the permissions boundary for IAM roles"
+  type        = string
+  default     = null
+}
+
 variable "aws_admin_usernames" {
   description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin"
   type        = list(string)
