@@ -5,7 +5,7 @@ data "aws_caller_identity" "current" {}
 ################################################################################
 
 module "db" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git?ref=v5.2.3"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git?ref=v5.6.0"
 
   identifier = var.identifier
 
@@ -44,6 +44,7 @@ module "db" {
   performance_insights_enabled          = true
   performance_insights_retention_period = 7
   create_monitoring_role                = true
+  monitoring_role_permissions_boundary  = var.monitoring_role_permissions_boundary
   monitoring_interval                   = 60
   monitoring_role_name                  = "example-monitoring-role-name"
   monitoring_role_use_name_prefix       = true

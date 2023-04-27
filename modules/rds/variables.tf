@@ -121,3 +121,9 @@ variable "automated_backups_replication_enabled" {
   type        = bool
   default     = false
 }
+
+variable "monitoring_role_permissions_boundary" {
+  description = "ARN of the policy that is used to set the permissions boundary for the monitoring IAM role"
+  type        = string
+  default     = null
+}

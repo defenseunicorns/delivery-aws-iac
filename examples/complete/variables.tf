@@ -21,6 +21,12 @@ variable "name_prefix" {
   }
 }
 
+variable "iam_role_permissions_boundary" {
+  description = "ARN of the policy that is used to set the permissions boundary for IAM roles"
+  type        = string
+  default     = null
+}
+
 variable "aws_admin_usernames" {
   description = "A list of one or more AWS usernames with authorized access to KMS and EKS resources, will automatically add the user running the terraform as an admin"
   type        = list(string)
@@ -120,12 +126,6 @@ variable "enable_eks_managed_nodegroups" {
 variable "enable_self_managed_nodegroups" {
   description = "Enable self managed node groups"
   type        = bool
-}
-
-variable "dataplane_wait_duration" {
-  description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed nodegroup(s), self-managed nodegroup(s), Fargate profile(s))"
-  type        = string
-  default     = "2m"
 }
 
 ###########################################################

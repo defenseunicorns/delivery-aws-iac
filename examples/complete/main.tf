@@ -32,21 +32,21 @@ locals {
       create = var.enable_eks_managed_nodegroups
       # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
       # so we need to disable it to use the default template provided by the AWS EKS managed node group service
-      use_custom_launch_template = false
-
-      disk_size = 50
+      use_custom_launch_template    = false
+      iam_role_permissions_boundary = var.iam_role_permissions_boundary
+      disk_size                     = 50
     }
   }
 
   self_managed_node_groups = {
     self_mg1 = {
-      create          = var.enable_self_managed_nodegroups
-      node_group_name = "self_mg1"
-      subnet_ids      = module.vpc.private_subnets
-
-      min_size     = 3
-      max_size     = 10
-      desired_size = 3
+      create                        = var.enable_self_managed_nodegroups
+      node_group_name               = "self_mg1"
+      subnet_ids                    = module.vpc.private_subnets
+      iam_role_permissions_boundary = var.iam_role_permissions_boundary
+      min_size                      = 3
+      max_size                      = 10
+      desired_size                  = 3
 
       # ami_id = "" # defaults to latest amazon linux 2 eks ami matching k8s version in the upstream module
       # create_iam_role           = true                                                    # Changing `create_iam_role=false` to bring your own IAM Role
@@ -129,7 +129,8 @@ module "vpc" {
   create_database_subnet_group       = true
   create_database_subnet_route_table = true
 
-  instance_tenancy = "default"
+  instance_tenancy                  = "default"
+  vpc_flow_log_permissions_boundary = var.iam_role_permissions_boundary
 }
 
 ###########################################################
@@ -172,6 +173,7 @@ module "bastion" {
   vpc_endpoints_enabled          = true
   tenancy                        = var.bastion_tenancy
   zarf_version                   = var.zarf_version
+  permissions_boundary           = var.iam_role_permissions_boundary
   tags = merge(
     local.tags,
   { Function = "bastion-ssm" })
@@ -189,9 +191,9 @@ module "eks" {
   vpc_id                          = module.vpc.vpc_id
   private_subnet_ids              = module.vpc.private_subnets
   control_plane_subnet_ids        = module.vpc.private_subnets
+  iam_role_permissions_boundary   = var.iam_role_permissions_boundary
   source_security_group_id        = module.bastion.security_group_ids[0]
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
-  dataplane_wait_duration         = var.dataplane_wait_duration
   cluster_endpoint_private_access = true
   vpc_cni_custom_subnet           = module.vpc.intra_subnets
   aws_admin_usernames             = var.aws_admin_usernames
