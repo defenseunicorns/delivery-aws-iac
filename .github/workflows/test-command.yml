@@ -71,11 +71,13 @@ jobs:
     if: needs.parse.outputs.run-ping == 'true'
     steps:
       - name: Create URL to the run output
+        if: github.event_name == 'repository_dispatch'
         id: vars
         run: echo "run-url=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
 
-      #Will update the comment that triggered the /test comment and add the run-url
+      # Will update the comment that triggered the /test comment and add the run-url
       - name: Update comment
+        if: github.event_name == 'repository_dispatch'
         uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.PAT }}
@@ -122,11 +124,13 @@ jobs:
           GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login || github.repository_owner }}
 
       - name: Create URL to the run output
+        if: github.event_name == 'repository_dispatch'
         id: vars
         run: echo "run-url=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
 
-      #Will update the comment that triggered the /test comment and add the run-url
+      # Will update the comment that triggered the /test comment and add the run-url
       - name: Update comment
+        if: github.event_name == 'repository_dispatch'
         uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.PAT }}
