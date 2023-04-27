@@ -82,7 +82,7 @@ jobs:
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            [run-url][1]
+            :robot: [View pipeline run][1]
 
             [1]: ${{ steps.vars.outputs.run-url }}
 
@@ -133,7 +133,7 @@ jobs:
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
-            [run-url][1]
+            :robot: [View pipeline run][1]
 
             [1]: ${{ steps.vars.outputs.run-url }}
 
