@@ -70,6 +70,22 @@ jobs:
     needs: parse
     if: needs.parse.outputs.run-ping == 'true'
     steps:
+      - name: Create URL to the run output
+        id: vars
+        run: echo "run-url=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
+
+      #Will update the comment that triggered the /test comment and add the run-url
+      - name: Update comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            [run-url][1]
+
+            [1]: ${{ steps.vars.outputs.run-url }}
+
       # Update GitHub status for dispatch events
       - name: "Update GitHub Status for this ref"
         uses: "docker://cloudposse/github-status-updater"
@@ -104,6 +120,22 @@ jobs:
           GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
           GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login || github.repository_owner }}
+
+      - name: Create URL to the run output
+        id: vars
+        run: echo "run-url=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
+
+      #Will update the comment that triggered the /test comment and add the run-url
+      - name: Update comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            [run-url][1]
+
+            [1]: ${{ steps.vars.outputs.run-url }}
 
       # Checkout the code from GitHub Pull Request
       - name: "Checkout the code"
