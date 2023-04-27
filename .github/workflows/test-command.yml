@@ -74,8 +74,8 @@ jobs:
         id: vars
         run: echo "run-url=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
 
-      #Will edit the comment that triggered the /test comment and add the run-url
-      - name: Create comment
+      #Will update the comment that triggered the /test comment and add the run-url
+      - name: Update comment
         uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.PAT }}
@@ -125,8 +125,8 @@ jobs:
         id: vars
         run: echo "run-url=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
 
-      #Will edit the comment that triggered the /test comment and add the run-url
-      - name: Create comment
+      #Will update the comment that triggered the /test comment and add the run-url
+      - name: Update comment
         uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.PAT }}
