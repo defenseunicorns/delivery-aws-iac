@@ -54,6 +54,12 @@ variable "name" {
   default = ""
 }
 
+variable "iam_role_permissions_boundary" {
+  description = "ARN of the policy that is used to set the permissions boundary for the IAM role"
+  type        = string
+  default     = null
+}
+
 variable "aws_auth_users" {
   description = "List of map of users to add to aws-auth configmap"
   type = list(object({
@@ -139,7 +145,7 @@ variable "tenancy" {
 variable "dataplane_wait_duration" {
   description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed nodegroup(s), self-managed nodegroup(s), Fargate profile(s))"
   type        = string
-  default     = "2m"
+  default     = "4m"
 }
 
 #-------------------------------

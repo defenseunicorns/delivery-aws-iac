@@ -109,3 +109,9 @@ variable "secondary_cidr_blocks" {
   type        = list(string)
   default     = []
 }
+
+variable "vpc_flow_log_permissions_boundary" {
+  description = "The ARN of the Permissions Boundary for the VPC Flow Log IAM Role"
+  type        = string
+  default     = null
+}

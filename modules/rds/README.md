@@ -24,7 +24,7 @@ To view examples for how you can leverage this RDS Module, please see the [examp
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_db"></a> [db](#module\_db) | git::https://github.com/terraform-aws-modules/terraform-aws-rds.git | v5.2.3 |
+| <a name="module_db"></a> [db](#module\_db) | git::https://github.com/terraform-aws-modules/terraform-aws-rds.git | v5.6.0 |
 | <a name="module_security_group"></a> [security\_group](#module\_security\_group) | terraform-aws-modules/security-group/aws | ~> 4.17 |
 
 ## Resources
@@ -52,6 +52,7 @@ To view examples for how you can leverage this RDS Module, please see the [examp
 | <a name="input_instance_class"></a> [instance\_class](#input\_instance\_class) | The instance type of the RDS instance. | `string` | `""` | no |
 | <a name="input_major_engine_version"></a> [major\_engine\_version](#input\_major\_engine\_version) | The major version of the engine that this option group should be associated with. | `string` | `""` | no |
 | <a name="input_max_allocated_storage"></a> [max\_allocated\_storage](#input\_max\_allocated\_storage) | The upper limit to which Amazon RDS can automatically scale the storage of the DB instance. | `number` | `0` | no |
+| <a name="input_monitoring_role_permissions_boundary"></a> [monitoring\_role\_permissions\_boundary](#input\_monitoring\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the monitoring IAM role | `string` | `null` | no |
 | <a name="input_password"></a> [password](#input\_password) | Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file.<br>  The password provided will not be used if the variable create\_random\_password is set to true. | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to apply to all resources | `map(string)` | `{}` | no |
 | <a name="input_username"></a> [username](#input\_username) | Username for the master DB user. | `string` | `""` | no |

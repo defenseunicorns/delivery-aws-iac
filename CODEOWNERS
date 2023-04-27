@@ -8,10 +8,10 @@
 /examples/ @defenseunicorns/delivery-aws-iac
 
 # Privileged Files
-/CODEOWNERS @defenseunicorns/iac-admin
-/LICENSE @defenseunicorns/iac-admin
-/.github/ @defenseunicorns/iac-admin
-/.gitignore @defenseunicorns/iac-admin
-/renovate.json @defenseunicorns/iac-admin
-/renovate.json5 @defenseunicorns/iac-admin
-/Makefile @defenseunicorns/iac-admin
+/CODEOWNERS @defenseunicorns/delivery-aws-iac-admin
+/LICENSE @defenseunicorns/delivery-aws-iac-admin
+/.github/ @defenseunicorns/delivery-aws-iac-admin
+/.gitignore @defenseunicorns/delivery-aws-iac-admin
+/renovate.json @defenseunicorns/delivery-aws-iac-admin
+/renovate.json5 @defenseunicorns/delivery-aws-iac-admin
+/Makefile @defenseunicorns/delivery-aws-iac-admin
