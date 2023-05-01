@@ -25,7 +25,6 @@ locals {
 
   eks_managed_node_group_defaults = {
     # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/node_groups.tf
-    create                        = var.enable_eks_managed_nodegroups
     iam_role_permissions_boundary = var.iam_role_permissions_boundary
     ami_type                      = "AL2_x86_64"
     instance_types                = ["m6a.large", "m6i.large"]
@@ -33,6 +32,7 @@ locals {
 
   eks_managed_node_groups = {
     managed_ng1 = {
+      create       = var.enable_eks_managed_nodegroups
       min_size     = 2
       max_size     = 2
       desired_size = 2
@@ -41,7 +41,6 @@ locals {
   }
 
   self_managed_node_group_defaults = {
-    create                                 = var.enable_self_managed_nodegroups
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
     instance_type                          = "m6a.large"
     update_launch_template_default_version = true
@@ -89,6 +88,7 @@ locals {
 
   self_managed_node_groups = {
     self_ng1 = {
+      create       = var.enable_self_managed_nodegroups
       subnet_ids   = module.vpc.private_subnets
       min_size     = 2
       max_size     = 2
