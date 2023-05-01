@@ -212,10 +212,11 @@ module "eks" {
 
   ######################## Self Managed Node Group ###################################
   self_managed_node_group_defaults = local.self_managed_node_group_defaults
+  self_managed_node_groups         = local.self_managed_node_groups
 
   tags = local.tags
 
-  self_managed_node_groups = local.self_managed_node_groups
+
 
   #---------------------------------------------------------------
   #"native" EKS Add-Ons
