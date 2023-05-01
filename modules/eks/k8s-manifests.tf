@@ -3,7 +3,7 @@
 #################################################################################
 
 resource "kubectl_manifest" "eni_config" {
-  for_each = length(var.vpc_cni_custom_subnet == 0) ? {} : zipmap(local.azs, var.vpc_cni_custom_subnet)
+  for_each = length(var.vpc_cni_custom_subnet) == 0 ? {} : zipmap(local.azs, var.vpc_cni_custom_subnet)
 
   yaml_body = yamlencode({
     apiVersion = "crd.k8s.amazonaws.com/v1alpha1"
