@@ -10,12 +10,6 @@ variable "vpc_id" {
   default     = ""
 }
 
-variable "db_vpc_security_group_ids" {
-  description = "A list of VPC security groups to associate."
-  type        = list(string)
-  default     = []
-}
-
 variable "database_subnet_group_name" {
   description = "The name of the database subnet group."
   type        = string
@@ -82,12 +76,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "create_db_subnet_group" {
-  description = "Create database subnet group."
-  type        = bool
-  default     = false
-}
-
 variable "identifier" {
   description = "The name of the DB instance, if omitted, Terraform will assign a random, unique identifier."
   type        = string
@@ -114,12 +102,6 @@ variable "password" {
   type        = string
   default     = null
   sensitive   = true
-}
-
-variable "automated_backups_replication_enabled" {
-  description = "Whether to enable automated backups cross-region replication"
-  type        = bool
-  default     = false
 }
 
 variable "monitoring_role_permissions_boundary" {

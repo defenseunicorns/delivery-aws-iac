@@ -61,7 +61,6 @@ To view examples for how you can leverage this S3-IRSA Module, please see the [e
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | KMS Key ARN to use for encryption | `string` | n/a | yes |
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Kubernetes namespace for IRSA | `string` | `"default"` | no |
 | <a name="input_kubernetes_service_account"></a> [kubernetes\_service\_account](#input\_kubernetes\_service\_account) | Kubernetes service account for IRSA | `string` | `"default"` | no |
-| <a name="input_name_dynamodb"></a> [name\_dynamodb](#input\_name\_dynamodb) | Name of DynamoDB table | `string` | `""` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Name prefix for all resources that use a randomized suffix | `string` | n/a | yes |
 | <a name="input_policy_name_prefix"></a> [policy\_name\_prefix](#input\_policy\_name\_prefix) | IAM Policy name prefix | `string` | `"irsa-policy"` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region | `string` | `""` | no |

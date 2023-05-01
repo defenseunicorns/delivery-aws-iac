@@ -20,19 +20,6 @@ repos:
     rev: 0.2.0
     hooks:
       - id: fix-smartquotes
-# TODO: Re-enable this after the new actions stuff has been released
-#  - repo: https://github.com/python-jsonschema/check-jsonschema
-#    rev: 0.20.0
-#    hooks:
-#      - id: check-jsonschema
-#        name: "Validate Zarf Configs Against Schema"
-#        files: "zarf.yaml"
-#        types: [yaml]
-#        args:
-#          [
-#            "--schemafile",
-#            "https://raw.githubusercontent.com/defenseunicorns/zarf/jeff-doing-stupid-jeff-things/zarf.schema.json",
-#          ]
   - repo: https://github.com/dnephin/pre-commit-golang
     rev: v0.5.0
     hooks:
@@ -49,6 +36,8 @@ repos:
         verbose: true
         args:
           - --args=--config-file __GIT_WORKING_DIR__/.checkov.yml
-#      - id: terraform_tflint
+      - id: terraform_tflint
+        args:
+          - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
 #      - id: terraform_tfsec
 #      - id: terraform_validate

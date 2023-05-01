@@ -15,8 +15,6 @@ locals {
   kms_key_alias_name_prefix  = "alias/${var.name_prefix}-${lower(random_id.default.hex)}"
   access_log_sqs_queue_name  = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
 
-  account = data.aws_caller_identity.current.account_id
-
   tags = merge(
     var.tags,
     {
@@ -110,7 +108,6 @@ module "vpc" {
   # source = "git::https://github.com/defenseunicorns/delivery-aws-iac.git//modules/vpc?ref=v<insert tagged version>"
   source = "../../modules/vpc"
 
-  region                = var.region
   name                  = local.vpc_name
   vpc_cidr              = var.vpc_cidr
   secondary_cidr_blocks = var.secondary_cidr_blocks
@@ -126,8 +123,7 @@ module "vpc" {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = 1
   }
-  create_database_subnet_group       = true
-  create_database_subnet_route_table = true
+  create_database_subnet_group = true
 
   instance_tenancy                  = "default"
   vpc_flow_log_permissions_boundary = var.iam_role_permissions_boundary
@@ -170,7 +166,6 @@ module "bastion" {
   assign_public_ip               = false
   enable_log_to_s3               = true
   enable_log_to_cloudwatch       = true
-  vpc_endpoints_enabled          = true
   tenancy                        = var.bastion_tenancy
   zarf_version                   = var.zarf_version
   permissions_boundary           = var.iam_role_permissions_boundary
@@ -187,7 +182,6 @@ module "eks" {
 
   name                            = local.cluster_name
   aws_region                      = var.region
-  aws_account                     = local.account
   vpc_id                          = module.vpc.vpc_id
   private_subnet_ids              = module.vpc.private_subnets
   control_plane_subnet_ids        = module.vpc.private_subnets
@@ -207,18 +201,6 @@ module "eks" {
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
 
   ######################## EKS Managed Node Group ###################################
-  eks_managed_node_group_defaults = {
-    ami_type       = "AL2_x86_64"
-    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-
-    # We are using the IRSA created below for permissions
-    # However, we have to deploy with the policy attached FIRST (when creating a fresh cluster)
-    # and then turn this off after the cluster/node group is created. Without this initial policy,
-    # the VPC CNI fails to assign IPs and nodes cannot join the cluster
-    # See https://github.com/aws/containers-roadmap/issues/1666 for more context
-    iam_role_attach_cni_policy = true
-  }
-
   eks_managed_node_groups = local.eks_managed_node_groups
 
   ######################## Self Managed Node Group ###################################

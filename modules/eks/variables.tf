@@ -33,18 +33,7 @@ variable "private_subnet_ids" {
   default     = []
 }
 
-variable "public_subnet_ids" {
-  description = "Public subnet IDs"
-  type        = list(string)
-  default     = []
-}
-
 variable "aws_region" {
-  type    = string
-  default = ""
-}
-
-variable "aws_account" {
   type    = string
   default = ""
 }
@@ -136,12 +125,6 @@ variable "bastion_role_name" {
   default     = ""
 }
 
-variable "tenancy" {
-  description = "Tenancy of the cluster"
-  type        = string
-  default     = "dedicated"
-}
-
 variable "dataplane_wait_duration" {
   description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed nodegroup(s), self-managed nodegroup(s), Fargate profile(s))"
   type        = string
@@ -166,12 +149,6 @@ variable "self_managed_node_groups" {
 
 variable "self_managed_node_group_defaults" {
   description = "Map of self-managed node group default configurations"
-  type        = any
-  default     = {}
-}
-
-variable "eks_managed_node_group_defaults" {
-  description = "Map of EKS-managed node group default configurations"
   type        = any
   default     = {}
 }

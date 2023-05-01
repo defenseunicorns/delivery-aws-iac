@@ -1,8 +1,3 @@
-variable "region" {
-  description = "AWS region to deploy into"
-  type        = string
-}
-
 variable "name" {
   description = "Name to be used on all resources as identifier"
   type        = string
@@ -38,12 +33,6 @@ variable "public_subnet_tags" {
 
 variable "create_database_subnet_group" {
   description = "Create database subnet group"
-  type        = bool
-  default     = true
-}
-
-variable "create_database_subnet_route_table" {
-  description = "Create database subnet route table"
   type        = bool
   default     = true
 }
