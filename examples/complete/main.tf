@@ -23,49 +23,76 @@ locals {
     }
   )
 
+  eks_managed_node_group_defaults = {
+    # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/node_groups.tf
+    create                        = var.enable_eks_managed_nodegroups
+    iam_role_permissions_boundary = var.iam_role_permissions_boundary
+    ami_type                      = "AL2_x86_64"
+    instance_types                = ["m6a.large", "m6i.large"]
+  }
+
   eks_managed_node_groups = {
-    # Managed Node groups with minimum config
-    # Default node group - as provided by AWS EKS
-    default_node_group = {
-      create = var.enable_eks_managed_nodegroups
-      # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
-      # so we need to disable it to use the default template provided by the AWS EKS managed node group service
-      use_custom_launch_template    = false
-      iam_role_permissions_boundary = var.iam_role_permissions_boundary
-      disk_size                     = 50
+    managed_ng1 = {
+      min_size     = 2
+      max_size     = 2
+      desired_size = 2
+      disk_size    = 50
     }
   }
 
-  self_managed_node_groups = {
-    self_mg1 = {
-      create                        = var.enable_self_managed_nodegroups
-      node_group_name               = "self_mg1"
-      subnet_ids                    = module.vpc.private_subnets
-      iam_role_permissions_boundary = var.iam_role_permissions_boundary
-      min_size                      = 3
-      max_size                      = 10
-      desired_size                  = 3
+  self_managed_node_group_defaults = {
+    create                                 = var.enable_self_managed_nodegroups
+    iam_role_permissions_boundary          = var.iam_role_permissions_boundary
+    instance_type                          = "m6a.large"
+    update_launch_template_default_version = true
 
-      # ami_id = "" # defaults to latest amazon linux 2 eks ami matching k8s version in the upstream module
-      # create_iam_role           = true                                                    # Changing `create_iam_role=false` to bring your own IAM Role
-      # iam_role_arn              = module.eks.aws_iam_role_self_managed_ng_arn              # custom IAM role for aws-auth mapping; used when create_iam_role = false
-      # iam_instance_profile_name = module.eks.aws_iam_instance_profile_self_managed_ng_name # IAM instance profile name for Launch templates; used when create_iam_role = false
-      placement = {
-        tenancy = var.eks_worker_tenancy
-      }
+    placement = {
+      tenancy = var.eks_worker_tenancy
+    }
 
-      pre_bootstrap_userdata = <<-EOT
+    pre_bootstrap_userdata = <<-EOT
         yum install -y amazon-ssm-agent
         systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
       EOT
 
-      post_userdata = <<-EOT
+    post_userdata = <<-EOT
         echo "Bootstrap successfully completed! You can further apply config or install to run after bootstrap if needed"
       EOT
 
-      # bootstrap_extra_args used only when you pass custom_ami_id. Allows you to change the Container Runtime for Nodes
-      # e.g., bootstrap_extra_args="--use-max-pods false --container-runtime containerd"
-      bootstrap_extra_args = "--use-max-pods false"
+    # bootstrap_extra_args used only when you pass custom_ami_id. Allows you to change the Container Runtime for Nodes
+    # e.g., bootstrap_extra_args="--use-max-pods false --container-runtime containerd"
+    bootstrap_extra_args = "--use-max-pods false"
+
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+
+    # enable discovery of autoscaling groups by cluster-autoscaler
+    autoscaling_group_tags = merge(
+      local.tags,
+      {
+        "k8s.io/cluster-autoscaler/enabled" : true,
+        "k8s.io/cluster-autoscaler/${local.cluster_name}" : "owned"
+    })
+
+    metadata_options = {
+      #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template#metadata-options
+      http_endpoint               = "enabled"
+      http_put_response_hop_limit = 2
+      http_tokens                 = "optional" # set to "enabled" to enforce IMDSv2, default for upstream terraform-aws-eks module
+    }
+
+    tags = {
+      subnet_type = "private"
+    }
+  }
+
+  self_managed_node_groups = {
+    self_ng1 = {
+      subnet_ids   = module.vpc.private_subnets
+      min_size     = 2
+      max_size     = 2
+      desired_size = 2
 
       block_device_mappings = {
         xvda = {
@@ -74,29 +101,8 @@ locals {
             volume_size = 50
             volume_type = "gp3"
           }
-        },
-        xvdf = {
-          device_name = "/dev/xvdf"
-          ebs = {
-            volume_size = 80
-            volume_type = "gp3"
-            iops        = 3000
-            throughput  = 125
-          }
-        },
-        xvdg = {
-          device_name = "/dev/xvdg"
-          ebs = {
-            volume_size = 100
-            volume_type = "gp3"
-            iops        = 3000
-            throughput  = 125
-          }
         }
       }
-
-      instance_type = "m5.xlarge"
-      #capacity_type = "" # Optional Use this only for SPOT capacity as  capacity_type = "spot". Only for eks_managed_node_groups
     }
   }
 }
@@ -201,32 +207,11 @@ module "eks" {
   manage_aws_auth_configmap = var.manage_aws_auth_configmap
 
   ######################## EKS Managed Node Group ###################################
-  eks_managed_node_groups = local.eks_managed_node_groups
+  eks_managed_node_group_defaults = local.eks_managed_node_group_defaults
+  eks_managed_node_groups         = local.eks_managed_node_groups
 
   ######################## Self Managed Node Group ###################################
-  self_managed_node_group_defaults = {
-    instance_type                          = "m5.xlarge"
-    update_launch_template_default_version = true
-    iam_role_additional_policies = {
-      AmazonSSMManagedInstanceCore = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    }
-    # enable discovery of autoscaling groups by cluster-autoscaler
-    autoscaling_group_tags = merge(
-      local.tags,
-      {
-        "k8s.io/cluster-autoscaler/enabled" : true,
-        "k8s.io/cluster-autoscaler/${local.cluster_name}" : "owned"
-    })
-    metadata_options = {
-      #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template#metadata-options
-      http_endpoint               = "enabled"
-      http_put_response_hop_limit = 2
-      http_tokens                 = "optional" # set to "enabled" to enforce IMDSv2, default for upstream terraform-aws-eks module
-    }
-    tags = {
-      subnet_type = "private"
-    }
-  }
+  self_managed_node_group_defaults = local.self_managed_node_group_defaults
 
   tags = local.tags
 
