@@ -10,9 +10,7 @@ module "flux_sops" {
   # source = "git::https://github.com/defenseunicorns/delivery-aws-iac.git//modules/sops?ref=v<insert tagged version>"
   source = "../../modules/sops"
 
-  region                        = var.region
   cluster_name                  = module.eks.cluster_name
-  vpc_id                        = module.vpc.vpc_id
   policy_name_prefix            = "${module.eks.cluster_name}-flux-sops"
   kms_key_arn                   = aws_kms_key.default.arn
   kubernetes_service_account    = "flux-system-sops-sa"
@@ -77,7 +75,6 @@ module "rds_postgres_keycloak" {
   password                             = var.keycloak_db_password
   allocated_storage                    = var.kc_db_allocated_storage
   max_allocated_storage                = var.kc_db_max_allocated_storage
-  create_db_subnet_group               = true
   deletion_protection                  = false
   monitoring_role_permissions_boundary = var.iam_role_permissions_boundary
   tags                                 = local.tags

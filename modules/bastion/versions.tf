@@ -6,5 +6,9 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 3.72"
     }
+    cloudinit = {
+      source  = "hashicorp/cloudinit"
+      version = ">= 2.0.0"
+    }
   }
 }

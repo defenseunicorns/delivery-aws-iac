@@ -1,5 +1,4 @@
 locals {
-  name                = basename(path.cwd)
   eks_oidc_issuer_url = replace(var.eks_oidc_provider_arn, "/^(.*provider/)/", "")
 }
 

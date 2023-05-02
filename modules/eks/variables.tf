@@ -33,18 +33,7 @@ variable "private_subnet_ids" {
   default     = []
 }
 
-variable "public_subnet_ids" {
-  description = "Public subnet IDs"
-  type        = list(string)
-  default     = []
-}
-
 variable "aws_region" {
-  type    = string
-  default = ""
-}
-
-variable "aws_account" {
   type    = string
   default = ""
 }
@@ -134,12 +123,6 @@ variable "bastion_role_name" {
   description = "Name of role authorized kubectl access"
   type        = string
   default     = ""
-}
-
-variable "tenancy" {
-  description = "Tenancy of the cluster"
-  type        = string
-  default     = "dedicated"
 }
 
 variable "dataplane_wait_duration" {
