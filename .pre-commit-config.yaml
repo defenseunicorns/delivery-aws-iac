@@ -41,3 +41,7 @@ repos:
           - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
 #      - id: terraform_tfsec
 #      - id: terraform_validate
+  - repo: https://github.com/renovatebot/pre-commit-hooks
+    rev: 35.66.3
+    hooks:
+      - id: renovate-config-validator
