@@ -14,7 +14,7 @@ data "aws_kms_key" "default" {
 ################## Loki S3 Bucket ###################
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "v3.8.2"
+  version = "v3.10.1"
 
   bucket_prefix           = var.name_prefix
   block_public_acls       = true
