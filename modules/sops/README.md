@@ -47,11 +47,9 @@ No modules.
 | <a name="input_kubernetes_namespace"></a> [kubernetes\_namespace](#input\_kubernetes\_namespace) | Name of the Kubernetes namespace | `string` | `""` | no |
 | <a name="input_kubernetes_service_account"></a> [kubernetes\_service\_account](#input\_kubernetes\_service\_account) | Name of the Kubernetes service account | `string` | `""` | no |
 | <a name="input_policy_name_prefix"></a> [policy\_name\_prefix](#input\_policy\_name\_prefix) | Prefix for the policy name | `string` | `"sops"` | no |
-| <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | n/a | yes |
 | <a name="input_role_name"></a> [role\_name](#input\_role\_name) | Role to attach the sops policy to | `string` | `""` | no |
 | <a name="input_sops_iam_policies"></a> [sops\_iam\_policies](#input\_sops\_iam\_policies) | IAM Policies for IRSA IAM role | `list(string)` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to apply to all resources | `map(string)` | `{}` | no |
-| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |
 
 ## Outputs
 

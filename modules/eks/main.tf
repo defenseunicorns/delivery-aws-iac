@@ -16,6 +16,7 @@ module "aws_eks" {
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
 
   self_managed_node_group_defaults = var.self_managed_node_group_defaults
+  eks_managed_node_group_defaults  = var.eks_managed_node_group_defaults
   self_managed_node_groups         = var.self_managed_node_groups
   eks_managed_node_groups          = var.eks_managed_node_groups
 

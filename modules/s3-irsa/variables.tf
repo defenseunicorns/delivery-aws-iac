@@ -73,13 +73,6 @@ variable "kms_key_arn" {
   description = "KMS Key ARN to use for encryption"
 }
 
-variable "name_dynamodb" {
-  description = "Name of DynamoDB table"
-  type        = string
-  // TODO: Evaluate whether "" is ever a valid value for this variable.
-  default = ""
-}
-
 variable "dynamodb_enabled" {
   description = "Is dynamoDB enabled"
   type        = bool

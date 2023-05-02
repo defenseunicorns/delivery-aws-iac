@@ -254,46 +254,6 @@ data "aws_security_group" "default" {
   vpc_id = module.vpc.vpc_id
 }
 
-data "aws_iam_policy_document" "dynamodb_endpoint_policy" {
-  statement {
-    effect    = "Deny"
-    actions   = ["dynamodb:*"]
-    resources = ["*"]
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:sourceVpce"
-
-      values = [module.vpc.vpc_id]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "generic_endpoint_policy" {
-  statement {
-    effect    = "Deny"
-    actions   = ["*"]
-    resources = ["*"]
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:SourceVpc"
-
-      values = [module.vpc.vpc_id]
-    }
-  }
-}
-
 resource "aws_security_group" "vpc_tls" {
   #checkov:skip=CKV2_AWS_5: Secuirity group is being referenced by the VPC endpoint
   name        = "${var.name}-vpc_tls"
