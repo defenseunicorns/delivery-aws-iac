@@ -12,7 +12,7 @@ resource "aws_s3_bucket" "session_logs_bucket" {
 }
 
 resource "time_sleep" "access_logging_wait" {
-  create_duration = "90s"
+  create_duration = "30s"
 
   triggers = {
     bucket = aws_s3_bucket.session_logs_bucket.id
