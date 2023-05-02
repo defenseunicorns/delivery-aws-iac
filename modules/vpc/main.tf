@@ -54,7 +54,7 @@ locals {
 ################################################################################
 
 module "vpc" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v3.19.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v4.0.1"
 
   name                  = var.name
   cidr                  = var.vpc_cidr
@@ -122,7 +122,7 @@ module "vpc" {
 ################################################################################
 
 module "vpc_endpoints" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git//modules/vpc-endpoints?ref=v3.19.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git//modules/vpc-endpoints?ref=v4.0.1"
 
   vpc_id             = module.vpc.vpc_id
   security_group_ids = [data.aws_security_group.default.id]
@@ -240,7 +240,7 @@ module "vpc_endpoints" {
 }
 
 module "vpc_endpoints_nocreate" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git//modules/vpc-endpoints?ref=v3.19.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git//modules/vpc-endpoints?ref=v4.0.1"
 
   create = false
 }
@@ -252,46 +252,6 @@ module "vpc_endpoints_nocreate" {
 data "aws_security_group" "default" {
   name   = "default"
   vpc_id = module.vpc.vpc_id
-}
-
-data "aws_iam_policy_document" "dynamodb_endpoint_policy" {
-  statement {
-    effect    = "Deny"
-    actions   = ["dynamodb:*"]
-    resources = ["*"]
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:sourceVpce"
-
-      values = [module.vpc.vpc_id]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "generic_endpoint_policy" {
-  statement {
-    effect    = "Deny"
-    actions   = ["*"]
-    resources = ["*"]
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:SourceVpc"
-
-      values = [module.vpc.vpc_id]
-    }
-  }
 }
 
 resource "aws_security_group" "vpc_tls" {

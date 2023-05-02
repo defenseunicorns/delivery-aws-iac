@@ -1,8 +1,3 @@
-variable "region" {
-  type        = string
-  description = "AWS region"
-}
-
 variable "cluster_name" {
   type        = string
   description = "Name of the cluster"
@@ -65,12 +60,6 @@ variable "sops_iam_policies" {
 variable "kms_key_arn" {
   type        = string
   description = "KMS Key ARN to use for encryption"
-}
-
-variable "vpc_id" {
-  type        = string
-  description = "VPC ID"
-  default     = ""
 }
 
 variable "role_name" {

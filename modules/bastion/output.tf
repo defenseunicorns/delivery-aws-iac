@@ -23,7 +23,7 @@ output "primary_network_interface_id" {
   description = "Primary Network Interface Id"
 }
 output "security_group_ids" {
-  value       = length(local.security_group_configs) > 0 ? aws_security_group.sg.*.id : var.security_group_ids
+  value       = length(local.security_group_configs) > 0 ? aws_security_group.sg[*].id : var.security_group_ids
   description = "Security Group Ids"
 }
 

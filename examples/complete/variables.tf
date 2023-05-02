@@ -82,18 +82,6 @@ variable "secondary_cidr_blocks" {
   default     = []
 }
 
-variable "create_database_subnet_group" {
-  description = "Whether to create a database subnet group"
-  type        = bool
-  default     = true
-}
-
-variable "create_database_subnet_route_table" {
-  description = "Whether to create a database subnet route table"
-  type        = bool
-  default     = true
-}
-
 ###########################################################
 #################### EKS Config ###########################
 variable "eks_worker_tenancy" {
@@ -236,12 +224,6 @@ variable "bastion_instance_type" {
   description = "value for the instance type of the EKS worker nodes"
   type        = string
   default     = "m5.xlarge"
-}
-
-variable "assign_public_ip" {
-  description = "Whether to assign a public IP to the bastion"
-  type        = bool
-  default     = false
 }
 
 variable "bastion_ssh_user" {

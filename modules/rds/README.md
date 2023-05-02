@@ -16,9 +16,7 @@ To view examples for how you can leverage this RDS Module, please see the [examp
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.45 |
+No providers.
 
 ## Modules
 
@@ -29,21 +27,16 @@ To view examples for how you can leverage this RDS Module, please see the [examp
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+No resources.
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_allocated_storage"></a> [allocated\_storage](#input\_allocated\_storage) | The allocated storage in gibibytes. | `number` | `0` | no |
-| <a name="input_automated_backups_replication_enabled"></a> [automated\_backups\_replication\_enabled](#input\_automated\_backups\_replication\_enabled) | Whether to enable automated backups cross-region replication | `bool` | `false` | no |
-| <a name="input_create_db_subnet_group"></a> [create\_db\_subnet\_group](#input\_create\_db\_subnet\_group) | Create database subnet group. | `bool` | `false` | no |
 | <a name="input_create_random_password"></a> [create\_random\_password](#input\_create\_random\_password) | Whether to create random password for RDS primary cluster | `bool` | `true` | no |
 | <a name="input_database_subnet_group_name"></a> [database\_subnet\_group\_name](#input\_database\_subnet\_group\_name) | The name of the database subnet group. | `string` | `""` | no |
 | <a name="input_db_name"></a> [db\_name](#input\_db\_name) | The name of the database to create when the DB instance is created. | `string` | `""` | no |
-| <a name="input_db_vpc_security_group_ids"></a> [db\_vpc\_security\_group\_ids](#input\_db\_vpc\_security\_group\_ids) | A list of VPC security groups to associate. | `list(string)` | `[]` | no |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | If the DB instance should have deletion protection enabled. | `bool` | `false` | no |
 | <a name="input_engine"></a> [engine](#input\_engine) | The database engine to use. | `string` | `""` | no |
 | <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | The database engine version. | `string` | `""` | no |

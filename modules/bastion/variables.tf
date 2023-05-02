@@ -181,11 +181,15 @@ variable "enable_log_to_cloudwatch" {
 
 
 variable "ssh_user" {
-  default = "ubuntu"
+  description = "Username to use when accessing the instance using SSH"
+  type        = string
+  default     = "ubuntu"
 }
 
 variable "additional_user_data_script" {
-  default = ""
+  description = "Additional user data script to run on instance boot"
+  type        = string
+  default     = ""
 }
 
 variable "ssm_enabled" {
@@ -227,12 +231,6 @@ variable "windows_shell_profile" {
   description = "The ShellProfile to use for windows based machines."
   default     = ""
   type        = string
-}
-
-variable "vpc_endpoints_enabled" {
-  description = "Create VPC Endpoints"
-  type        = bool
-  default     = true
 }
 
 variable "tenancy" {
