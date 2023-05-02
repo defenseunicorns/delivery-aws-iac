@@ -15,18 +15,15 @@ resource "time_sleep" "access_logging_wait" {
   create_duration = "30s"
 
   triggers = {
-    bucket = aws_s3_bucket_logging.access_logging_on_session_logs_bucket.id
+    bucket = aws_s3_bucket.session_logs_bucket.id
   }
 }
 
 resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
-  bucket = aws_s3_bucket_logging.access_logging_on_session_logs_bucket.id
+  bucket = time_sleep.access_logging_wait.triggers.bucket
 
   target_bucket = data.aws_s3_bucket.access_logs_bucket.id
   target_prefix = var.access_logs_target_prefix
-  depends_on = [
-    time_sleep.access_logging_wait.triggers["bucket"]
-  ]
 }
 
 resource "aws_s3_bucket_acl" "session_logs_bucket" {
