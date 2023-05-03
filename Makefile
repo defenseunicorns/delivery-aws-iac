@@ -1,7 +1,7 @@
 # The version of the build harness container to use
 BUILD_HARNESS_REPO := ghcr.io/defenseunicorns/not-a-build-harness/not-a-build-harness
 # renovate: datasource=docker depName=ghcr.io/defenseunicorns/not-a-build-harness/not-a-build-harness versioning=docker
-BUILD_HARNESS_VERSION := 0.0.15
+BUILD_HARNESS_VERSION := 0.0.16
 
 .DEFAULT_GOAL := help
 
