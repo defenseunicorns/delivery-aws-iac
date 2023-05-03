@@ -34,6 +34,15 @@
     enabled: true
   },
   "regexManagers": [
+    // Custom regex manager for the Makefile that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
+    {
+      "fileMatch": ["^Makefile"],
+      "matchStrings": [
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*?_VERSION := (?<currentValue>.*)\\s"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    },
     // Custom regex manager for the .tool-versions file that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
     {
       "fileMatch": ["^.tool-versions$"],
