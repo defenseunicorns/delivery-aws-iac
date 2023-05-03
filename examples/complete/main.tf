@@ -167,7 +167,7 @@ module "bastion" {
   subnet_id                      = module.vpc.private_subnets[0]
   region                         = var.region
   access_logs_bucket_name        = aws_s3_bucket.access_log_bucket.id
-  session_log_bucket_name_prefix = "${local.bastion_name}-sessionlogs/"
+  session_log_bucket_name_prefix = "${local.bastion_name}-sessionlogs"
   kms_key_arn                    = aws_kms_key.default.arn
   ssh_user                       = var.bastion_ssh_user
   ssh_password                   = var.bastion_ssh_password
