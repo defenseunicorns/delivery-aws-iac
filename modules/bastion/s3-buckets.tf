@@ -11,16 +11,8 @@ resource "aws_s3_bucket" "session_logs_bucket" {
 
 }
 
-resource "time_sleep" "access_logging_wait" {
-  create_duration = "30s"
-
-  triggers = {
-    bucket = aws_s3_bucket.session_logs_bucket.id
-  }
-}
-
 resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
-  bucket = time_sleep.access_logging_wait.triggers.bucket
+  bucket = aws_s3_bucket.session_logs_bucket.id
 
   target_bucket = var.access_logs_bucket_name
   target_prefix = var.access_logs_target_prefix
