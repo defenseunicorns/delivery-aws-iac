@@ -4,24 +4,18 @@
 # Create S3 bucket for session logs with versioning, encryption, blocked public access enabled
 resource "aws_s3_bucket" "session_logs_bucket" {
   # checkov:skip=CKV_AWS_144: Cross region replication overkill
-  # checkov: CKV_AWS_18: we are using a data block to get the bucket id
   bucket_prefix = "${var.session_log_bucket_name_prefix}-"
   force_destroy = true
   tags          = var.tags
 
-  logging {
-    target_bucket = var.access_logs_bucket_name
-    target_prefix = var.access_logs_target_prefix
-  }
-
 }
 
-# resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
-#   bucket = aws_s3_bucket.session_logs_bucket.id
+resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
+  bucket = aws_s3_bucket.session_logs_bucket.id
 
-#   target_bucket = var.access_logs_bucket_name
-#   target_prefix = var.access_logs_target_prefix
-# }
+  target_bucket = var.access_logs_bucket_name
+  target_prefix = var.access_logs_target_prefix
+}
 
 resource "aws_s3_bucket_acl" "session_logs_bucket" {
   bucket = aws_s3_bucket.session_logs_bucket.id
