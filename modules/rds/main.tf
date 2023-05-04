@@ -3,7 +3,7 @@
 ################################################################################
 
 module "db" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git?ref=v5.6.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git?ref=v5.9.0"
 
   identifier = var.identifier
 
