@@ -9,14 +9,19 @@ resource "aws_s3_bucket" "session_logs_bucket" {
   force_destroy = true
   tags          = var.tags
 
+  logging {
+    target_bucket = var.access_logs_bucket_name
+    target_prefix = var.access_logs_target_prefix
+  }
+
 }
 
-resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
-  bucket = aws_s3_bucket.session_logs_bucket.id
+# resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
+#   bucket = aws_s3_bucket.session_logs_bucket.id
 
-  target_bucket = var.access_logs_bucket_name
-  target_prefix = var.access_logs_target_prefix
-}
+#   target_bucket = var.access_logs_bucket_name
+#   target_prefix = var.access_logs_target_prefix
+# }
 
 resource "aws_s3_bucket_acl" "session_logs_bucket" {
   bucket = aws_s3_bucket.session_logs_bucket.id
