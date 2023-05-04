@@ -22,7 +22,7 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 			"fixtures.insecure.tfvars",
 		},
 		RetryableTerraformErrors: map[string]string{
-			"*Error: error reading S3 Bucket.*Logging: empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
+			".*Error: error reading S3 Bucket.*Logging: empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
 		},
 		MaxRetries: 5,
 		TimeBetweenRetries: 5 * time.Second,
