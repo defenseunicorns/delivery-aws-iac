@@ -1,5 +1,5 @@
-Root module outputs
-Setting all of them sensitive = true to avoid having their details logged to the console in our public CI pipelines
+# Root module outputs
+# Setting all of them sensitive = true to avoid having their details logged to the console in our public CI pipelines
 
 output "loki_s3_bucket" {
   description = "Loki S3 Bucket Name"

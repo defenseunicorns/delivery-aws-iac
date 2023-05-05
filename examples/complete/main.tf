@@ -182,8 +182,8 @@ module "bastion" {
   { Function = "bastion-ssm" })
 }
 
-##########################################################
-################## EKS Cluster ###########################
+###########################################################
+################### EKS Cluster ###########################
 module "eks" {
   # source = "git::https://github.com/defenseunicorns/delivery-aws-iac.git//modules/eks?ref=v<insert tagged version>"
   source = "../../modules/eks"
