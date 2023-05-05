@@ -86,8 +86,8 @@ module "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
-  enable_nat_gateway = var.enable_nat_gateway
-  single_nat_gateway = var.single_nat_gateway
+  # enable_nat_gateway = var.enable_nat_gateway
+  # single_nat_gateway = var.single_nat_gateway
 
   # customer_gateways = {
   #   IP1 = {
