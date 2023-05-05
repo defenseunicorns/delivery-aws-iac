@@ -35,6 +35,9 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"fixtures.common.tfvars",
 			"fixtures.secure.tfvars",
 		},
+		RetryableTerraformErrors: map[string]string{
+			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
+		},
 	}
 	terraformOptionsWithVPCAndBastionTargets := &terraform.Options{
 		TerraformDir: tempFolder,
@@ -46,6 +49,9 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"module.vpc",
 			"module.bastion",
 		},
+		RetryableTerraformErrors: map[string]string{
+			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
+		},
 	}
 	terraformOptionsWithEKSTarget := &terraform.Options{
 		TerraformDir: tempFolder,
@@ -55,6 +61,9 @@ func TestExamplesCompleteSecure(t *testing.T) {
 		},
 		Targets: []string{
 			"module.eks",
+		},
+		RetryableTerraformErrors: map[string]string{
+			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
 		},
 	}
 	terraformOutputOptions := &terraform.Options{

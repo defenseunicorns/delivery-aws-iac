@@ -12,9 +12,6 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 	t.Parallel()
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
 	terraformOptions := &terraform.Options{
-		// EnvVars: map[string]string{
-		// 	"TF_LOG": "DEBUG",
-		// },
 		TerraformDir: tempFolder,
 		Upgrade:      false,
 		VarFiles: []string{
@@ -36,7 +33,6 @@ func setupTestExamplesCompleteInsecure(t *testing.T, terraformOptions *terraform
 	teststructure.RunTestStage(t, "SETUP", func() {
 		terraform.InitAndApply(t, terraformOptions)
 	})
-
 }
 
 func teardownTestExamplesCompleteInsecure(t *testing.T, terraformOptions *terraform.Options) {
