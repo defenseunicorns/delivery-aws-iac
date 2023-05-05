@@ -12,9 +12,9 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 	t.Parallel()
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
 	terraformOptions := &terraform.Options{
-		EnvVars: map[string]string{
-			"TF_LOG": "DEBUG",
-		},
+		// EnvVars: map[string]string{
+		// 	"TF_LOG": "DEBUG",
+		// },
 		TerraformDir: tempFolder,
 		Upgrade:      false,
 		VarFiles: []string{
@@ -24,7 +24,7 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 		RetryableTerraformErrors: map[string]string{
 			".*Error: error reading S3 Bucket.*Logging: empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
 		},
-		MaxRetries: 5,
+		MaxRetries:         5,
 		TimeBetweenRetries: 5 * time.Second,
 	}
 	defer teardownTestExamplesCompleteInsecure(t, terraformOptions)
