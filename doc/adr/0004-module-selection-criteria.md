@@ -10,26 +10,26 @@ Accepted
 
 This project was started to provide a highly opinionated secure and declarative infrastructure baseline that supports a Big Bang deployment in AWS. Below is a list of modules as of the first tag cut in this repository and how they primarily function.
 
-* bastion 
+* bastion
   - highly opinionated EC2 terraform module that informs how users can/are expected to interact with the environment
   - fully built / maintained by this project
-* eks 
+* eks
   - opinionated wrapper of EKS Blueprints module (maintained by AWS Solution Architects)
-* rds 
+* rds
   - opinionated wrapper of terraform-aws-rds module
   - supports big bang add-ons that need a managed service database
 * s3-irsa
-  - opinionated wrapper of terraform-aws-modules/s3-bucket 
+  - opinionated wrapper of terraform-aws-modules/s3-bucket
   - adds iam / kms AWS resources to enable irsa but depends on k8s configuration (svc account) to be handle by GitOps
 * sops
   - highly opinionated iam / kms module that allows encryption / decryption of GitOps secrets via the bastion & flux in eks
   - adds iam / kms AWS resources to enable irsa but depends on k8s configuration (svc account) to be handle by GitOps
   - fully built / maintained by this project
 * tfstate-backend
-  - opinionated wrapper of terraform-aws-modules/s3-bucket 
+  - opinionated wrapper of terraform-aws-modules/s3-bucket
   - adds dynamodb / kms resources to enable secure tf state backend
 * vpc
-  - opinionated wrapper of terraform-aws-modules/vpc module 
+  - opinionated wrapper of terraform-aws-modules/vpc module
   - adds security group for VPC endpoints
 
 As we start moving more toward treating our Terraform infrastructure code as a product, there is a need to capture previous decisions for module selection in order to enhance the process going forward. Below is a list of modules as of the first tag cut in this repository along with guiding principles that were taken into account for the initial selection:
@@ -56,7 +56,7 @@ Below is a list of the original modules and why those early decisions were made.
   - opinionated wrapper of terraform-aws-rds module
   - supports big bang add-ons that need a managed service database
 * s3-irsa (terraform-aws-modules/s3-bucket)
-  - opinionated wrapper of terraform-aws-modules/s3-bucket 
+  - opinionated wrapper of terraform-aws-modules/s3-bucket
   - adds iam / kms AWS resources to enable irsa but depends on k8s configuration (svc account) to be handle by GitOps
 * sops (no upstream module selected)
   - this decision was made because it was simple, easy to maintain and there weren't any upstream options.
@@ -68,5 +68,3 @@ Below is a list of the original modules and why those early decisions were made.
   - we chose this upstream modules because it was simple and well used in many places.
 
 ## Consequences
-
-
