@@ -13,9 +13,7 @@
     // Apply crowd-sourced package replacement rules. See https://docs.renovatebot.com/presets-replacements/#replacementsall
     "replacements:all",
     // Apply crowd-sourced workarounds for known problems with packages. See https://docs.renovatebot.com/presets-workarounds/#workaroundsall
-    "workarounds:all",
-    // Only run outside of office hours. See https://docs.renovatebot.com/presets-schedule/#schedulenonofficehours
-    "schedule:nonOfficeHours"
+    "workarounds:all"
   ],
   // Labels to set in Pull Request. See https://docs.renovatebot.com/configuration-options/#labels
   labels: [
@@ -32,5 +30,25 @@
   // Enable updates to the pre-commit-config.yaml file. See https://docs.renovatebot.com/modules/manager/pre-commit/
   "pre-commit": {
     enabled: true
-  }
+  },
+  "regexManagers": [
+    // Custom regex manager for the Makefile that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
+    {
+      "fileMatch": ["^Makefile"],
+      "matchStrings": [
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*?_VERSION := (?<currentValue>.*)\\s"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    },
+    // Custom regex manager for the .tool-versions file that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
+    {
+      "fileMatch": ["^.tool-versions$"],
+      "matchStrings": [
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*? (?<currentValue>.*)\\s"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    }
+  ]
 }

@@ -394,12 +394,16 @@ github.com/gruntwork-io/go-commons v0.8.0 h1:k/yypwrPqSeYHevLlEDmvmgQzcyTwrlZGRa
 github.com/gruntwork-io/go-commons v0.8.0/go.mod h1:gtp0yTtIBExIZp7vyIV9I0XQkVwiQZze678hvDXof78=
 github.com/gruntwork-io/terratest v0.41.15 h1:od3neRQRBuf+Zwz5SSByrf3F90iyqFanV9nFF/86uuM=
 github.com/gruntwork-io/terratest v0.41.15/go.mod h1:a9QNOPa3/nbsLy1ufNGT33X9sMRknun7qsf4bIVEbPo=
+github.com/gruntwork-io/terratest v0.41.23 h1:GqwK0Nh6IQze3hka6iwuOd1V3wX7/y/85W25d1zpAnE=
+github.com/gruntwork-io/terratest v0.41.23/go.mod h1:O6gajNBjO1wvc7Wl9WtbO+ORcdnhAV2GQiBE71ycwIk=
 github.com/hashicorp/errwrap v1.0.0 h1:hLrqtEDnRye3+sgx6z4qVLNuviH3MR5aQ0ykNJa/UYA=
 github.com/hashicorp/errwrap v1.0.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
 github.com/hashicorp/go-cleanhttp v0.5.2 h1:035FKYIWjmULyFRBKPs8TBQoi0x6d9G4xc9neXJWAZQ=
 github.com/hashicorp/go-cleanhttp v0.5.2/go.mod h1:kO/YDlP8L1346E6Sodw+PrpBSV4/SoxCXGY6BqNFT48=
 github.com/hashicorp/go-getter v1.7.0 h1:bzrYP+qu/gMrL1au7/aDvkoOVGUJpeKBgbqRHACAFDY=
 github.com/hashicorp/go-getter v1.7.0/go.mod h1:W7TalhMmbPmsSMdNjD0ZskARur/9GJ17cfHTRtXV744=
+github.com/hashicorp/go-getter v1.7.1 h1:SWiSWN/42qdpR0MdhaOc/bLR48PLuP1ZQtYLRlM69uY=
+github.com/hashicorp/go-getter v1.7.1/go.mod h1:W7TalhMmbPmsSMdNjD0ZskARur/9GJ17cfHTRtXV744=
 github.com/hashicorp/go-multierror v1.1.0 h1:B9UzwGQJehnUY1yNrnwREHc3fGbC2xefo8g4TbElacI=
 github.com/hashicorp/go-multierror v1.1.0/go.mod h1:spPvp8C1qA32ftKqdAHm4hHTbPw+vmowP0z+KUhOZdA=
 github.com/hashicorp/go-safetemp v1.0.0 h1:2HR189eFNrjHQyENnQMMpCiBAsRxzbTMIgBhEyExpmo=
@@ -519,6 +523,8 @@ github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
+github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
+github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/tmccombs/hcl2json v0.3.3 h1:+DLNYqpWE0CsOQiEZu+OZm5ZBImake3wtITYxQ8uLFQ=
 github.com/tmccombs/hcl2json v0.3.3/go.mod h1:Y2chtz2x9bAeRTvSibVRVgbLJhLJXKlUeIvjeVdnm4w=
 github.com/ulikunitz/xz v0.5.10 h1:t92gobL9l3HE202wg3rlk19F6X+JOxl9BBrCCMYEYd8=

@@ -3,7 +3,7 @@
 ################################################################################
 
 module "db" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git?ref=v5.6.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-rds.git?ref=v5.9.0"
 
   identifier = var.identifier
 
@@ -44,9 +44,9 @@ module "db" {
   create_monitoring_role                = true
   monitoring_role_permissions_boundary  = var.monitoring_role_permissions_boundary
   monitoring_interval                   = 60
-  monitoring_role_name                  = "example-monitoring-role-name"
+  monitoring_role_name                  = "${var.db_name}-rds-monitoring-role"
   monitoring_role_use_name_prefix       = true
-  monitoring_role_description           = "Description for monitoring role"
+  monitoring_role_description           = "IAM role that permits RDS to send enhanced monitoring metrics to CloudWatch Logs"
 
   parameters = [
     {

@@ -2,7 +2,10 @@ module github.com/defenseunicorns/delivery-aws-iac
 
 go 1.19
 
-require github.com/gruntwork-io/terratest v0.41.15
+require (
+	github.com/gruntwork-io/terratest v0.41.23
+	github.com/stretchr/testify v1.8.2
+)
 
 require (
 	cloud.google.com/go v0.105.0 // indirect
@@ -33,7 +36,7 @@ require (
 	github.com/gruntwork-io/go-commons v0.8.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-getter v1.7.0 // indirect
+	github.com/hashicorp/go-getter v1.7.1 // indirect
 	github.com/hashicorp/go-multierror v1.1.0 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
@@ -54,7 +57,6 @@ require (
 	github.com/pquerna/otp v1.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/tmccombs/hcl2json v0.3.3 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/urfave/cli v1.22.2 // indirect

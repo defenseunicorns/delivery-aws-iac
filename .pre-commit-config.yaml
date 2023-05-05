@@ -21,12 +21,12 @@ repos:
     hooks:
       - id: fix-smartquotes
   - repo: https://github.com/dnephin/pre-commit-golang
-    rev: v0.5.0
+    rev: v0.5.1
     hooks:
       - id: go-fmt
       - id: golangci-lint
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.77.0
+    rev: v1.78.0
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
@@ -42,6 +42,6 @@ repos:
 #      - id: terraform_tfsec
 #      - id: terraform_validate
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 35.66.3
+    rev: 35.71.1
     hooks:
       - id: renovate-config-validator
