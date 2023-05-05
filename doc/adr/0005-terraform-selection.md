@@ -1,4 +1,4 @@
-# 5. Use Terraform for IaC 
+# 5. Use Terraform for IaC
 
 Date: 2023-05-05 (Effective 2023-01-02)
 
@@ -12,7 +12,7 @@ We need to select a tool for Infrastructure as Code that:
 
 * establish a common pattern across multiple environments (on prem, cloud providers, etc.)
 * is portable
-* is widely supported 
+* is widely supported
 * can be easily adopted / extended by external entities running day 2 ops
 * is extensible for internal use cases
 * doesn't introduce significant complexity / unnecessary cost
@@ -27,7 +27,7 @@ Tools that were considered:
 
 ## Decision
 
-We chose Terraform because 
+We chose Terraform because
   - it is the most widely adopted IaC tool (we felt it would resonate best with external day 2 ops partners)
   - it is portable (easily supports air gapped environments)
   - allowed us to leverage existing capabilities / experience (expedited delivery of capabilities)
@@ -44,7 +44,7 @@ Why we didn't choose one of the other tools:
   - not as widely supported
 
 * Crossplane
-  - requires a utility cluster / hub and spoke architecture (chicken and egg scenario) 
+  - requires a utility cluster / hub and spoke architecture (chicken and egg scenario)
     - incurs additional cloud costs - many DoD environments require dedicated tenancy which is x3 more expensive
     - add significant complexity to mission environments and e2e testing pipelines
   - portability concerns
