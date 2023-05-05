@@ -9,7 +9,7 @@ tags = {
   Environment = "dev"
   Project     = "du-iac-cicd"
 }
-name_prefix               = "zack-iac"
+name_prefix               = "ex-complete"
 manage_aws_auth_configmap = true
 
 ###########################################################
