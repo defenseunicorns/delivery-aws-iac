@@ -74,6 +74,7 @@ resource "aws_network_interface_attachment" "attach" {
 
 # Optional Security Group
 resource "aws_security_group" "sg" {
+  # checkov:skip=CKV_AWS_23: "Ensure every security groups rule has a description" -- False positive
   count       = length(local.security_group_configs)
   name        = local.security_group_configs[count.index].name
   description = local.security_group_configs[count.index].description

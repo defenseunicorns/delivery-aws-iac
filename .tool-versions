@@ -2,7 +2,7 @@
 adr-tools 3.0.0
 awscli 2.11.17
 # renovate: datasource=github-tags depName=bridgecrewio/checkov
-checkov 2.3.3
+checkov 2.3.231
 golang 1.20.4
 # renovate: datasource=github-tags depName=golangci/golangci-lint
 golangci-lint 1.52.2

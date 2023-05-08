@@ -212,7 +212,7 @@ variable "tags" {
 variable "cloudwatch_logs_retention" {
   description = "Number of days to retain Session Logs in CloudWatch"
   type        = number
-  default     = 30
+  default     = 365
 }
 
 variable "cloudwatch_log_group_name" {
