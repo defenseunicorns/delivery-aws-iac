@@ -6,7 +6,7 @@ resource "kubernetes_namespace" "iac" {
   }
 }
 
-resource "kubernetes_secret" "rds_postgres_keycloak_creds" {
+resource "kubernetes_secret_v1" "rds_postgres_keycloak_creds" {
   count = var.keycloak_enabled ? 1 : 0
   metadata {
     name      = "keycloak-connect-info"
