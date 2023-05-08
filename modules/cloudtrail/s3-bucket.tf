@@ -1,6 +1,11 @@
 resource "aws_s3_bucket" "this" {
   # checkov:skip=CKV_AWS_144: "Ensure that S3 bucket has cross-region replication enabled" -- Cross-region replication is not necessary
   # checkov:skip=CKV_AWS_18: "Ensure the S3 bucket has access logging enabled" -- Access logging is overkill if we are creating our own bucket. Best Practice is to send CloudTrail logs to a bucket in a different account.
+  # checkov:skip=CKV_AWS_21: "Ensure all data stored in the S3 bucket have versioning enabled" -- False positive
+  # checkov:skip=CKV2_AWS_6: "Ensure that S3 bucket has a Public Access block" -- False positive
+  # checkov:skip=CKV_AWS_145: "Ensure that S3 buckets are encrypted with KMS by default" -- False positive
+  # checkov:skip=CKV2_AWS_62: "Ensure S3 buckets should have event notifications enabled" -- Not necessary for this bucket
+  # checkov:skip=CKV2_AWS_61: "Ensure that an S3 bucket has a lifecycle configuration" -- False positive
   count         = var.use_external_s3_bucket ? 0 : 1
   bucket_prefix = local.s3_bucket_prefix
   force_destroy = true
@@ -103,6 +108,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
     status = "Enabled"
     expiration {
       days = var.log_retention_days
+    }
+  }
+  rule {
+    id     = "abort_incomplete_multipart_upload"
+    status = "Enabled"
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
     }
   }
 }

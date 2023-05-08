@@ -84,6 +84,14 @@ resource "aws_s3_bucket_lifecycle_configuration" "session_logs_bucket" {
   depends_on = [
     aws_s3_bucket_versioning.session_logs_bucket
   ]
+
+  rule {
+    id     = "abort_incomplete_multipart_upload"
+    status = "Enabled"
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
 }
 
 resource "aws_s3_bucket_notification" "session_logs_bucket_notification" {
