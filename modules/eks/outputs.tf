@@ -40,3 +40,8 @@ output "cluster_certificate_authority_data" {
   value       = module.aws_eks.cluster_certificate_authority_data
   sensitive   = true
 }
+
+output "efs_storageclass_name" {
+  description = "The name of the EFS storageclass that was created (if var.enable_efs was set to true)"
+  value       = try(kubernetes_storage_class_v1.efs[0].id, null)
+}
