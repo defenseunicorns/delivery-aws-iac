@@ -123,6 +123,14 @@ resource "aws_s3_bucket_lifecycle_configuration" "access_log_bucket" {
       days = var.access_log_expire_days
     }
   }
+
+  rule {
+    id     = "abort_incomplete_multipart_upload"
+    status = "Enabled"
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
 }
 
 resource "aws_sqs_queue" "access_log_queue" {

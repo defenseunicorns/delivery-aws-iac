@@ -1,7 +1,7 @@
 # Create a log group for ssh access
 resource "aws_cloudwatch_log_group" "ssh_access_log_group" {
   name              = "/aws/events/${var.name}-ssh-access"
-  retention_in_days = 60
+  retention_in_days = 365
   kms_key_id        = data.aws_kms_key.default.arn
 }
 
@@ -29,6 +29,7 @@ resource "aws_cloudwatch_event_target" "ssm_target" {
 
 # Create a cloudwatch agent configuration file and log group
 resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
+  # checkov:skip=CKV_AWS_337: "Ensure SSM parameters are using KMS CMK" -- There is no sensitive data in this SSM parameter
   name      = "AmazonCloudWatch-linux-${var.name}"
   type      = "SecureString"
   overwrite = true
@@ -179,7 +180,7 @@ resource "aws_ssm_parameter" "cloudwatch_configuration_file" {
 
 resource "aws_cloudwatch_log_group" "ec2_cloudwatch_logs" {
   name              = "ec2-cloudwatch-logging-${var.name}"
-  retention_in_days = 60
+  retention_in_days = 365
   kms_key_id        = data.aws_kms_key.default.arn
 }
 
