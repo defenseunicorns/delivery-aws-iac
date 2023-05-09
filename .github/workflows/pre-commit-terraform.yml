@@ -38,4 +38,4 @@ jobs:
         run: make docker-load-build-harness
 
       - name: Run `pre-commit run -a`
-        run: make pre-commit-terraform
+        run: make pre-commit-terraform fix-cache-permissions

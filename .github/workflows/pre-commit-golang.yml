@@ -38,4 +38,4 @@ jobs:
         run: make docker-load-build-harness
 
       - name: Run `pre-commit run -a`
-        run: make pre-commit-golang
+        run: make pre-commit-golang fix-cache-permissions

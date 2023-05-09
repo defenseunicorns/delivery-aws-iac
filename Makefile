@@ -132,3 +132,7 @@ pre-commit-renovate: ## Run the renovate pre-commit hooks. Returns nonzero exit 
 .PHONY: pre-commit-common
 pre-commit-common: ## Run the common pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
 	$(MAKE) runhooks HOOK="" SKIP="go-fmt,golangci-lint,terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
+
+.PHONY: fix-cache-permissions
+fix-cache-permissions: ## Fixes the permissions on the pre-commit cache
+	docker run $(TTY_ARG) --rm -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) chmod -R a+rx .cache
