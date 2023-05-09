@@ -15,28 +15,28 @@
         uses: actions/cache@v3
         with:
           path: "${{ github.workspace }}/.cache/pre-commit"
-          key: "pre-commit-${{inputs.check-type}}"
+          key: "pre-commit-${{inputs.check-type}}|${{hashFiles('.tool-versions')}}|${{hashFiles('.pre-commit-config.yaml')}}"
 
       - name: Init gopath cache
         if: inputs.check-type == 'golang'
         uses: actions/cache@v3
         with:
           path: "${{ github.workspace }}/.cache/go"
-          key: "gopath|${{ hashFiles('.tool-versions') }}|${{ hashFiles('go.sum') }}"
+          key: "gopath|${{hashFiles('.tool-versions')}}|${{hashFiles('go.sum')}}"
 
       - name: Init gobuild cache
         if: inputs.check-type == 'golang'
         uses: actions/cache@v3
         with:
           path: "${{ github.workspace }}/.cache/go-build"
-          key: "gobuild|${{ hashFiles('.tool-versions') }}|${{ hashFiles('go.sum') }}"
+          key: "gobuild|${{hashFiles('.tool-versions')}}|${{hashFiles('go.sum')}}"
 
       - name: Init docker cache
         id: init-docker-cache
         uses: actions/cache@v3
         with:
           path: "${{ github.workspace }}/.cache/docker"
-          key: docker|${{ hashFiles('Makefile') }}
+          key: "docker|${{hashFiles('.env')}}"
 
       - name: Docker save build harness
         if: steps.init-docker-cache.outputs.cache-hit != 'true'

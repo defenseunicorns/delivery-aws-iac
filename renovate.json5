@@ -32,9 +32,9 @@
     enabled: true
   },
   "regexManagers": [
-    // Custom regex manager for the Makefile that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
+    // Custom regex manager for the .env file that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
     {
-      "fileMatch": ["^Makefile"],
+      "fileMatch": ["^.env"],
       "matchStrings": [
         "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*?_VERSION := (?<currentValue>.*)\\s"
       ],
