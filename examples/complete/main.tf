@@ -133,6 +133,8 @@ module "vpc" {
 
   instance_tenancy                  = "default"
   vpc_flow_log_permissions_boundary = var.iam_role_permissions_boundary
+
+  tags = local.tags
 }
 
 ###########################################################

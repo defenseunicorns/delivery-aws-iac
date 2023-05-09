@@ -139,4 +139,6 @@ module "efs" {
       cidr_blocks = var.cidr_blocks
     }
   }
+
+  tags = var.tags
 }

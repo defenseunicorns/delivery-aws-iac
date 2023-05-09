@@ -2,6 +2,7 @@ package e2e_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	teststructure "github.com/gruntwork-io/terratest/modules/test-structure"
@@ -17,6 +18,11 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 			"fixtures.common.tfvars",
 			"fixtures.insecure.tfvars",
 		},
+		RetryableTerraformErrors: map[string]string{
+			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
+		},
+		MaxRetries:         5,
+		TimeBetweenRetries: 5 * time.Second,
 	}
 	defer teardownTestExamplesCompleteInsecure(t, terraformOptions)
 	setupTestExamplesCompleteInsecure(t, terraformOptions)
