@@ -111,28 +111,24 @@ docker-load-build-harness: ## Loads the saved build harness docker image
 .PHONY: runhooks
 runhooks:
 	mkdir -p .cache/pre-commit
-	docker run $(TTY_ARG) --rm -e "SKIP=$(SKIP)" -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) bash -c 'asdf install && pre-commit run -a --show-diff-on-failure $(HOOKS)'
+	docker run $(TTY_ARG) --rm -e "SKIP=$(SKIP)" -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) bash -c 'asdf install && pre-commit run -a --show-diff-on-failure $(HOOK)'
 
 .PHONY: pre-commit-all
 pre-commit-all: ## Run all pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOKS="" SKIP=""
+	$(MAKE) runhooks HOOK="" SKIP=""
 
 .PHONY: pre-commit-terraform
 pre-commit-terraform: ## Run the terraform pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOKS="terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint" SKIP=""
+	$(MAKE) runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,end-of-file-fixer,fix-byte-order-marker,trailing-whitespace,check-yaml,fix-smartquotes,go-fmt,golangci-lint,renovate-config-validator"
 
 .PHONY: pre-commit-golang
 pre-commit-golang: ## Run the golang pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOKS="go-fmt,golangci-lint" SKIP=""
+	$(MAKE) runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,end-of-file-fixer,fix-byte-order-marker,trailing-whitespace,check-yaml,fix-smartquotes,terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
 
 .PHONY: pre-commit-renovate
 pre-commit-renovate: ## Run the renovate pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOKS="renovate-config-validator" SKIP=""
+	$(MAKE) runhooks HOOK="renovate-config-validator" SKIP=""
 
 .PHONY: pre-commit-common
 pre-commit-common: ## Run the common pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOKS="" SKIP="terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,go-fmt,golangci-lint,renovate-config-validator"
-
-.PHONY: fix-cache-permissions
-fix-cache-permissions: ## Fixes the permissions on the pre-commit cache
-	docker run $(TTY_ARG) --rm -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) chmod -R a+rx .cache
+	$(MAKE) runhooks HOOK="" SKIP="go-fmt,golangci-lint,terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
