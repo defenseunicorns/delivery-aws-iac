@@ -58,7 +58,7 @@ locals {
         {
           instance_requirements = {
             memory_mib = {
-              memory_mib = 8192
+              min = 8192
             }
             vcpu_count = {
               min = 2
