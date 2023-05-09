@@ -234,7 +234,6 @@ module "vpc_endpoints" {
   }
 
   tags = merge(local.tags, {
-    Project  = "Secret"
     Endpoint = "true"
   })
 }

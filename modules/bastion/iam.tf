@@ -3,6 +3,8 @@
 resource "aws_iam_instance_profile" "bastion_ssm_profile" {
   name = "${var.name}-ssm-profile"
   role = aws_iam_role.bastion_ssm_role.name
+
+  tags = var.tags
 }
 
 # Create EC2 Instance Role
@@ -25,6 +27,7 @@ resource "aws_iam_role" "bastion_ssm_role" {
     ]
 }
 EOF
+  tags               = var.tags
 }
 
 # Attach AmazonSSMManagedInstanceCore policy to role
@@ -103,6 +106,8 @@ resource "aws_iam_policy" "ssm_s3_cwl_access" {
   name   = "${var.name}-ssm_s3_cwl_access-${var.region}"
   path   = "/"
   policy = data.aws_iam_policy_document.ssm_s3_cwl_access.json
+
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "bastion-ssm-s3-cwl-policy-attach" {
@@ -135,6 +140,8 @@ resource "aws_iam_policy" "ssm_ec2_access" {
   name   = "ssm-${var.name}-${var.region}"
   path   = "/"
   policy = data.aws_iam_policy_document.ssm_ec2_access.json
+
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "bastion-ssm-ec2-access-policy-attach" {
@@ -150,6 +157,7 @@ resource "aws_iam_policy" "custom" {
   description = "Custom policy for EC2 instance"
 
   policy = var.policy_content
+  tags   = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "custom" {
@@ -192,6 +200,7 @@ resource "aws_iam_policy" "s3_readonly_policy" {
     ]
 }
 EOF
+  tags   = var.tags
 }
 
 # S3 logging policy and attachment
@@ -221,6 +230,7 @@ resource "aws_iam_policy" "s3_logging_policy" {
     ]
 }
 EOF
+  tags   = var.tags
 }
 
 # Terraform policy and attachment
@@ -393,4 +403,5 @@ resource "aws_iam_policy" "terraform_policy" {
     ]
 }
 EOF
+  tags   = var.tags
 }

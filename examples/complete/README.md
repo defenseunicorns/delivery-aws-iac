@@ -101,7 +101,7 @@ kubectl get nodes
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.1.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.1.0 |
-| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.8.0 |
+| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9.1 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 3.0.0 |
 
 ## Providers
