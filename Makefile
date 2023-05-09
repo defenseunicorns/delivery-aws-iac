@@ -1,7 +1,4 @@
-# The version of the build harness container to use
-BUILD_HARNESS_REPO := ghcr.io/defenseunicorns/not-a-build-harness/not-a-build-harness
-# renovate: datasource=docker depName=ghcr.io/defenseunicorns/not-a-build-harness/not-a-build-harness versioning=docker
-BUILD_HARNESS_VERSION := 0.0.16
+include .env
 
 .DEFAULT_GOAL := help
 
@@ -27,6 +24,8 @@ help: ## Show a list of all targets
 
 .PHONY: _create-folders
 _create-folders:
+	mkdir -p .cache/docker
+	mkdir -p .cache/pre-commit
 	mkdir -p .cache/go
 	mkdir -p .cache/go-build
 	mkdir -p .cache/tmp
@@ -60,7 +59,7 @@ _test-all: _create-folders
 		-e SKIP_SETUP \
 		-e SKIP_TEST \
 		-e SKIP_TEARDOWN \
-		$(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) \
+		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
 		bash -c 'asdf install && cd examples/complete && terraform init -upgrade=true && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
 
 .PHONY: bastion-connect
@@ -79,7 +78,7 @@ bastion-connect: _create-folders ## To be used after deploying "secure mode" of 
 		-e AWS_SESSION_TOKEN \
 		-e AWS_SECURITY_TOKEN \
 		-e AWS_SESSION_EXPIRATION \
-		$(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) \
+		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
 		bash -c 'asdf install \
 				&& sshuttle -D -e '"'"'sshpass -p "my-password" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="aws ssm --region $(shell cd examples/complete && terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p"'"'"' --dns --disable-ipv6 -vr ec2-user@$(shell cd examples/complete && terraform output -raw bastion_instance_id) $(shell cd examples/complete && terraform output -raw vpc_cidr) \
 				&& aws eks --region $(shell cd examples/complete && terraform output -raw bastion_region) update-kubeconfig --name $(shell cd examples/complete && terraform output -raw eks_cluster_name) \
@@ -99,20 +98,52 @@ test-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires acc
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompleteSecure"
 
 .PHONY: docker-save-build-harness
-docker-save-build-harness: ## Pulls the build harness docker image and saves it to a tarball
-	mkdir -p .cache/docker
-	docker pull $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION)
-	docker save -o .cache/docker/build-harness.tar $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION)
+docker-save-build-harness: _create-folders ## Pulls the build harness docker image and saves it to a tarball
+	docker pull ${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION}
+	docker save -o .cache/docker/build-harness.tar ${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION}
 
 .PHONY: docker-load-build-harness
 docker-load-build-harness: ## Loads the saved build harness docker image
 	docker load -i .cache/docker/build-harness.tar
 
-.PHONY: run-pre-commit-hooks
-run-pre-commit-hooks: ## Run all pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	mkdir -p .cache/pre-commit
-	docker run $(TTY_ARG) --rm -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) bash -c 'asdf install && pre-commit run -a --show-diff-on-failure'
+.PHONY: _runhooks
+_runhooks: _create-folders
+	docker run $(TTY_ARG) --rm \
+		-v "${PWD}:/app" \
+		-v "${PWD}/.cache/tmp:/tmp" \
+		-v "${PWD}/.cache/go:/root/go" \
+		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
+		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
+		--workdir "/app" \
+		-e GOPATH=/root/go \
+		-e GOCACHE=/root/.cache/go-build \
+		-e TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE=true \
+		-e TF_PLUGIN_CACHE_DIR=/root/.terraform.d/plugin-cache \
+		-e "SKIP=$(SKIP)" \
+		-e "PRE_COMMIT_HOME=/app/.cache/pre-commit" \
+		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
+		bash -c 'asdf install && pre-commit run -a --show-diff-on-failure $(HOOK)'
+
+.PHONY: pre-commit-all
+pre-commit-all: ## Run all pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) _runhooks HOOK="" SKIP=""
+
+.PHONY: pre-commit-terraform
+pre-commit-terraform: ## Run the terraform pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) _runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,end-of-file-fixer,fix-byte-order-marker,trailing-whitespace,check-yaml,fix-smartquotes,go-fmt,golangci-lint,renovate-config-validator"
+
+.PHONY: pre-commit-golang
+pre-commit-golang: ## Run the golang pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) _runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,end-of-file-fixer,fix-byte-order-marker,trailing-whitespace,check-yaml,fix-smartquotes,terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
+
+.PHONY: pre-commit-renovate
+pre-commit-renovate: ## Run the renovate pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) _runhooks HOOK="renovate-config-validator" SKIP=""
+
+.PHONY: pre-commit-common
+pre-commit-common: ## Run the common pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) _runhooks HOOK="" SKIP="go-fmt,golangci-lint,terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
 
 .PHONY: fix-cache-permissions
 fix-cache-permissions: ## Fixes the permissions on the pre-commit cache
-	docker run $(TTY_ARG) --rm -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) chmod -R a+rx .cache
+	docker run $(TTY_ARG) --rm -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" ${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} chmod -R a+rx .cache
