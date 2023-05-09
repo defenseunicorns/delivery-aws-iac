@@ -49,24 +49,22 @@ locals {
 
     mixed_instances_policy = {
       instances_distribution = {
-        on_demand_base_capacity                  = 0
+        on_demand_base_capacity                  = 2
         on_demand_percentage_above_base_capacity = 20
         spot_allocation_strategy                 = "capacity-optimized"
       }
 
       override = [
         {
-          instance_type     = "m6a.large"
-          weighted_capacity = "1"
-        },
-        {
-          instance_type     = "m6i.large"
-          weighted_capacity = "1"
-        },
-        {
-          instance_type     = "m5.large"
-          weighted_capacity = "1"
-        },
+          instance_requirements = {
+            memory_mib = {
+              memory_mib = 8192
+            }
+            vcpu_count = {
+              min = 2
+            }
+          }
+        }
       ]
     }
 
