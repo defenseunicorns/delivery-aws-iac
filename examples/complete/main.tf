@@ -27,7 +27,7 @@ locals {
     # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/node_groups.tf
     iam_role_permissions_boundary = var.iam_role_permissions_boundary
     ami_type                      = "AL2_x86_64"
-    instance_types                = ["m6a.large", "m6i.large"]
+    instance_types                = ["m6a.large", "m6i.large", "m5.large"]
   }
 
   eks_managed_node_groups = {
@@ -44,6 +44,31 @@ locals {
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
     instance_type                          = "m6a.large"
     update_launch_template_default_version = true
+
+    use_mixed_instances_policy = true
+
+    mixed_instances_policy = {
+      instances_distribution = {
+        on_demand_base_capacity                  = 0
+        on_demand_percentage_above_base_capacity = 20
+        spot_allocation_strategy                 = "capacity-optimized"
+      }
+
+      override = [
+        {
+          instance_type     = "m6a.large"
+          weighted_capacity = "1"
+        },
+        {
+          instance_type     = "m6i.large"
+          weighted_capacity = "1"
+        },
+        {
+          instance_type     = "m5.large"
+          weighted_capacity = "1"
+        },
+      ]
+    }
 
     placement = {
       tenancy = var.eks_worker_tenancy
