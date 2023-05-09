@@ -1,6 +1,4 @@
-# The version of the build harness container to use
-BUILD_HARNESS_REPO := $(shell . .env && echo $$BUILD_HARNESS_REPO)
-BUILD_HARNESS_VERSION := $(shell . .env && echo $$BUILD_HARNESS_VERSION)
+include .env
 
 .DEFAULT_GOAL := help
 
@@ -26,6 +24,7 @@ help: ## Show a list of all targets
 
 .PHONY: _create-folders
 _create-folders:
+	mkdir -p .cache/docker
 	mkdir -p .cache/pre-commit
 	mkdir -p .cache/go
 	mkdir -p .cache/go-build
@@ -99,8 +98,7 @@ test-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires acc
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompleteSecure"
 
 .PHONY: docker-save-build-harness
-docker-save-build-harness: ## Pulls the build harness docker image and saves it to a tarball
-	mkdir -p .cache/docker
+docker-save-build-harness: _create-folders ## Pulls the build harness docker image and saves it to a tarball
 	docker pull $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION)
 	docker save -o .cache/docker/build-harness.tar $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION)
 
