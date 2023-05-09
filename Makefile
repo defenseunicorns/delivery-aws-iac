@@ -119,11 +119,11 @@ pre-commit-all: ## Run all pre-commit hooks. Returns nonzero exit code if any ho
 
 .PHONY: pre-commit-terraform
 pre-commit-terraform: ## Run the terraform pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOKS="terraform_fmt terraform_docs terraform_checkov terraform_tflint" SKIP=""
+	$(MAKE) runhooks HOOKS="terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint" SKIP=""
 
 .PHONY: pre-commit-golang
 pre-commit-golang: ## Run the golang pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOKS="go-fmt golangci-lint" SKIP=""
+	$(MAKE) runhooks HOOKS="go-fmt,golangci-lint" SKIP=""
 
 .PHONY: pre-commit-renovate
 pre-commit-renovate: ## Run the renovate pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
