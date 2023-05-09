@@ -2,14 +2,13 @@ name: run-pre-commit
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: '26 21 * * 5'
+    paths:
+      - "renovate.json5"
+      - "Makefile"
+      - ".pre-commit-config.yaml"
 
 jobs:
-  run-pre-commit:
+  pre-commit-renovate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -19,7 +18,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: "${{ github.workspace }}/.cache/pre-commit"
-          key: pre-commit
+          key: pre-commit-renovate
 
       - name: Init docker cache
         id: init-docker-cache
@@ -36,4 +35,4 @@ jobs:
         run: make docker-load-build-harness
 
       - name: Run `pre-commit run -a`
-        run: make run-pre-commit-hooks fix-cache-permissions
+        run: make pre-commit-renovate

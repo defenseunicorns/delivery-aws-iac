@@ -108,10 +108,30 @@ docker-save-build-harness: ## Pulls the build harness docker image and saves it 
 docker-load-build-harness: ## Loads the saved build harness docker image
 	docker load -i .cache/docker/build-harness.tar
 
-.PHONY: run-pre-commit-hooks
-run-pre-commit-hooks: ## Run all pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+.PHONY: runhooks
+runhooks:
 	mkdir -p .cache/pre-commit
-	docker run $(TTY_ARG) --rm -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) bash -c 'asdf install && pre-commit run -a --show-diff-on-failure'
+	docker run $(TTY_ARG) --rm -e "SKIP=$(SKIP)" -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) bash -c 'asdf install && pre-commit run -a --show-diff-on-failure $(HOOKS)'
+
+.PHONY: pre-commit-all
+pre-commit-all: ## Run all pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) runhooks HOOKS="" SKIP=""
+
+.PHONY: pre-commit-terraform
+pre-commit-terraform: ## Run the terraform pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) runhooks HOOKS="terraform_fmt terraform_docs terraform_checkov terraform_tflint" SKIP=""
+
+.PHONY: pre-commit-golang
+pre-commit-golang: ## Run the golang pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) runhooks HOOKS="go-fmt golangci-lint" SKIP=""
+
+.PHONY: pre-commit-renovate
+pre-commit-renovate: ## Run the renovate pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) runhooks HOOKS="renovate-config-validator" SKIP=""
+
+.PHONY: pre-commit-common
+pre-commit-common: ## Run the common pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
+	$(MAKE) runhooks HOOKS="" SKIP="terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,go-fmt,golangci-lint,renovate-config-validator"
 
 .PHONY: fix-cache-permissions
 fix-cache-permissions: ## Fixes the permissions on the pre-commit cache
