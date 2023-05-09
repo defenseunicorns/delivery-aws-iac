@@ -101,7 +101,7 @@ kubectl get nodes
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.1.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.1.0 |
-| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.8.0 |
+| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9.1 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 3.0.0 |
 
 ## Providers
@@ -138,6 +138,8 @@ kubectl get nodes
 | [aws_sqs_queue.access_log_queue](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
 | [kubernetes_job_v1.test_write](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/job_v1) | resource |
 | [kubernetes_persistent_volume_claim_v1.test_claim](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/persistent_volume_claim_v1) | resource |
+| [kubernetes_namespace.iac](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
+| [kubernetes_secret_v1.rds_postgres_keycloak_creds](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret_v1) | resource |
 | [random_id.default](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 | [aws_ami.amazonlinux2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |

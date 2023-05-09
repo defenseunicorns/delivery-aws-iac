@@ -334,5 +334,9 @@ _EOF_
 
 sudo service sshd restart
 
+# Export ssh_user and zarf_version for use in additional user-data script
+export ssh_user=${ssh_user}
+export zarf_version=${zarf_version}
+
 # Append addition user-data script
 ${additional_user_data_script}
