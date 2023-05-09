@@ -109,8 +109,8 @@ docker-save-build-harness: ## Pulls the build harness docker image and saves it 
 docker-load-build-harness: ## Loads the saved build harness docker image
 	docker load -i .cache/docker/build-harness.tar
 
-.PHONY: runhooks
-runhooks: _create-folders
+.PHONY: _runhooks
+_runhooks: _create-folders
 	docker run $(TTY_ARG) --rm \
 		-v "${PWD}:/app" \
 		-v "${PWD}/.cache/tmp:/tmp" \
@@ -129,23 +129,23 @@ runhooks: _create-folders
 
 .PHONY: pre-commit-all
 pre-commit-all: ## Run all pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOK="" SKIP=""
+	$(MAKE) _runhooks HOOK="" SKIP=""
 
 .PHONY: pre-commit-terraform
 pre-commit-terraform: ## Run the terraform pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,end-of-file-fixer,fix-byte-order-marker,trailing-whitespace,check-yaml,fix-smartquotes,go-fmt,golangci-lint,renovate-config-validator"
+	$(MAKE) _runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,end-of-file-fixer,fix-byte-order-marker,trailing-whitespace,check-yaml,fix-smartquotes,go-fmt,golangci-lint,renovate-config-validator"
 
 .PHONY: pre-commit-golang
 pre-commit-golang: ## Run the golang pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,end-of-file-fixer,fix-byte-order-marker,trailing-whitespace,check-yaml,fix-smartquotes,terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
+	$(MAKE) _runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,end-of-file-fixer,fix-byte-order-marker,trailing-whitespace,check-yaml,fix-smartquotes,terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
 
 .PHONY: pre-commit-renovate
 pre-commit-renovate: ## Run the renovate pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOK="renovate-config-validator" SKIP=""
+	$(MAKE) _runhooks HOOK="renovate-config-validator" SKIP=""
 
 .PHONY: pre-commit-common
 pre-commit-common: ## Run the common pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
-	$(MAKE) runhooks HOOK="" SKIP="go-fmt,golangci-lint,terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
+	$(MAKE) _runhooks HOOK="" SKIP="go-fmt,golangci-lint,terraform_fmt,terraform_docs,terraform_checkov,terraform_tflint,renovate-config-validator"
 
 .PHONY: fix-cache-permissions
 fix-cache-permissions: ## Fixes the permissions on the pre-commit cache
