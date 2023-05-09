@@ -27,6 +27,7 @@ help: ## Show a list of all targets
 
 .PHONY: _create-folders
 _create-folders:
+	mkdir -p .cache/pre-commit
 	mkdir -p .cache/go
 	mkdir -p .cache/go-build
 	mkdir -p .cache/tmp
@@ -109,9 +110,22 @@ docker-load-build-harness: ## Loads the saved build harness docker image
 	docker load -i .cache/docker/build-harness.tar
 
 .PHONY: runhooks
-runhooks:
-	mkdir -p .cache/pre-commit
-	docker run $(TTY_ARG) --rm -e "SKIP=$(SKIP)" -v "${PWD}:/app" --workdir "/app" -e "PRE_COMMIT_HOME=/app/.cache/pre-commit" $(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) bash -c 'asdf install && pre-commit run -a --show-diff-on-failure $(HOOK)'
+runhooks: _create-folders
+	docker run $(TTY_ARG) --rm \
+		-v "${PWD}:/app" \
+		-v "${PWD}/.cache/tmp:/tmp" \
+		-v "${PWD}/.cache/go:/root/go" \
+		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
+		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
+		--workdir "/app" \
+		-e GOPATH=/root/go \
+		-e GOCACHE=/root/.cache/go-build \
+		-e TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE=true \
+		-e TF_PLUGIN_CACHE_DIR=/root/.terraform.d/plugin-cache \
+		-e "SKIP=$(SKIP)" \
+		-e "PRE_COMMIT_HOME=/app/.cache/pre-commit" \
+		$(BUILD_HARNESS_REPO):$(BUILD_HARNESS_VERSION) \
+		bash -c 'asdf install && pre-commit run -a --show-diff-on-failure $(HOOK)'
 
 .PHONY: pre-commit-all
 pre-commit-all: ## Run all pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
