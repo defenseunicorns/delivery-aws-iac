@@ -21,5 +21,3 @@ jobs:
         uses: ./.github/actions/pre-commit
         with:
           check-type: terraform
-
-
