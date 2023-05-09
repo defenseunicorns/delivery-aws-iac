@@ -13,7 +13,7 @@ resource "aws_s3_bucket" "session_logs_bucket" {
 resource "aws_s3_bucket_logging" "access_logging_on_session_logs_bucket" {
   bucket = aws_s3_bucket.session_logs_bucket.id
 
-  target_bucket = var.access_logs_bucket_name
+  target_bucket = data.aws_s3_bucket.access_logs_bucket.id
   target_prefix = var.access_logs_target_prefix
 }
 
