@@ -129,6 +129,11 @@ func TestExamplesCompleteSecure(t *testing.T) {
 
 	// Run assertions
 	teststructure.RunTestStage(t, "TEST", func() {
+		// Validate that var.enable_efs was set to true, otherwise this will always fail. We'll do that by checking for the presence of the output "efs_storageclass_name".
+		efsStorageClassName := terraform.Output(t, terraformOutputOptions, "efs_storageclass_name")
+		require.NotNil(t, efsStorageClassName)
+		require.NotEmpty(t, efsStorageClassName)
+
 		// Get outputs
 		bastionInstanceID := terraform.Output(t, terraformOutputOptions, "bastion_instance_id")
 		bastionPrivateDNS := terraform.Output(t, terraformOutputOptions, "bastion_private_dns")
