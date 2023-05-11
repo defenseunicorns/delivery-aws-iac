@@ -1,17 +1,31 @@
 package e2e_test
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 	"testing"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/eks"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	teststructure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	batchv1 "k8s.io/api/batch/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/wait"
+
+	"github.com/defenseunicorns/delivery-aws-iac/test/e2e/utils"
 )
+
+// TODO: Figure out how to parse the input variables to get the bastion password rather than having to hardcode it.
+//
+//nolint:godox
+const bastionPassword = "my-password"
 
 // This test deploys the complete example in "secure mode". Secure mode is:
 // - Self-managed nodegroups only
@@ -22,8 +36,11 @@ import (
 // 2. With Sshuttle tunneling to the bastion, deploy the rest of the example.
 // 3. With Sshuttle tunneling to the bastion, destroy EKS cluster.
 // 4. Destroy the rest of the example.
+//
+//nolint:funlen,cyclop
 func TestExamplesCompleteSecure(t *testing.T) {
 	t.Parallel()
+	// Setup options
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
 	terraformInitOptions := &terraform.Options{
 		TerraformDir: tempFolder,
@@ -76,6 +93,8 @@ func TestExamplesCompleteSecure(t *testing.T) {
 		TerraformDir: tempFolder,
 		Logger:       logger.Discard,
 	}
+
+	// Defer the teardown
 	defer func() {
 		t.Helper()
 		teststructure.RunTestStage(t, "TEARDOWN", func() {
@@ -83,9 +102,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			bastionPrivateDNS := terraform.Output(t, terraformOutputOptions, "bastion_private_dns")
 			// We are intentionally using `assert` here and not `require`. We want the rest of this function to run even if there are errors.
 			assert.NoError(t, outputBastionInstanceIDErr)
-			//nolint:godox
-			// TODO: Figure out how to parse the input variables to get the bastion password rather than having to hardcode it
-			bastionPassword := "my-password"
 			vpcCidr, outputVpcCidrErr := terraform.OutputE(t, terraformOutputOptions, "vpc_cidr")
 			assert.NoError(t, outputVpcCidrErr)
 			bastionRegion, outputBastionRegionErr := terraform.OutputE(t, terraformOutputOptions, "bastion_region")
@@ -98,19 +114,70 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			terraform.Destroy(t, terraformOptionsNoTargets)
 		})
 	}()
-	// setupTestExamplesCompleteSecure(t, terraformOptionsNoTargets, terraformOptionsWithVPCAndBastionTargets)
+
+	// Deploy the infra
 	teststructure.RunTestStage(t, "SETUP", func() {
 		terraform.Init(t, terraformInitOptions)
 		terraform.Apply(t, terraformOptionsWithVPCAndBastionTargets)
 		bastionInstanceID := terraform.Output(t, terraformOutputOptions, "bastion_instance_id")
 		bastionPrivateDNS := terraform.Output(t, terraformOutputOptions, "bastion_private_dns")
-		//nolint:godox
-		// TODO: Figure out how to parse the input variables to get the bastion password rather than having to hardcode it
-		bastionPassword := "my-password"
 		vpcCidr := terraform.Output(t, terraformOutputOptions, "vpc_cidr")
 		bastionRegion := terraform.Output(t, terraformOutputOptions, "bastion_region")
 		err := applyWithSshuttle(t, bastionInstanceID, bastionPrivateDNS, bastionRegion, bastionPassword, vpcCidr, terraformOptionsNoTargets)
 		require.NoError(t, err)
+	})
+
+	// Run assertions
+	teststructure.RunTestStage(t, "TEST", func() {
+		// Get outputs
+		bastionInstanceID := terraform.Output(t, terraformOutputOptions, "bastion_instance_id")
+		bastionPrivateDNS := terraform.Output(t, terraformOutputOptions, "bastion_private_dns")
+		vpcCidr := terraform.Output(t, terraformOutputOptions, "vpc_cidr")
+		bastionRegion := terraform.Output(t, terraformOutputOptions, "bastion_region")
+		clusterName := terraform.Output(t, terraformOutputOptions, "eks_cluster_name")
+		// Start sshuttle
+		cmd, err := runSshuttleInBackground(t, bastionInstanceID, bastionPrivateDNS, bastionRegion, bastionPassword, vpcCidr)
+		require.NoError(t, err)
+		defer func(t *testing.T, cmd *exec.Cmd) {
+			t.Helper()
+			err := stopSshuttle(t, cmd)
+			require.NoError(t, err)
+		}(t, cmd)
+		// Create the EKS clientset
+		sess := session.Must(session.NewSession(&aws.Config{
+			Region: aws.String(bastionRegion),
+		}))
+		eksSvc := eks.New(sess)
+		input := &eks.DescribeClusterInput{Name: aws.String(clusterName)}
+		result, err := eksSvc.DescribeCluster(input)
+		require.NoError(t, err)
+		clientset, err := utils.NewK8sClientset(result.Cluster)
+		require.NoError(t, err)
+		// Wait for the job "test-write" in the namespace "default" to complete, with a 2-minute timeout
+		namespace := "default"
+		jobName := "test-write"
+		timeout := 2 * time.Minute
+		err = wait.PollImmediate(time.Second, timeout, func() (bool, error) {
+			job, err := clientset.BatchV1().Jobs(namespace).Get(context.Background(), jobName, metav1.GetOptions{})
+			if err != nil {
+				return false, fmt.Errorf("failed to get kubernetes jobs: %w", err)
+			}
+			// Check the job's status
+			for _, c := range job.Status.Conditions {
+				if c.Type == batchv1.JobComplete && c.Status == "True" {
+					return true, nil
+				} else if c.Type == batchv1.JobFailed && c.Status == "True" {
+					return false, fmt.Errorf("job failed")
+				}
+			}
+			return false, nil
+		})
+		if err != nil {
+			utils.DoLog("Job did not complete in time: %v\n", err)
+		} else {
+			utils.DoLog("Job completed successfully")
+		}
+		assert.NoError(t, err)
 	})
 }
 
@@ -161,23 +228,23 @@ func runSshuttleInBackground(t *testing.T, bastionInstanceID string, bastionPriv
 		// We don't care about the output, just the exit code. Since we are looking for exit code 52, we should expect an error here.
 		err = curlCmd.Run()
 		if err != nil {
-			doLog(err)
+			utils.DoLog(err)
 		}
 		if curlCmd.ProcessState.ExitCode() == 52 {
 			// Success! sshuttle is working.
 			return sshuttleCmd, nil
 		}
 		// Failure. Try again.
-		doLog(fmt.Sprintf("sshuttle failed to start up. Retrying... (attempt %d of %d)", i+1, retryAttempts))
+		utils.DoLog(fmt.Sprintf("sshuttle failed to start up. Retrying... (attempt %d of %d)", i+1, retryAttempts))
 		err = stopSshuttle(t, sshuttleCmd)
 		if err != nil {
-			doLog(err)
+			utils.DoLog(err)
 		}
 	}
 	// If we get here, we got through our for loop without verifying that sshuttle was working, so we should stop it and return an error.
 	err := stopSshuttle(t, sshuttleCmd)
 	if err != nil {
-		doLog(err)
+		utils.DoLog(err)
 	}
 	return nil, fmt.Errorf("failed to start sshuttle: could not verify that sshuttle was working")
 }
