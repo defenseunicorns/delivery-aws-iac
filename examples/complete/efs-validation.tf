@@ -42,11 +42,12 @@ resource "kubernetes_job_v1" "test_write" {
         volume {
           name = "test-write-volume"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim_v1.test_claim[0].id
+            claim_name = "test-claim"
           }
         }
         restart_policy = "Never"
       }
     }
   }
+  depends_on = [kubernetes_persistent_volume_claim_v1.test_claim]
 }
