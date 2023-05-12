@@ -42,7 +42,7 @@ locals {
 
   self_managed_node_group_defaults = {
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
-    instance_type                          = "m6a.large"
+    instance_type                          = "m5.xlarge" # should be compatible with dedicated tenancy in GovCloud region https://aws.amazon.com/ec2/pricing/dedicated-instances/#Dedicated_On-Demand_instances
     update_launch_template_default_version = true
 
     use_mixed_instances_policy = true
@@ -113,9 +113,9 @@ locals {
     self_ng1 = {
       create       = var.enable_self_managed_nodegroups
       subnet_ids   = module.vpc.private_subnets
-      min_size     = 2
-      max_size     = 2
-      desired_size = 2
+      min_size     = 3
+      max_size     = 5
+      desired_size = 3
 
       block_device_mappings = {
         xvda = {
