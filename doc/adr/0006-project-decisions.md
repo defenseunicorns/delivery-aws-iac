@@ -13,6 +13,7 @@ Why / How were opinionatation decisions made for this project
 Guiding Principles:
 * AWS is the target environment
 * zarf will be the GitOps mechanism for IaC
+* this project will provision requisite AWS resources to `zarf init` an EKS cluster and deploy bigbang
 * IL5 controls are met
 * make it simpler to deploy / update *the same* zarf package (base) across multiple environments
   - extensible to & for dev -> stg -> prd deployment values via the same base package
@@ -25,18 +26,17 @@ Guiding Principles:
 
 * The bastion module will:
   - inform how users can/are expected to interact with the environment
-  - standardized access for the environment in an approved way that follows a similar pattern for cloud, air gap & on prem
+  - be provisioned in private or intra subnets and leverage SSM for access
+  - standardize access for the environment in an approved way that follows a common / established pattern for cloud, air gap & on prem
   - establish a common pattern for users to interact with EKS / AWS managed services
 * Customizable terraform root module (see complete example) will:
   - enable zarf to be the highly opinionated wrapper / version controlled mechanism
   - be extensible for different mission hero use cases / environments
 * Sops module will:
   - create a common pattern for handling secrets & leverage a managed service via IAM roles for key rotations
-  - assume flux or zarf will handle decription of values via the provided roles
+  - assume flux or zarf will handle decryption of values via the provided roles
 * AWS Private Link will:
   - be enabled by the VPC and used by all resources
   - be enforced via IAM policy conditions to ensure that services are only accessible from within a VPC
-
-
 
 ## Consequences
