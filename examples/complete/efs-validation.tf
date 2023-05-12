@@ -20,6 +20,7 @@ resource "kubernetes_persistent_volume_claim_v1" "test_claim" {
 
 resource "kubernetes_job_v1" "test_write" {
   # checkov:skip=CKV_K8S_21: "The default namespace should not be used" -- This is test code, not production
+  count = var.enable_efs ? 1 : 0
   metadata {
     name      = "test-write"
     namespace = "default"
