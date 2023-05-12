@@ -162,6 +162,8 @@ func TestExamplesCompleteSecure(t *testing.T) {
 		namespace := "default"
 		jobName := "test-write"
 		timeout := 2 * time.Minute
+		// See https://github.com/kubernetes/kubernetes/issues/116712
+		//nolint:staticcheck
 		err = wait.PollImmediate(time.Second, timeout, func() (bool, error) {
 			job, err := clientset.BatchV1().Jobs(namespace).Get(context.Background(), jobName, metav1.GetOptions{})
 			if err != nil {
