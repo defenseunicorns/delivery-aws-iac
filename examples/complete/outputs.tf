@@ -66,3 +66,8 @@ output "eks_cluster_name" {
   value       = module.eks.cluster_name
   sensitive   = true
 }
+
+output "efs_storageclass_name" {
+  description = "The name of the EFS storageclass that was created (if var.enable_efs was set to true)"
+  value       = try(module.eks.efs_storageclass_name, null)
+}
