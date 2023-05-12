@@ -189,7 +189,6 @@ variable "enable_efs" {
   description = "Enable EFS CSI add-on"
   type        = bool
   default     = false
-
 }
 
 variable "reclaim_policy" {

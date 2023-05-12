@@ -2,10 +2,11 @@ package e2e_test
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/defenseunicorns/delivery-aws-iac/test/e2e/utils"
 )
 
 // TestMain is the entry point for all tests. We are using a custom one so that we can log a message to the console every few seconds. Without this there is a risk of GitHub Actions killing the test run if it believes it is hung.
@@ -17,7 +18,7 @@ func TestMain(m *testing.M) {
 			case <-ctx.Done():
 				return
 			default:
-				doLog("The test is still running! Don't kill me!")
+				utils.DoLog("The test is still running! Don't kill me!")
 			}
 			time.Sleep(10 * time.Second)
 		}
@@ -25,12 +26,4 @@ func TestMain(m *testing.M) {
 	exitVal := m.Run()
 	cancel()
 	os.Exit(exitVal)
-}
-
-// doLog logs the given arguments to the given writer, along with a timestamp.
-func doLog(args ...interface{}) {
-	date := time.Now()
-	prefix := fmt.Sprintf("%s:", date.Format(time.RFC3339))
-	allArgs := append([]interface{}{prefix}, args...)
-	fmt.Println(allArgs...) //nolint:forbidigo
 }
