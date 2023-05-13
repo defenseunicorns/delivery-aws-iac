@@ -86,7 +86,8 @@ locals {
     bootstrap_extra_args = "--use-max-pods false"
 
     iam_role_additional_policies = {
-      AmazonSSMManagedInstanceCore = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      AmazonSSMManagedInstanceCore      = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore",
+      AmazonElasticFileSystemFullAccess = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonElasticFileSystemFullAccess"
     }
 
     # enable discovery of autoscaling groups by cluster-autoscaler
@@ -177,6 +178,8 @@ data "aws_ami" "amazonlinux2" {
 module "bastion" {
   # source = "git::https://github.com/defenseunicorns/delivery-aws-iac.git//modules/bastion?ref=v<insert tagged version>"
   source = "../../modules/bastion"
+
+  enable_bastion_terraform_permissions = true
 
   ami_id        = data.aws_ami.amazonlinux2.id
   instance_type = var.bastion_instance_type
