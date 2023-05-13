@@ -244,3 +244,9 @@ variable "zarf_version" {
   type        = string
   default     = ""
 }
+
+variable "enable_bastion_terraform_permissions" {
+  description = "Enable Terraform permissions for Bastion"
+  type        = bool
+  default     = false
+}

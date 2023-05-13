@@ -36,9 +36,19 @@ data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
 }
 
 
-resource "aws_iam_role_policy_attachment" "bastion-ssm-amazon-policy-attach" {
+resource "aws_iam_role_policy_attachment" "bastion-ssm-aws-ssm-policy-attach" {
   role       = aws_iam_role.bastion_ssm_role.name
   policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
+}
+
+# Attach AmazonElasticFileSystemFullAccess policy to role
+data "aws_iam_policy" "AmazonElasticFileSystemFullAccess" {
+  arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonElasticFileSystemFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "bastion-ssm-aws-efs-policy-attach" {
+  role       = aws_iam_role.bastion_ssm_role.name
+  policy_arn = data.aws_iam_policy.AmazonElasticFileSystemFullAccess.arn
 }
 
 # Create S3/CloudWatch Logs access document, policy and attach to role
@@ -235,8 +245,9 @@ EOF
 
 # Terraform policy and attachment
 resource "aws_iam_role_policy_attachment" "terraform" {
+  count      = var.enable_bastion_terraform_permissions ? 1 : 0
   role       = aws_iam_role.bastion_ssm_role.name
-  policy_arn = aws_iam_policy.terraform_policy.arn
+  policy_arn = aws_iam_policy.terraform_policy[count.index].arn
 }
 
 resource "aws_iam_policy" "terraform_policy" {
@@ -250,6 +261,8 @@ resource "aws_iam_policy" "terraform_policy" {
   # checkov:skip=CKV_AWS_109: TODO: Fix CKV_AWS_289. It is identical to this policy.
   # checkov:skip=CKV_AWS_290: TODO: Tighten this policy up. It currently allows actions that can be used to for resource exposure without constraint. Ref: https://docs.bridgecrew.io/docs/ensure-iam-policies-do-not-allow-write-access-without-constraint
   # checkov:skip=CKV_AWS_111: TODO: Fix CKV_AWS_290. It is identical to this policy.
+
+  count = var.enable_bastion_terraform_permissions ? 1 : 0
 
   name   = "${var.name}-terraform-policy"
   policy = <<EOF
@@ -292,6 +305,9 @@ resource "aws_iam_policy" "terraform_policy" {
                 "iam:Tag*",
                 "iam:Untag*",
                 "iam:*ServiceLinkedRole",
+                "iam:CreateOpenIDConnectProvider",
+                "iam:DeleteOpenIDConnectProvider",
+                "iam:UpdateAssumeRolePolicy",
                 "ec2:*",
                 "elasticbeanstalk:*",
                 "elasticache:*",
@@ -344,9 +360,36 @@ resource "aws_iam_policy" "terraform_policy" {
             "Effect": "Allow"
         },
         {
+            "Sid": "EKSPermisssions",
             "Effect": "Allow",
             "Action": [
-                "eks:DescribeCluster"
+                "eks:UpdateNodegroupVersion",
+                "eks:UpdateNodegroupConfig",
+                "eks:UpdateClusterVersion",
+                "eks:UpdateClusterConfig",
+                "eks:UntagResource",
+                "eks:TagResource",
+                "eks:ListUpdates",
+                "eks:ListTagsForResource",
+                "eks:ListNodegroups",
+                "eks:ListFargateProfiles",
+                "eks:ListClusters",
+                "eks:DescribeUpdate",
+                "eks:DescribeNodegroup",
+                "eks:DescribeFargateProfile",
+                "eks:DescribeCluster",
+                "eks:DeleteNodegroup",
+                "eks:DeleteFargateProfile",
+                "eks:DeleteCluster",
+                "eks:CreateNodegroup",
+                "eks:CreateFargateProfile",
+                "eks:CreateCluster",
+                "eks:CreateAddon",
+                "eks:DeleteAddon",
+                "eks:UpdateAddon",
+                "eks:DescribeAddon",
+                "eks:DescribeAddonVersions",
+                "eks:ListAddons"
             ],
             "Resource": "*"
         },
