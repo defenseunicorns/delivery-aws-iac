@@ -54,7 +54,7 @@ locals {
 ################################################################################
 
 module "vpc" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v4.0.1"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v4.0.2"
 
   name                  = var.name
   cidr                  = var.vpc_cidr
@@ -122,7 +122,7 @@ module "vpc" {
 ################################################################################
 
 module "vpc_endpoints" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git//modules/vpc-endpoints?ref=v4.0.1"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git//modules/vpc-endpoints?ref=v4.0.2"
 
   vpc_id             = module.vpc.vpc_id
   security_group_ids = [data.aws_security_group.default.id]
@@ -239,7 +239,7 @@ module "vpc_endpoints" {
 }
 
 module "vpc_endpoints_nocreate" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git//modules/vpc-endpoints?ref=v4.0.1"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git//modules/vpc-endpoints?ref=v4.0.2"
 
   create = false
 }
