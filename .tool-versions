@@ -1,6 +1,6 @@
 # renovate: datasource=github-tags depName=npryce/adr-tools
 adr-tools 3.0.0
-awscli 2.11.18
+awscli 2.11.20
 # renovate: datasource=github-tags depName=bridgecrewio/checkov
 checkov 2.3.234
 golang 1.20.4
@@ -16,3 +16,5 @@ terraform-docs 0.16.0
 tflint 0.46.1
 # renovate: datasource=github-tags depName=aquasecurity/tfsec
 tfsec 1.28.1
+# renovate: datasource=github-tags depName=defenseunicorns/zarf
+zarf 0.26.3
