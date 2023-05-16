@@ -23,7 +23,7 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
-zarf_version         = "v0.25.2"
+zarf_version         = "v0.26.3"
 
 ###########################################################
 #################### EKS Config ###########################
@@ -101,6 +101,16 @@ enable_cluster_autoscaler = true
 cluster_autoscaler_helm_config = {
   wait    = false
   version = "v9.28.0"
+  set = [
+    {
+      name  = "extraArgs.expander"
+      value = "priority"
+    },
+    {
+      name  = "image.tag"
+      value = "v1.27.1"
+    }
+  ]
 }
 
 enable_metrics_server = true
