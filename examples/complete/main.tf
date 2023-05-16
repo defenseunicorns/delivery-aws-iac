@@ -45,7 +45,7 @@ locals {
     instance_type                          = "m5a.large" # should be compatible with dedicated tenancy in GovCloud region https://aws.amazon.com/ec2/pricing/dedicated-instances/#Dedicated_On-Demand_instances
     update_launch_template_default_version = true
 
-    use_mixed_instances_policy = true 
+    use_mixed_instances_policy = true
 
     mixed_instances_policy = {
       instances_distribution = {
