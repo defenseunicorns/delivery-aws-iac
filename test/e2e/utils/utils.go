@@ -37,6 +37,7 @@ func DoLog(args ...interface{}) {
 	fmt.Println(allArgs...) //nolint:forbidigo
 }
 
+// GetEKSCluster returns the EKS cluster for the given terraform folder.
 func GetEKSCluster(t *testing.T, tempFolder string) (*eks.Cluster, error) {
 	t.Helper()
 	terraformOutputOptions := &terraform.Options{
@@ -53,7 +54,7 @@ func GetEKSCluster(t *testing.T, tempFolder string) (*eks.Cluster, error) {
 	eksSvc := eks.New(sess)
 	input := &eks.DescribeClusterInput{Name: aws.String(clusterName)}
 	result, err := eksSvc.DescribeCluster(input)
-	return result.Cluster, err
+	return result.Cluster, fmt.Errorf("failed to describe cluster: %w", err)
 }
 
 // NewK8sClientset returns a new kubernetes clientset for the given cluster.
@@ -141,7 +142,11 @@ func RunSshuttleInBackground(t *testing.T, tempFolder string) (*exec.Cmd, error)
 		if err != nil {
 			return nil, fmt.Errorf("failed to start sshuttle: %w", err)
 		}
-		time.Sleep(20 * time.Second) // It takes a few seconds for sshuttle to start up
+
+		// It takes a few seconds for sshuttle to start up
+		time.Sleep(20 * time.Second)
+
+		//nolint:gosec
 		curlCmd := exec.Command("curl", "-v", bastionPrivateDNS)
 		// We don't care about the output, just the exit code. Since we are looking for exit code 52, we should expect an error here.
 		err = curlCmd.Run()
@@ -191,7 +196,7 @@ func StopSshuttle(t *testing.T, cmd *exec.Cmd) error {
 	return nil
 }
 
-// ValidateEFSFunctionality validates that EFS functionality is working.
+// ValidateEFSFunctionality idempotently validates that EFS functionality is working.
 func ValidateEFSFunctionality(t *testing.T, tempFolder string) {
 	t.Helper()
 	terraformOutputOptions := &terraform.Options{
@@ -237,21 +242,39 @@ func ValidateEFSFunctionality(t *testing.T, tempFolder string) {
 	assert.NoError(t, err)
 }
 
-// DownloadZarfInitPackage downloads the Zarf init package.
+// DownloadZarfInitPackage idempotently downloads the Zarf init package if it doesn't already exist.
 func DownloadZarfInitPackage(t *testing.T) {
 	t.Helper()
-	err := exec.Command("bash", "-c", "mkdir -p ~/.zarf-cache").Run()
-	require.NoError(t, err)
-	err = exec.Command("bash", "-c", `VERSION=$(zarf version); URL=https://github.com/defenseunicorns/zarf/releases/download/${VERSION}/zarf-init-amd64-${VERSION}.tar.zst; TARGET=~/.zarf-cache/zarf-init-amd64-${VERSION}.tar.zst; curl -L $URL -o $TARGET`).Run()
+	// Download the Zarf init package if it doesn't already exist
+	err := exec.Command("bash", "-c", `VERSION=$(zarf version); URL=https://github.com/defenseunicorns/zarf/releases/download/${VERSION}/zarf-init-amd64-${VERSION}.tar.zst; TARGET=~/.zarf-cache/zarf-init-amd64-${VERSION}.tar.zst; mkdir -p ~/.zarf-cache; [ -f $TARGET ] || curl -L $URL -o $TARGET`).Run()
 	require.NoError(t, err)
 }
 
+// ConfigureKubeconfig idempotently uses the AWS CLI to configure the user's kubeconfig file with the new EKS cluster.
 func ConfigureKubeconfig(t *testing.T, tempFolder string) {
 	t.Helper()
-	err := exec.Command("bash", "-c", "mkdir -p ~/.kube && ").Run()
+	terraformOutputOptions := &terraform.Options{
+		TerraformDir: tempFolder,
+		Logger:       logger.Discard,
+	}
+	eksClusterName := terraform.Output(t, terraformOutputOptions, "eks_cluster_name")
+	region := terraform.Output(t, terraformOutputOptions, "bastion_region")
+	err := exec.Command("bash", "-c", fmt.Sprintf("mkdir -p ~/.kube && aws eks update-kubeconfig --name %s --alias %s --region %s", eksClusterName, eksClusterName, region)).Run() //nolint:gosec
+	require.NoError(t, err)
+	// Make sure it worked. This command should return without error
+	err = exec.Command("bash", "-c", "kubectl get nodes").Run()
+	require.NoError(t, err)
 }
 
-func ValidateZarfInit(t *testing.T) {
+// ValidateZarfInit idempotently ensures that zarf init runs successfully.
+func ValidateZarfInit(t *testing.T, tempFolder string) {
 	t.Helper()
-
+	terraformOutputOptions := &terraform.Options{
+		TerraformDir: tempFolder,
+		Logger:       logger.Discard,
+	}
+	storageClassName := terraform.Output(t, terraformOutputOptions, "efs_storageclass_name")
+	//nolint:godox    // TODO: Add `git-server` to --components once this fix is present in a release: https://github.com/defenseunicorns/zarf/pull/1706
+	err := exec.Command("bash", "-c", fmt.Sprintf("zarf init --components=logging --confirm --no-log-file --no-progress --storage-class %s", storageClassName)).Run() //nolint:gosec
+	require.NoError(t, err)
 }

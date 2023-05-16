@@ -23,8 +23,6 @@ import (
 // 2. With Sshuttle tunneling to the bastion, deploy the rest of the example.
 // 3. With Sshuttle tunneling to the bastion, destroy EKS cluster.
 // 4. Destroy the rest of the example.
-//
-//nolint:funlen,cyclop
 func TestExamplesCompleteSecure(t *testing.T) {
 	t.Parallel()
 	// Setup options
@@ -120,5 +118,8 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			require.NoError(t, err)
 		}(t, cmd)
 		utils.ValidateEFSFunctionality(t, tempFolder)
+		utils.DownloadZarfInitPackage(t)
+		utils.ConfigureKubeconfig(t, tempFolder)
+		utils.ValidateZarfInit(t, tempFolder)
 	})
 }

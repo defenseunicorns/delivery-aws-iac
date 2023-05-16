@@ -10,7 +10,6 @@ import (
 	"github.com/defenseunicorns/delivery-aws-iac/test/e2e/utils"
 )
 
-//nolint:goconst
 func TestExamplesCompleteInsecure(t *testing.T) {
 	t.Parallel()
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
@@ -45,5 +44,7 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 	teststructure.RunTestStage(t, "TEST", func() {
 		utils.ValidateEFSFunctionality(t, tempFolder)
 		utils.DownloadZarfInitPackage(t)
+		utils.ConfigureKubeconfig(t, tempFolder)
+		utils.ValidateZarfInit(t, tempFolder)
 	})
 }
