@@ -31,12 +31,6 @@
           path: "${{ github.workspace }}/.cache/go-build"
           key: "gobuild|${{hashFiles('.tool-versions')}}|${{hashFiles('go.sum')}}"
 
-      - name: Init zarf cache
-        uses: actions/cache@v3
-        with:
-          path: "${{ github.workspace }}/.cache/.zarf-cache"
-          key: "zarf|${{ hashFiles('.tool-versions') }}"
-
       - name: Init docker cache
         id: init-docker-cache
         uses: actions/cache@v3
