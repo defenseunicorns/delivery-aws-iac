@@ -27,7 +27,7 @@ locals {
     # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/node_groups.tf
     iam_role_permissions_boundary = var.iam_role_permissions_boundary
     ami_type                      = "AL2_x86_64"
-    instance_types                = ["m6a.large", "m6i.large", "m5.large"]
+    instance_types                = ["m5a.large", "m5.large", "m6i.large"]
   }
 
   eks_managed_node_groups = {
@@ -42,7 +42,7 @@ locals {
 
   self_managed_node_group_defaults = {
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
-    instance_type                          = "m6a.large"
+    instance_type                          = "m5a.large" # should be compatible with dedicated tenancy in GovCloud region https://aws.amazon.com/ec2/pricing/dedicated-instances/#Dedicated_On-Demand_instances
     update_launch_template_default_version = true
 
     use_mixed_instances_policy = true
@@ -57,6 +57,7 @@ locals {
       override = [
         {
           instance_requirements = {
+            allowed_instance_types = ["m5a.large", "m5.large", "m6i.large"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
             memory_mib = {
               min = 8192
             }
