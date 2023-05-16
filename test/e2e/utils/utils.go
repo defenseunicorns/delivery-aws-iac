@@ -54,7 +54,10 @@ func GetEKSCluster(t *testing.T, tempFolder string) (*eks.Cluster, error) {
 	eksSvc := eks.New(sess)
 	input := &eks.DescribeClusterInput{Name: aws.String(clusterName)}
 	result, err := eksSvc.DescribeCluster(input)
-	return result.Cluster, fmt.Errorf("failed to describe cluster: %w", err)
+	if err != nil {
+		return nil, fmt.Errorf("failed to describe cluster: %w", err)
+	}
+	return result.Cluster, nil
 }
 
 // NewK8sClientset returns a new kubernetes clientset for the given cluster.
