@@ -136,7 +136,8 @@ _runhooks: _create-folders
 		-e "SKIP=$(SKIP)" \
 		-e "PRE_COMMIT_HOME=/app/.cache/pre-commit" \
 		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
-		bash -c 'asdf install && pre-commit run -a --show-diff-on-failure $(HOOK)'
+		bash -c 'git status && exit 1'
+		#bash -c 'asdf install && pre-commit run -a --show-diff-on-failure $(HOOK)'
 
 .PHONY: pre-commit-all
 pre-commit-all: ## Run all pre-commit hooks. Returns nonzero exit code if any hooks fail. Uses Docker for maximum compatibility
