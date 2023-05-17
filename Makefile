@@ -30,6 +30,7 @@ _create-folders:
 	mkdir -p .cache/go-build
 	mkdir -p .cache/tmp
 	mkdir -p .cache/.terraform.d/plugin-cache
+	mkdir -p .cache/.zarf-cache
 
 .PHONY: _test-all
 _test-all: _create-folders
@@ -42,6 +43,7 @@ _test-all: _create-folders
 		-v "${PWD}/.cache/go:/root/go" \
 		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
 		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
+		-v "${PWD}/.cache/.zarf-cache:/root/.zarf-cache" \
 		--workdir "/app" \
 		-e TF_LOG_PATH \
 		-e TF_LOG \
@@ -73,6 +75,7 @@ bastion-connect: _create-folders ## To be used after deploying "secure mode" of 
 		-v "${PWD}/.cache/go:/root/go" \
 		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
 		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
+		-v "${PWD}/.cache/.zarf-cache:/root/.zarf-cache" \
 		--workdir "/app/examples/complete" \
 		-e TF_LOG_PATH \
 		-e TF_LOG \
@@ -124,6 +127,7 @@ _runhooks: _create-folders
 		-v "${PWD}/.cache/go:/root/go" \
 		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
 		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
+		-v "${PWD}/.cache/.zarf-cache:/root/.zarf-cache" \
 		--workdir "/app" \
 		-e GOPATH=/root/go \
 		-e GOCACHE=/root/.cache/go-build \
