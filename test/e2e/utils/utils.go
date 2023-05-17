@@ -277,8 +277,6 @@ func ValidateZarfInit(t *testing.T, tempFolder string) {
 		Logger:       logger.Discard,
 	}
 	storageClassName := terraform.Output(t, terraformOutputOptions, "efs_storageclass_name")
-	//nolint:godox
-	// TODO: Add `git-server` to --components once this fix is present in a release: https://github.com/defenseunicorns/zarf/pull/1706
-	err := exec.Command("bash", "-c", fmt.Sprintf("zarf init --components=logging --confirm --no-log-file --no-progress --storage-class %s", storageClassName)).Run() //nolint:gosec
+	err := exec.Command("bash", "-c", fmt.Sprintf("zarf init --components=logging,git-server --confirm --no-log-file --no-progress --storage-class %s", storageClassName)).Run() //nolint:gosec
 	require.NoError(t, err)
 }
