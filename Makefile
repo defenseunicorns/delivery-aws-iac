@@ -127,7 +127,6 @@ _runhooks: _create-folders
 		-v "${PWD}/.cache/go:/root/go" \
 		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
 		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
-		-v "${PWD}/.cache/.zarf-cache:/root/.zarf-cache" \
 		--workdir "/app" \
 		-e GOPATH=/root/go \
 		-e GOCACHE=/root/.cache/go-build \
