@@ -17,4 +17,4 @@ tflint 0.46.1
 # renovate: datasource=github-tags depName=aquasecurity/tfsec
 tfsec 1.28.1
 # renovate: datasource=github-tags depName=defenseunicorns/zarf
-zarf 0.26.3
+zarf 0.26.4
