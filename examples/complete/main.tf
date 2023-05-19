@@ -2,6 +2,16 @@ data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
+data "aws_ami" "eks_default_bottlerocket" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["bottlerocket-aws-k8s-${var.cluster_version}-x86_64-*"]
+  }
+}
+
 resource "random_id" "default" {
   byte_length = 2
 }
@@ -128,6 +138,43 @@ locals {
           }
         }
       }
+    },
+    bottlerocket = {
+      create       = var.enable_self_managed_nodegroups
+      name = "bottlerocket-self-mng"
+
+      platform      = "bottlerocket"
+      ami_id        = data.aws_ami.eks_default_bottlerocket.id
+      instance_type = "m5.large"
+      min_size     = 2
+      max_size     = 2
+      desired_size = 2
+      key_name      = module.key_pair.key_pair_name
+
+      bootstrap_extra_args = <<-EOT
+        # The admin host container provides SSH access and runs with "superpowers".
+        # It is disabled by default, but can be disabled explicitly.
+        [settings.host-containers.admin]
+        enabled = false
+
+        # The control host container provides out-of-band access via SSM.
+        # It is enabled by default, and can be disabled if you do not expect to use SSM.
+        # This could leave you with no way to access the API and change settings on an existing node!
+        [settings.host-containers.control]
+        enabled = true
+
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
+
+        [settings.kubernetes.node-labels]
+        label1 = "foo"
+        label2 = "bar"
+
+        [settings.kubernetes.node-taints]
+        dedicated = "experimental:PreferNoSchedule"
+        special = "true:NoSchedule"
+      EOT
     }
   }
 }
@@ -280,4 +327,58 @@ module "eks" {
   #Calico
   enable_calico      = var.enable_calico
   calico_helm_config = var.calico_helm_config
+}
+
+module "key_pair" {
+  source  = "terraform-aws-modules/key-pair/aws"
+  version = "~> 2.0"
+
+  key_name_prefix    = local.cluster_name
+  create_private_key = true
+
+  tags = local.tags
+}
+
+module "ebs_kms_key" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 1.5"
+
+  description = "Customer managed key to encrypt EKS managed node group volumes"
+
+  # Policy
+  key_administrators = [
+    data.aws_caller_identity.current.arn
+  ]
+
+  key_service_roles_for_autoscaling = [
+    # required for the ASG to manage encrypted volumes for nodes
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
+    # required for the cluster / persistentvolume-controller to create encrypted PVCs
+    module.eks.cluster_iam_role_arn,
+  ]
+
+  # Aliases
+  aliases = ["eks/${local.cluster_name}/ebs"]
+
+  tags = local.tags
+}
+
+resource "aws_iam_policy" "additional" {
+  name        = "${local.cluster_name}-additional"
+  description = "Example usage of node additional policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+
+  tags = local.tags
 }
