@@ -140,15 +140,15 @@ locals {
       }
     },
     bottlerocket = {
-      create       = var.enable_self_managed_nodegroups
-      name = "bottlerocket-self-mng"
+      create = var.enable_self_managed_nodegroups
+      name   = "bottlerocket-self-mng"
 
       platform      = "bottlerocket"
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = "m5.large"
-      min_size     = 2
-      max_size     = 2
-      desired_size = 2
+      min_size      = 2
+      max_size      = 2
+      desired_size  = 2
       key_name      = module.key_pair.key_pair_name
 
       bootstrap_extra_args = <<-EOT
