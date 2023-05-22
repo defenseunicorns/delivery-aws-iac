@@ -1,0 +1,38 @@
+name: Ping test
+
+description: Simple test that validates that an action can update a workflow status.
+
+runs:
+  using: composite
+  steps:
+    - name: Create URL to the run output
+      shell: bash
+      if: github.event_name == 'repository_dispatch'
+      id: vars
+      run: echo "run-url=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
+
+    # Will update the comment that triggered the /test comment and add the run-url
+    - name: Update comment
+      if: github.event_name == 'repository_dispatch'
+      uses: peter-evans/create-or-update-comment@v3
+      with:
+        token: ${{ secrets.PAT }}
+        repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+        comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+        body: |
+          :robot: [View pipeline run][1]
+
+          [1]: ${{ steps.vars.outputs.run-url }}
+
+    # Update GitHub status for dispatch events
+    - name: "Update GitHub Status for this ref"
+      uses: "docker://cloudposse/github-status-updater"
+      with:
+        args: "-action update_state -state success -ref ${{ github.event.client_payload.pull_request.head.sha }} -repo ${{ github.event.client_payload.github.payload.repository.name }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
+        GITHUB_CONTEXT: "test / ping (${{ github.event_name }})"
+        GITHUB_DESCRIPTION: "pong"
+        GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref }}
+        GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login }}

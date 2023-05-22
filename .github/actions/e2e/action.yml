@@ -1,0 +1,13 @@
+name: Run E2E Tests
+
+description: Run E2E Tests
+
+inputs:
+  account:
+    description: The AWS account to use. Valid values are "commercial" or "govcloud"
+    required: true
+
+runs:
+  using: composite
+  steps:
+
