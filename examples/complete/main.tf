@@ -168,8 +168,8 @@ locals {
         lockdown = "integrity"
 
         [settings.kubernetes.node-labels]
-        label1 = "foo"
-        label2 = "bar"
+        label1 = "sso"
+        label2 = "bb-core"
 
         [settings.kubernetes.node-taints]
         dedicated = "experimental:PreferNoSchedule"
