@@ -38,6 +38,10 @@ locals {
     iam_role_permissions_boundary = var.iam_role_permissions_boundary
     ami_type                      = "AL2_x86_64"
     instance_types                = ["m5a.large", "m5.large", "m6i.large"]
+    tags = {
+      subnet_type = "private",
+      cluster     = local.cluster_name
+    }
   }
 
   mission_app_mg_node_group = {
@@ -121,7 +125,8 @@ locals {
     }
 
     tags = {
-      subnet_type = "private"
+      subnet_type = "private",
+      cluster     = local.cluster_name
     }
   }
 
