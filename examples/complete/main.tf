@@ -40,15 +40,19 @@ locals {
     instance_types                = ["m5a.large", "m5.large", "m6i.large"]
   }
 
-  eks_managed_node_groups = {
+  mission_app_mg_node_group = {
     managed_ng1 = {
-      create       = var.enable_eks_managed_nodegroups
       min_size     = 2
       max_size     = 2
       desired_size = 2
       disk_size    = 50
     }
   }
+
+  eks_managed_node_groups = merge(
+    var.enable_eks_managed_nodegroups ? local.mission_app_mg_node_group : {},
+    # var.enable_eks_managed_nodegroups && var.keycloak_enabled ? local.keycloak_mg_node_group : {}
+  )
 
   self_managed_node_group_defaults = {
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
@@ -333,6 +337,10 @@ module "eks" {
   enable_calico      = var.enable_calico
   calico_helm_config = var.calico_helm_config
 }
+
+#---------------------------------------------------------------
+#Keycloak Self Managed Node Group Dependencies
+#---------------------------------------------------------------
 
 module "key_pair" {
   source  = "terraform-aws-modules/key-pair/aws"
