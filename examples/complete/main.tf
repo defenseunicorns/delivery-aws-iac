@@ -154,7 +154,7 @@ locals {
       min_size      = 2
       max_size      = 2
       desired_size  = 2
-      key_name      = module.key_pair.key_pair_name
+      key_name      = module.key_pair[0].key_pair_name
 
       bootstrap_extra_args = <<-EOT
         # The admin host container provides SSH access and runs with "superpowers".
@@ -346,6 +346,8 @@ module "key_pair" {
   source  = "terraform-aws-modules/key-pair/aws"
   version = "~> 2.0"
 
+  count = var.keycloak_enabled ? 1 : 0
+
   key_name_prefix    = local.cluster_name
   create_private_key = true
 
@@ -355,6 +357,8 @@ module "key_pair" {
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
   version = "~> 1.5"
+
+  count = var.keycloak_enabled ? 1 : 0
 
   description = "Customer managed key to encrypt EKS managed node group volumes"
 
@@ -377,6 +381,9 @@ module "ebs_kms_key" {
 }
 
 resource "aws_iam_policy" "additional" {
+
+  count = var.keycloak_enabled ? 1 : 0
+
   name        = "${local.cluster_name}-additional"
   description = "Example usage of node additional policy"
 
