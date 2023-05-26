@@ -126,8 +126,7 @@ locals {
   }
 
   mission_app_self_mg_node_group = {
-    for name in ["ng_bb"] :
-    "${local.cluster_name}-${name}" => {
+    bigbang_ng = {
       subnet_ids   = module.vpc.private_subnets
       min_size     = 2
       max_size     = 2
@@ -146,8 +145,7 @@ locals {
   }
 
   keycloak_self_mg_node_group = {
-    for name in ["ng_sso"] :
-    "${local.cluster_name}-${name}" => {
+    keycloak_ng_sso = {
       platform      = "bottlerocket"
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = "m5.large"
@@ -183,10 +181,10 @@ locals {
     }
   }
 
-  self_managed_node_groups = merge(
-    var.enable_self_managed_nodegroups ? local.mission_app_self_mg_node_group : {},
-    var.enable_self_managed_nodegroups && var.keycloak_enabled ? local.keycloak_self_mg_node_group : {}
-  )
+  self_managed_node_groups = var.enable_self_managed_nodegroups ? merge(
+    local.mission_app_self_mg_node_group,
+    var.keycloak_enabled ? local.keycloak_self_mg_node_group : {}
+  ) : {}
 }
 
 ###########################################################
