@@ -45,3 +45,8 @@ output "efs_storageclass_name" {
   description = "The name of the EFS storageclass that was created (if var.enable_efs was set to true)"
   value       = try(kubernetes_storage_class_v1.efs[0].id, null)
 }
+
+output "cluster_iam_role_arn" {
+  description = "EKS cluster IAM role ARN"
+  value       = module.aws_eks.cluster_iam_role_arn
+}
