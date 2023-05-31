@@ -50,8 +50,7 @@ module "loki_s3_bucket" {
 ############### Keycloak RDS Database #####################
 
 module "rds_postgres_keycloak" {
-  # source = "git::https://github.com/defenseunicorns/delivery-aws-iac.git//modules/rds?ref=v<insert tagged version>"
-  source = "../../modules/rds"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-rds.git?ref=v0.0.1-alpha"
 
   count = var.keycloak_enabled ? 1 : 0
 
