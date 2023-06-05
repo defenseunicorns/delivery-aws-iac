@@ -377,7 +377,7 @@ module "ebs_kms_key" {
   ]
 
   # Aliases
-  aliases = ["eks/keycloak_ng_sso/ebs"]
+  aliases = ["eks/${local.cluster_name}-keycloak_ng_sso/ebs"]
 
   tags = local.tags
 }
