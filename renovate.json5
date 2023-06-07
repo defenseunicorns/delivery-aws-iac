@@ -5,8 +5,6 @@
     ":dependencyDashboard",
     // Use semantic commit type fix for dependencies and chore for all others if semantic commits are in use. See https://docs.renovatebot.com/presets-default/#semanticprefixfixdepschoreothers
     ":semanticPrefixFixDepsChoreOthers",
-    // Ignore node_modules, bower_components, vendor and various test/tests directories. See https://docs.renovatebot.com/presets-default/#ignoremodulesandtests
-    ":ignoreModulesAndTests",
     // Group all updates together. See https://docs.renovatebot.com/presets-group/#groupall
     // Other less drastic groupings that may be of interest include: group:allNonMajor, group:recommended, group:monorepos
     "group:all",
@@ -55,6 +53,12 @@
     {
       matchPackageNames: ["k8s.io/client-go"],
       allowedVersions: "<1.0.0"
+    },
+    {
+      matchManagers: ["terraform"],
+      matchDepTypes: ["module"],
+      matchDatasources: ["github-tags", "git-tags"],
+      versioning: "loose"
     }
   ]
 }

@@ -196,7 +196,7 @@ locals {
 ####################### VPC ###############################
 
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-vpc.git?ref=tags/v0.0.1-alpha"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-vpc.git?ref=v0.0.1-alpha"
 
   name                  = local.vpc_name
   vpc_cidr              = var.vpc_cidr
@@ -236,7 +236,7 @@ data "aws_ami" "amazonlinux2" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-bastion.git?ref=tags/v0.0.1-alpha"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-bastion.git?ref=v0.0.1-alpha"
 
   enable_bastion_terraform_permissions = true
 
