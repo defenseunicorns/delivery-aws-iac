@@ -3,7 +3,7 @@ adr-tools 3.0.0
 awscli 2.11.25
 # renovate: datasource=github-tags depName=bridgecrewio/checkov
 checkov 2.3.234
-golang 1.20.4
+golang 1.20.5
 # renovate: datasource=github-tags depName=golangci/golangci-lint
 golangci-lint 1.53.2
 # renovate: datasource=github-tags depName=pre-commit/pre-commit
@@ -16,4 +16,4 @@ tflint 0.46.1
 # renovate: datasource=github-tags depName=aquasecurity/tfsec
 tfsec 1.28.1
 # renovate: datasource=github-tags depName=defenseunicorns/zarf
-zarf 0.27.0
+zarf 0.27.1
