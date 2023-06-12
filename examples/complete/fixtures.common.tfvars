@@ -39,9 +39,9 @@ keycloak_enabled = true
 #################### Keycloak ###########################
 
 keycloak_db_password        = "my-password"
-kc_db_engine_version        = "14.1"
-kc_db_family                = "postgres14" # DB parameter group
-kc_db_major_engine_version  = "14"         # DB option group
+kc_db_engine_version        = "15.3"
+kc_db_family                = "postgres15" # DB parameter group
+kc_db_major_engine_version  = "15"         # DB option group
 kc_db_allocated_storage     = 20
 kc_db_max_allocated_storage = 100
 kc_db_instance_class        = "db.t4g.large"
