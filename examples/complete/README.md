@@ -48,7 +48,7 @@ ip-10-200-48-31.us-east-2.compute.internal    Ready    <none>   22h   v1.23.16-e
 
 To do this manually, you're going to want to run:
 
-> NOTE: This is not really recommended. Better to use the make target / docker container. If the container doesn't have a tool you need, open an issue [here](https://github.com/defenseunicorns/not-a-build-harness) and we'll get it added.
+> NOTE: This is not really recommended. Better to use the make target / docker container. If the container doesn't have a tool you need, open an issue [here](https://github.com/defenseunicorns/build-harness) and we'll get it added.
 
 ```shell
 # Switch to the examples/complete directory
