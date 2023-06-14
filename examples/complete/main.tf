@@ -157,7 +157,7 @@ locals {
       min_size      = 2
       max_size      = 2
       desired_size  = 2
-      key_name      = module.key_pair[0].key_pair_name
+      key_name      = var.keycloak_enabled ? module.key_pair[0].key_pair_name : null
 
       bootstrap_extra_args = <<-EOT
         # The admin host container provides SSH access and runs with "superpowers".
