@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestExamplesVariable(t *testing.T) {
+func TestExamplesCompletePlanOnly(t *testing.T) {
 	t.Parallel()
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
 	terraformOptionsPlan := &terraform.Options{

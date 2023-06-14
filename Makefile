@@ -111,6 +111,10 @@ test-complete-insecure: ## Run one test (TestExamplesCompleteInsecure). Requires
 test-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires access to an AWS account. Costs real money.
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompleteSecure"
 
+.PHONY: test-complete-plan-only
+test-complete-plan-only: ## Run one test (TestExamplesCompletePlanOnly). Requires access to an AWS account. Costs real money.
+	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run  TestExamplesCompletePlanOnly"
+
 .PHONY: docker-save-build-harness
 docker-save-build-harness: _create-folders ## Pulls the build harness docker image and saves it to a tarball
 	docker pull ${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION}
