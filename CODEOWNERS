@@ -1,1 +1,5 @@
 * @defenseunicorns/delivery-aws-iac
+
+# Privileged Files
+/CODEOWNERS @defenseunicorns/delivery-aws-iac-admin
+/LICENSE @defenseunicorns/delivery-aws-iac-admin
