@@ -101,15 +101,15 @@ bastion-connect: _create-folders ## To be used after deploying "secure mode" of 
 
 .PHONY: test
 test: ## Run all automated tests. Requires access to an AWS account. Costs real money.
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h"
+	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h"
 
 .PHONY: test-complete-insecure
 test-complete-insecure: ## Run one test (TestExamplesCompleteInsecure). Requires access to an AWS account. Costs real money.
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompleteInsecure"
+	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteInsecure"
 
 .PHONY: test-complete-secure
 test-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires access to an AWS account. Costs real money.
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompleteSecure"
+	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteSecure"
 
 .PHONY: docker-save-build-harness
 docker-save-build-harness: _create-folders ## Pulls the build harness docker image and saves it to a tarball
