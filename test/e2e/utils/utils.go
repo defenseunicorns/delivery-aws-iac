@@ -277,10 +277,10 @@ func ValidateZarfInit(t *testing.T, tempFolder string) {
 		Logger:       logger.Discard,
 	}
 	storageClassName := terraform.Output(t, terraformOutputOptions, "efs_storageclass_name")
-	output, err := exec.Command("bash", "-c", fmt.Sprintf("zarf init --components=logging,git-server --confirm --no-log-file --no-progress --storage-class %s", storageClassName)).CombinedOutput() //nolint:gosec
+	outputBytes, err := exec.Command("bash", "-c", fmt.Sprintf("zarf init --components=logging,git-server --confirm --no-log-file --no-progress --storage-class %s", storageClassName)).CombinedOutput() //nolint:gosec
 	if err != nil {
 		DoLog("zarf init failed: %v\n", err)
-		DoLog("zarf init output: %s\n", output)
+		DoLog("zarf init output: %s\n", string(outputBytes))
 	}
 	require.NoError(t, err)
 }

@@ -270,8 +270,7 @@ module "bastion" {
 ###########################################################
 ################### EKS Cluster ###########################
 module "eks" {
-  # source = "git::https://github.com/defenseunicorns/delivery-aws-iac.git//modules/eks?ref=v<insert tagged version>"
-  source = "../../modules/eks"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.1-alpha"
 
   name                            = local.cluster_name
   aws_region                      = var.region
