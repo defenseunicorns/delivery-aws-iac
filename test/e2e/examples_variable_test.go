@@ -22,11 +22,8 @@ func TestExamplesVariable(t *testing.T) {
 		},
 		SetVarsAfterVarFiles: true,
 	}
-	teststructure.RunTestStage(t, "TERRAFORM_INIT", func() {
+	teststructure.RunTestStage(t, "SETUP", func() {
 		terraform.Init(t, terraformOptionsPlan)
-	})
-	// Run `terraform plan` with the specified variable
-	teststructure.RunTestStage(t, "TERRAFORM_PLAN", func() {
 		terraform.Plan(t, terraformOptionsPlan)
 	})
 }
