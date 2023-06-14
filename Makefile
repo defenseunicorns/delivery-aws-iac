@@ -112,7 +112,7 @@ test-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires acc
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompleteSecure"
 
 .PHONY: test-complete-plan-only
-test-complete-plan-only: ## Run one test (TestExamplesCompletePlanOnly). Requires access to an AWS account. Costs real money.
+test-complete-plan-only: ## Run one test (TestExamplesCompletePlanOnly). Requires access to an AWS account. It will not cost money or create any resources since it is just running `terraform plan`.
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run  TestExamplesCompletePlanOnly"
 
 .PHONY: docker-save-build-harness
