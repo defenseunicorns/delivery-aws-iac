@@ -1,9 +1,9 @@
 package e2e_test
 
 import (
-	"testing"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	teststructure "github.com/gruntwork-io/terratest/modules/test-structure"
+	"testing"
 )
 
 func TestExamplesVariable(t *testing.T) {
@@ -16,7 +16,7 @@ func TestExamplesVariable(t *testing.T) {
 			"fixtures.common.tfvars",
 			"fixtures.insecure.tfvars",
 		},
-	// Set any overrides for variables you would like to validate
+		// Set any overrides for variables you would like to validate
 		Vars: map[string]interface{}{
 			"keycloak_enabled": false,
 		},
@@ -30,5 +30,3 @@ func TestExamplesVariable(t *testing.T) {
 		terraform.Plan(t, terraformOptionsPlan)
 	})
 }
-
-	
