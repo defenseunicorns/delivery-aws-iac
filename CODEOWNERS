@@ -1,17 +1,1 @@
 * @defenseunicorns/delivery-aws-iac
-
-# Docs & Examples
-*.md @defenseunicorns/delivery-aws-iac
-
-# Terraform Modules & Examples
-/modules/ @defenseunicorns/delivery-aws-iac
-/examples/ @defenseunicorns/delivery-aws-iac
-
-# Privileged Files
-/CODEOWNERS @defenseunicorns/delivery-aws-iac-admin
-/LICENSE @defenseunicorns/delivery-aws-iac-admin
-/.github/ @defenseunicorns/delivery-aws-iac-admin
-/.gitignore @defenseunicorns/delivery-aws-iac-admin
-/renovate.json @defenseunicorns/delivery-aws-iac-admin
-/renovate.json5 @defenseunicorns/delivery-aws-iac-admin
-/Makefile @defenseunicorns/delivery-aws-iac-admin
