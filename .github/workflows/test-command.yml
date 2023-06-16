@@ -172,7 +172,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: "${{ github.workspace }}/.cache/docker"
-          key: "docker|${{ hashFiles('Makefile') }}"
+          key: "docker|${{ hashFiles('.env') }}"
 
       - name: Docker save build harness
         if: steps.init-docker-cache.outputs.cache-hit != 'true'
