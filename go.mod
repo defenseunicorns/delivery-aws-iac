@@ -3,12 +3,12 @@ module github.com/defenseunicorns/delivery-aws-iac
 go 1.20
 
 require (
-	github.com/aws/aws-sdk-go v1.44.277
-	github.com/gruntwork-io/terratest v0.43.0
+	github.com/aws/aws-sdk-go v1.44.287
+	github.com/gruntwork-io/terratest v0.43.3
 	github.com/stretchr/testify v1.8.4
-	k8s.io/api v0.27.2
-	k8s.io/apimachinery v0.27.2
-	k8s.io/client-go v0.27.2
+	k8s.io/api v0.27.3
+	k8s.io/apimachinery v0.27.3
+	k8s.io/client-go v0.27.3
 	sigs.k8s.io/aws-iam-authenticator v0.6.10
 )
 
