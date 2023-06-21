@@ -13,6 +13,9 @@
     // Apply crowd-sourced workarounds for known problems with packages. See https://docs.renovatebot.com/presets-workarounds/#workaroundsall
     "workarounds:all"
   ],
+  schedule: [
+    "before 4am every weekday"
+  ],
   // Labels to set in Pull Request. See https://docs.renovatebot.com/configuration-options/#labels
   labels: [
     "renovate"
