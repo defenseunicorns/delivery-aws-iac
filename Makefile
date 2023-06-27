@@ -34,39 +34,35 @@ _create-folders:
 
 .PHONY: _test-all
 _test-all: _create-folders
-	echo "mock"
-
-#.PHONY: _test-all
-#_test-all: _create-folders
-#	echo "Running automated tests. This will take several minutes. At times it does not log anything to the console. If you interrupt the test run you will need to log into AWS console and manually delete any orphaned infrastructure."
-#	docker run $(TTY_ARG) --rm \
-#		--cap-add=NET_ADMIN \
-#		--cap-add=NET_RAW \
-#		-v "${PWD}:/app" \
-#		-v "${PWD}/.cache/tmp:/tmp" \
-#		-v "${PWD}/.cache/go:/root/go" \
-#		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
-#		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
-#		-v "${PWD}/.cache/.zarf-cache:/root/.zarf-cache" \
-#		--workdir "/app" \
-#		-e TF_LOG_PATH \
-#		-e TF_LOG \
-#		-e GOPATH=/root/go \
-#		-e GOCACHE=/root/.cache/go-build \
-#		-e TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE=true \
-#		-e TF_PLUGIN_CACHE_DIR=/root/.terraform.d/plugin-cache \
-#		-e AWS_REGION \
-#		-e AWS_DEFAULT_REGION \
-#		-e AWS_ACCESS_KEY_ID \
-#		-e AWS_SECRET_ACCESS_KEY \
-#		-e AWS_SESSION_TOKEN \
-#		-e AWS_SECURITY_TOKEN \
-#		-e AWS_SESSION_EXPIRATION \
-#		-e SKIP_SETUP \
-#		-e SKIP_TEST \
-#		-e SKIP_TEARDOWN \
-#		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
-#		bash -c 'git config --global --add safe.directory /app && asdf install && cd examples/complete && terraform init -upgrade=true && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
+	echo "Running automated tests. This will take several minutes. At times it does not log anything to the console. If you interrupt the test run you will need to log into AWS console and manually delete any orphaned infrastructure."
+	docker run $(TTY_ARG) --rm \
+		--cap-add=NET_ADMIN \
+		--cap-add=NET_RAW \
+		-v "${PWD}:/app" \
+		-v "${PWD}/.cache/tmp:/tmp" \
+		-v "${PWD}/.cache/go:/root/go" \
+		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
+		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
+		-v "${PWD}/.cache/.zarf-cache:/root/.zarf-cache" \
+		--workdir "/app" \
+		-e TF_LOG_PATH \
+		-e TF_LOG \
+		-e GOPATH=/root/go \
+		-e GOCACHE=/root/.cache/go-build \
+		-e TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE=true \
+		-e TF_PLUGIN_CACHE_DIR=/root/.terraform.d/plugin-cache \
+		-e AWS_REGION \
+		-e AWS_DEFAULT_REGION \
+		-e AWS_ACCESS_KEY_ID \
+		-e AWS_SECRET_ACCESS_KEY \
+		-e AWS_SESSION_TOKEN \
+		-e AWS_SECURITY_TOKEN \
+		-e AWS_SESSION_EXPIRATION \
+		-e SKIP_SETUP \
+		-e SKIP_TEST \
+		-e SKIP_TEARDOWN \
+		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
+		bash -c 'git config --global --add safe.directory /app && asdf install && cd examples/complete && terraform init -upgrade=true && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
 
 .PHONY: bastion-connect
 bastion-connect: _create-folders ## To be used after deploying "secure mode" of examples/complete. It (a) creates a tunnel through the bastion host using sshuttle, and (b) sets up the KUBECONFIG so that the EKS cluster is able to be interacted with. Requires the standard AWS cred environment variables to be set. We recommend using 'aws-vault' to set them.
