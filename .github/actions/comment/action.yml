@@ -1,0 +1,23 @@
+name: Update Slash Command Dispatch Comment
+
+description: Update Slash Command Dispatch comment with the run URL
+
+runs:
+  using: composite
+  steps:
+    - name: Create URL to the run output
+      id: vars
+      shell: bash -e -o pipefail {0}
+      run: echo "run-url=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
+
+    # Will update the comment that triggered the /test comment and add the run-url
+    - name: Update comment
+      if: github.event_name == 'repository_dispatch'
+      uses: peter-evans/create-or-update-comment@v3
+      with:
+        token: ${{ secrets.PAT }}
+        repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+        comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+        body: |
+          :robot: [View pipeline run][1]
+          [1]: ${{ steps.vars.outputs.run-url }}

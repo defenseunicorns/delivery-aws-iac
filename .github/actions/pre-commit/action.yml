@@ -18,14 +18,14 @@
           key: "pre-commit-${{inputs.check-type}}|${{hashFiles('.tool-versions')}}|${{hashFiles('.pre-commit-config.yaml')}}"
 
       - name: Init gopath cache
-        if: inputs.check-type == 'golang'
+        if: inputs.check-type == 'golang' || inputs.check-type == 'all'
         uses: actions/cache@v3
         with:
           path: "${{ github.workspace }}/.cache/go"
           key: "gopath|${{hashFiles('.tool-versions')}}|${{hashFiles('go.sum')}}"
 
       - name: Init gobuild cache
-        if: inputs.check-type == 'golang'
+        if: inputs.check-type == 'golang' || inputs.check-type == 'all'
         uses: actions/cache@v3
         with:
           path: "${{ github.workspace }}/.cache/go-build"
@@ -40,13 +40,13 @@
 
       - name: Docker save build harness
         if: steps.init-docker-cache.outputs.cache-hit != 'true'
-        shell: bash
+        shell: bash -e -o pipefail {0}
         run: make docker-save-build-harness
 
       - name: Load build harness
-        shell: bash
+        shell: bash -e -o pipefail {0}
         run: make docker-load-build-harness
 
       - name: Run `pre-commit run -a`
-        shell: bash
+        shell: bash -e -o pipefail {0}
         run: "make pre-commit-${{inputs.check-type}} fix-cache-permissions"
