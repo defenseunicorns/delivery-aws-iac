@@ -2,6 +2,11 @@ name: Ping test
 
 description: Simple test that validates that an action can update a workflow status.
 
+inputs:
+  token:
+    description: Personal Access Token (PAT) used to update the comment
+    required: true
+
 runs:
   using: composite
   steps:
@@ -12,7 +17,7 @@ runs:
       with:
         args: "-action update_state -state success -ref ${{ github.event.client_payload.pull_request.head.sha }} -repo ${{ github.event.client_payload.github.payload.repository.name }}"
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
+        GITHUB_TOKEN: ${{ inputs.token }}
         GITHUB_CONTEXT: "ping"
         GITHUB_DESCRIPTION: "pong"
         GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}

@@ -2,6 +2,11 @@ name: Update Slash Command Dispatch Comment
 
 description: Update Slash Command Dispatch comment with the run URL
 
+inputs:
+  token:
+    description: Personal Access Token (PAT) used to update the comment
+    required: true
+
 runs:
   using: composite
   steps:
@@ -15,7 +20,7 @@ runs:
       if: github.event_name == 'repository_dispatch'
       uses: peter-evans/create-or-update-comment@v3
       with:
-        token: ${{ secrets.PAT }}
+        token: ${{ inputs.token }}
         repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
         comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
         body: |
