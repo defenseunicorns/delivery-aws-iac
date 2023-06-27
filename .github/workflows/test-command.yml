@@ -83,8 +83,8 @@ jobs:
         uses: ./.github/actions/e2e
         with:
           token: ${{ secrets.PAT }}
-          account: commercial
           role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+          region: us-east-1
 
   # Run the E2E tests on the govcloud account
   e2e-govcloud:
@@ -102,5 +102,5 @@ jobs:
         uses: ./.github/actions/e2e
         with:
           token: ${{ secrets.PAT }}
-          account: govcloud
           role-to-assume: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          region: us-gov-west-1
