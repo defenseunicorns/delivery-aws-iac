@@ -8,7 +8,6 @@ on:
   push:
     branches:
       - main
-      - feature/include-govcloud-in-tests-2
 
 permissions:
   id-token: write
@@ -85,6 +84,7 @@ jobs:
           token: ${{ secrets.PAT }}
           role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
           region: us-east-1
+          github-context: "test / e2e-commercial (${{github.event_name}})"
 
   # Run the E2E tests on the govcloud account
   e2e-govcloud:
@@ -104,3 +104,4 @@ jobs:
           token: ${{ secrets.PAT }}
           role-to-assume: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
           region: us-gov-west-1
+          github-context: "test / e2e-govcloud (${{github.event_name}})"
