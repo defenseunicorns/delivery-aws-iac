@@ -61,15 +61,18 @@ runs:
 
     - name: Docker save build harness
       if: steps.init-docker-cache.outputs.cache-hit != 'true'
+      shell: bash -e -o pipefail {0}
       run: |
         make docker-save-build-harness
 
     - name: Load build harness
+      shell: bash -e -o pipefail {0}
       run: |
         make docker-load-build-harness
 
     - name: Get Terraform version from .tool-versions
       id: get_tf_version
+      shell: bash -e -o pipefail {0}
       run: echo "tf_version=$(grep 'terraform ' .tool-versions)" >> $GITHUB_OUTPUT
 
     - name: Init Terraform Cache
@@ -99,9 +102,7 @@ runs:
         role-duration-seconds: 21600
 
     - name: "Run E2E tests"
-      env:
-        REPO_URL: https://github.com/${{ github.repository }}.git
-        GIT_BRANCH: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
+      shell: bash -e -o pipefail {0}
       run: |
         make test fix-cache-permissions
 
