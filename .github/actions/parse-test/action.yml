@@ -1,0 +1,50 @@
+name: Parse Slash Command Dispatch (/test)
+
+description: Parse Slash Command Dispatch (/test)
+
+outputs:
+  run-ping:
+    description: Will be 'true' if the 'ping' job should run
+    value: ${{ steps.parse.outputs.ping }}
+  run-e2e:
+    description: Will be 'true' if the 'e2e' job should run
+    value: ${{ steps.parse.outputs.e2e }}
+
+runs:
+  using: composite
+  steps:
+    - name: Parse Args
+      id: parse
+      env:
+        DEBUG: ${{ toJSON(github.event.client_payload.slash_command) }}
+        ARGS_V1: ${{ github.event.client_payload.slash_command.arg1 }}
+        ARGS_V2: ${{ github.event.client_payload.slash_command.args.unnamed.all }}
+        EVENT_NAME: ${{ github.event_name }}
+      shell: bash -e -o pipefail {0}
+      run: |
+        ARGS="${ARGS_V1}${ARGS_V2}"
+        # set ARGS to "all" if EVENT_NAME is "push"
+        if [[ "${EVENT_NAME}" == "push" ]]; then
+            ARGS="all"
+        fi
+        printf "Event name is %s\n" "$EVENT_NAME"
+        printf "Args are %s\n" "$ARGS"
+        printf "\n\nslash_command is %s\n\n" "$DEBUG"
+        COMMANDS=(PING E2E) #all options here
+        if printf "%s" "${ARGS^^}" | grep -qE '\bALL\b'; then
+          # "all" explicitly does not include "ping"
+          for cmd in "${COMMANDS[@]}"; do
+            [[ $cmd == "PING" ]] && ! { printf "%s" "${ARGS^^}" | grep -qE '\bPING\b'; } && continue
+            printf -v "$cmd" "true"
+          done
+        else
+          for cmd in "${COMMANDS[@]}"; do
+            if printf "%s" "${ARGS^^}" | grep -qE "\b${cmd}\b"; then
+              printf -v "$cmd" "true"
+            fi
+          done
+        fi
+        for out in "${COMMANDS[@]}"; do
+          printf "%s=%s\n" "${out,,}" "${!out:-false}" >> $GITHUB_OUTPUT
+          printf "%s=%s\n" "${out,,}" "${!out:-false}"
+        done
