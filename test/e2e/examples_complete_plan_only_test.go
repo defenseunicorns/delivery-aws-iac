@@ -1,9 +1,10 @@
 package e2e_test
 
 import (
+	"testing"
+
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	teststructure "github.com/gruntwork-io/terratest/modules/test-structure"
-	"testing"
 )
 
 func TestExamplesCompletePlanOnly(t *testing.T) {
