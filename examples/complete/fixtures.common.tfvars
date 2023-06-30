@@ -1,10 +1,6 @@
 ###########################################################
 ################## Global Settings ########################
 
-# Setting region per test case to avoid AWS service quota limits
-#region  = "us-east-2" # target AWS region
-#region2 = "us-east-1" # RDS backup target AWS region
-
 tags = {
   Environment = "dev"
   Project     = "du-iac-cicd"

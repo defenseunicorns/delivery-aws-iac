@@ -25,4 +25,5 @@ runs:
         comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
         body: |
           :robot: [View pipeline run][1]
+
           [1]: ${{ steps.vars.outputs.run-url }}
