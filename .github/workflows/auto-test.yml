@@ -1,6 +1,3 @@
-# Attribution for a bunch of this goes to CloudPosse
-# https://github.com/cloudposse/actions/blob/master/.github/workflows/test-command.yml
-
 name: auto-test
 on:
   pull_request:
@@ -18,7 +15,6 @@ jobs:
   # Run the E2E tests on the commercial account
   e2e-commercial:
     runs-on: ubuntu-latest
-    if: needs.parse.outputs.run-e2e == 'true'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -38,7 +34,6 @@ jobs:
   # Run the E2E tests on the govcloud account
   e2e-govcloud:
     runs-on: ubuntu-latest
-    if: needs.parse.outputs.run-e2e == 'true'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3

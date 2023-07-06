@@ -24,6 +24,7 @@ runs:
   steps:
     # Update GitHub status for pending pipeline run
     - name: "Update GitHub Status for pending"
+      if: github.event_name == 'repository_dispatch'
       uses: docker://cloudposse/github-status-updater
       with:
         args: "-action update_state -state pending -ref ${{ env.REPO_SHA }} -repo ${{ env.REPO_NAME }}"
