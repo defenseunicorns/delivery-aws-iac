@@ -1,0 +1,56 @@
+# Attribution for a bunch of this goes to CloudPosse
+# https://github.com/cloudposse/actions/blob/master/.github/workflows/test-command.yml
+
+name: auto-test
+on:
+  pull_request:
+
+permissions:
+  id-token: write
+  contents: read
+
+defaults:
+  run:
+    # We need -e -o pipefail for consistency with GitHub Actions' default behavior
+    shell: bash -e -o pipefail {0}
+
+jobs:
+  # Run the E2E tests on the commercial account
+  e2e-commercial:
+    runs-on: ubuntu-latest
+    if: needs.parse.outputs.run-e2e == 'true'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
+      - name: Run E2E Tests
+        uses: ./.github/actions/e2e
+        with:
+          token: ${{ secrets.PAT }}
+          role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+          region: us-east-1
+          region2: us-east-2
+          github-context: "test / e2e-commercial (${{github.event_name}})"
+
+  # Run the E2E tests on the govcloud account
+  e2e-govcloud:
+    runs-on: ubuntu-latest
+    if: needs.parse.outputs.run-e2e == 'true'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
+      - name: Run E2E Tests
+        uses: ./.github/actions/e2e
+        with:
+          token: ${{ secrets.PAT }}
+          role-to-assume: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          region: us-gov-east-1
+          region2: us-gov-west-1
+          github-context: "test / e2e-govcloud (${{github.event_name}})"

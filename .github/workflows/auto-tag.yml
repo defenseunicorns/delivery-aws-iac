@@ -1,0 +1,26 @@
+# Attribution for a bunch of this goes to CloudPosse
+# https://github.com/cloudposse/actions/blob/master/.github/workflows/test-command.yml
+
+name: auto-tag
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+    - name: set env
+      run: echo "NOW=v$(date +'%Y%m%d.%H%M%S')" >> $GITHUB_ENV
+    - name: create tag
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.MY_PAT }}
+        script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ env.NOW }}',
+              sha: context.sha
+            })
