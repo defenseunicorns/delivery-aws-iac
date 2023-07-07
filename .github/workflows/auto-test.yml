@@ -1,7 +1,6 @@
 name: auto-test
 on:
   pull_request:
-    types: [review_requested]
 
 permissions:
   id-token: write
@@ -16,6 +15,7 @@ jobs:
   # Run the E2E tests on the commercial account
   e2e-commercial:
     runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'ready-for-review')
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -33,6 +33,7 @@ jobs:
   # Run the E2E tests on the govcloud account
   e2e-govcloud:
     runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'ready-for-review')
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
