@@ -1,6 +1,11 @@
 name: auto-test
 on:
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
 
 permissions:
   id-token: write
