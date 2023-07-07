@@ -264,7 +264,9 @@ module "bastion" {
   permissions_boundary           = var.iam_role_permissions_boundary
   tags = merge(
     local.tags,
-  { Function = "bastion-ssm" })
+    { Function = "bastion-ssm" },
+    { Password-Rotation = "True" }
+  )
 }
 
 ###########################################################
@@ -403,4 +405,107 @@ resource "aws_iam_policy" "additional" {
   })
 
   tags = local.tags
+}
+
+
+###########################################################
+################### Lambda Function #######################
+
+module "password_lambda" {
+  source               = "../../modules/lambda"
+  timeout              = var.timeout
+  function_name        = "${var.name_prefix}-${var.function_name}"
+  function_description = var.function_description
+  function_handler     = var.function_handler
+  lambda_runtime       = var.lambda_runtime
+  policy_statements = {
+    ec2 = {
+      effect    = "Allow",
+      actions   = ["ec2:DescribeInstances", "ec2:DescribeImages"]
+      resources = ["*"]
+      condition = {
+        stringequals_condition = {
+          test     = "StringEquals"
+          variable = "aws:RequestedRegion",
+          values   = var.region,
+          test     = "StringEquals"
+          variable = "aws:PrincipalAccount"
+          values   = data.aws_caller_identity.current.account_id
+        }
+      }
+    },
+    secretsmanager = {
+      effect = "Allow",
+      actions = [
+        "secretsmanager:CreateSecret",
+        "secretsmanager:PutResourcePolicy",
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:UpdateSecret"
+      ]
+      resources = ["arn:aws-us-gov:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:*"]
+    },
+    logs = {
+      effect = "Allow",
+      actions = [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+      resources = ["arn:aws-us-gov:logs:${var.region}:${data.aws_caller_identity.current.account_id}:*"]
+    },
+    ssm = {
+      effect = "Allow"
+      actions = [
+        "ssm:SendCommand",
+        "ssm:GetCommandInvocation",
+        "ssm:PutParameter",
+        "ssm:GetParameter",
+        "ssm:DeleteParameter"
+      ]
+      resources = [
+        "arn:aws-us-gov:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/*",
+        "arn:aws-us-gov:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:*",
+        "arn:aws-us-gov:ssm:${var.region}::document/AWS-RunShellScript",
+        "arn:aws-us-gov:ssm:${var.region}::document/AWS-RunPowerShellScript"
+      ]
+    },
+  }
+  depends_on  = [data.archive_file.lambda_archive_file]
+  output_path = var.output_path
+}
+
+
+
+data "archive_file" "lambda_archive_file" {
+  type        = "zip"
+  source_file = var.source_file
+  output_path = var.output_path
+}
+
+# CloudWatch Event Rule to execute function every 30 days.
+
+resource "aws_cloudwatch_event_rule" "cron_eventbridge_rule" {
+  name                = "${var.name_prefix}-Cron-Password-Reset-Trigger"
+  description         = "Monthly trigger for lambda function"
+  schedule_expression = "cron(0 0 1 * ? *)"
+  # depends_on = [ aws_lambda_function.lambda_password_function ]
+  event_pattern = <<EOF
+{
+  "detail-type": [
+    "Scheduled Event"
+  ],
+  "source": [
+    "aws.events"
+  ],
+  "resources": [
+    "${module.password_lambda.lambda_function_arn}"
+  ]
+}
+EOF
+}
+
+resource "aws_cloudwatch_event_target" "cron_event_target" {
+  rule      = aws_cloudwatch_event_rule.cron_eventbridge_rule.name
+  target_id = "TargetFunctionV1"
+  arn       = module.password_lambda.lambda_function_arn
 }

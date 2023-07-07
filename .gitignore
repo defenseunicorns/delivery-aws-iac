@@ -56,3 +56,7 @@ backend.tf
 .external_modules
 
 examples/zarf-complete-example/build
+
+#ignore lamba zip file created from archive resource
+
+*.zip

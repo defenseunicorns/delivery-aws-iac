@@ -120,3 +120,17 @@ calico_helm_config = {
   wait    = false
   version = "v3.25.1"
 }
+
+
+###########################################################
+################## Lambda Config ##########################
+
+function_name        = "password-reset-function"
+function_description = "Function to reset passwords for ec2 instances with tag Key: Password-Rotation Value: True"
+function_handler     = "lambda_function.lambda_handler"
+lambda_runtime       = "python3.9"
+
+output_path = "fixtures/python/lambda_function.zip"
+source_file = "fixtures/python/lambda_function.py"
+
+timeout = 900
