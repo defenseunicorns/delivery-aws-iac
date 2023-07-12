@@ -1,6 +1,6 @@
 # AWS Lambda Module
 
-This repository contains Terraform configuration files that create an AWS Lambda Function. 
+This repository contains Terraform configuration files that create an AWS Lambda Function.
 
 The module uses a local existing package which is being created via an archive file resource. See example below.
 
