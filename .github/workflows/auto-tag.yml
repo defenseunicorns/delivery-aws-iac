@@ -15,19 +15,14 @@ jobs:
     steps:
     - name: set env
       run: echo "NOW=v$(date +'%Y%m%d.%H%M%S')" >> $GITHUB_ENV
-    # - name: create tag
-    #   uses: actions/github-script@v6
-    #   with:
-    #     script: |
-    #         github.rest.git.createRef({
-    #           owner: context.repo.owner,
-    #           repo: context.repo.repo,
-    #           ref: 'refs/tags/${{ env.NOW }}',
-    #           sha: context.sha
-    #         })
-    - name: Checkout Repo
-      uses: actions/checkout@v3
-    - name: Create Tag
-      run: git tag ${{ env.NOW }}
-    - name: Push Tag
-      run: git push origin ${{ env.NOW }}
+    - name: create tag
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.PAT }}
+        script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ env.NOW }}',
+              sha: context.sha
+            })
