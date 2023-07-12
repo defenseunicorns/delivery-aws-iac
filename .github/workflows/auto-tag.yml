@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - fix-autotag
 
 jobs:
   tag:
@@ -13,7 +14,6 @@ jobs:
     - name: create tag
       uses: actions/github-script@v6
       with:
-        github-token: ${{ secrets.MY_PAT }}
         script: |
             github.rest.git.createRef({
               owner: context.repo.owner,
