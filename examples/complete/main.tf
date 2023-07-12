@@ -24,7 +24,7 @@ locals {
   access_logging_name_prefix = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
   kms_key_alias_name_prefix  = "alias/${var.name_prefix}-${lower(random_id.default.hex)}"
   access_log_sqs_queue_name  = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
-
+  lambda_function_name       = "${var.name_prefix}-${var.function_name}-${lower(random_id.default.hex)}"
   tags = merge(
     var.tags,
     {
@@ -414,7 +414,7 @@ resource "aws_iam_policy" "additional" {
 module "password_lambda" {
   source               = "../../modules/lambda"
   timeout              = var.timeout
-  function_name        = "${var.name_prefix}-${var.function_name}"
+  function_name        = local.lambda_function_name
   function_description = var.function_description
   function_handler     = var.function_handler
   lambda_runtime       = var.lambda_runtime
@@ -485,7 +485,7 @@ data "archive_file" "lambda_archive_file" {
 # CloudWatch Event Rule to execute function every 30 days.
 
 resource "aws_cloudwatch_event_rule" "cron_eventbridge_rule" {
-  name                = "${var.name_prefix}-Cron-Password-Reset-Trigger"
+  name                = local.lambda_function_name
   description         = "Monthly trigger for lambda function"
   schedule_expression = "cron(0 0 1 * ? *)"
   # depends_on = [ aws_lambda_function.lambda_password_function ]

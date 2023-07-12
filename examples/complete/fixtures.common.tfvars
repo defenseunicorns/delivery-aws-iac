@@ -125,7 +125,7 @@ calico_helm_config = {
 ###########################################################
 ################## Lambda Config ##########################
 
-function_name        = "password-reset-function"
+function_name        = "pass-reset"
 function_description = "Function to reset passwords for ec2 instances with tag Key: Password-Rotation Value: True"
 function_handler     = "lambda_function.lambda_handler"
 lambda_runtime       = "python3.9"
