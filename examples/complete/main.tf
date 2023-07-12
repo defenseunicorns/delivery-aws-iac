@@ -442,7 +442,7 @@ module "password_lambda" {
         "secretsmanager:DescribeSecret",
         "secretsmanager:UpdateSecret"
       ]
-      resources = ["arn:aws-us-gov:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:*"]
+      resources = ["arn:${data.aws_partition.current.partition}:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:*"]
     },
     logs = {
       effect = "Allow",
@@ -451,7 +451,7 @@ module "password_lambda" {
         "logs:CreateLogStream",
         "logs:PutLogEvents"
       ]
-      resources = ["arn:aws-us-gov:logs:${var.region}:${data.aws_caller_identity.current.account_id}:*"]
+      resources = ["arn:${data.aws_partition.current.partition}:logs:${var.region}:${data.aws_caller_identity.current.account_id}:*"]
     },
     ssm = {
       effect = "Allow"
@@ -463,10 +463,10 @@ module "password_lambda" {
         "ssm:DeleteParameter"
       ]
       resources = [
-        "arn:aws-us-gov:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/*",
-        "arn:aws-us-gov:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:*",
-        "arn:aws-us-gov:ssm:${var.region}::document/AWS-RunShellScript",
-        "arn:aws-us-gov:ssm:${var.region}::document/AWS-RunPowerShellScript"
+        "arn:${data.aws_partition.current.partition}:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/*",
+        "arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:*",
+        "arn:${data.aws_partition.current.partition}:ssm:${var.region}::document/AWS-RunShellScript",
+        "arn:${data.aws_partition.current.partition}:ssm:${var.region}::document/AWS-RunPowerShellScript"
       ]
     },
   }
