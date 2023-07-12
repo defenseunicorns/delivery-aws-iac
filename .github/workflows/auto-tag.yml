@@ -18,7 +18,7 @@ jobs:
     - name: create tag
       uses: actions/github-script@v6
       with:
-        github-token: ${{ secrets.PAT }}
+        github-token: ${{ secrets.TEST_PAT }}
         script: |
             github.rest.git.createRef({
               owner: context.repo.owner,
