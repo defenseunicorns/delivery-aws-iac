@@ -5,6 +5,10 @@ on:
       - main
       - fix-autotag
 
+permissions:
+  id-token: write
+  contents: write
+
 jobs:
   tag:
     runs-on: ubuntu-latest
