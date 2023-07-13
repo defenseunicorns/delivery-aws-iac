@@ -125,12 +125,18 @@ calico_helm_config = {
 ###########################################################
 ################## Lambda Config ##########################
 
-function_name        = "pass-reset"
-function_description = "Function to reset passwords for ec2 instances with tag Key: Password-Rotation Value: True"
-function_handler     = "lambda_function.lambda_handler"
-lambda_runtime       = "python3.9"
+enable_password_rotation_lambda = true
 
-output_path = "fixtures/python/lambda_function.zip"
-source_file = "fixtures/python/lambda_function.py"
+## TSTING REAMOVE
+users = ["ec2-user", "Administrator", "cyber"]
 
-timeout = 900
+bastion_tenancy                = "dedicated"
+eks_worker_tenancy             = "dedicated"
+cluster_endpoint_public_access = false
+
+create_aws_auth_configmap = true
+
+region = "us-gov-east-1"
+region2 = "us-gov-west-1"
+enable_eks_managed_nodegroups = false
+enable_self_managed_nodegroups = true

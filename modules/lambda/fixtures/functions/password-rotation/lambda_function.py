@@ -185,70 +185,20 @@ def create_instance_secrets(instance, passwords):
             Name=secret_name,
             SecretString=json.dumps(secret_value)
         )
-        ## this if uncommented will create iam policy for secrets. Remeber to change the :user/josh.brewer to your user that you want to have access.
-        # sts_response = sts_client.get_caller_identity()
-        # account_id = str(sts_response['Account'])
-        # access_policy = {s
-        #     "Version": "2012-10-17",
-        #     "Statement": [
-        #         {
-        #             "Sid": "AllowAccess",
-        #             "Effect": "Allow",
-        #             "Principal": {
-        #                 "AWS": ""
-        #             },
-        #             "Action": [
-        #                 "secretsmanager:GetSecretValue",
-        #                 "secretsmanager:DescribeSecret",
-        #                 "secretsmanager:DeleteSecret",
-        #                 "secretsmanager:PutResourcePolicy"
-        #             ],
-        #             "Resource": "*"
-        #         },
-        #     ]
-        # }
-        # response = secrets_manager_client.describe_secret(SecretId=secret_name)
-        # secret_arn = response['ARN']
-        # access_policy['Statement'][0]['Principal']['AWS'] = f"arn:aws-us-gov:iam::{account_id}:user/<user-name>"
-        # access_policy['Statement'][0]['Resource'] = secret_arn
-
-        # secrets_manager_client.put_resource_policy(
-        #     SecretId=secret_name,
-        #     ResourcePolicy=json.dumps(access_policy)
-        # )
 
     logger.info(f"Instance secrets created for {instance['InstanceId']}")
 
 
 def lambda_handler(event, context):
-    tag_key = 'tag:Password-Rotation'
-    tag_value = 'True'
 
-    response = ec2_client.describe_instances(
-        Filters=[
-            {
-                'Name': tag_key,
-                'Values': [tag_value]
-            },
-            {
-                'Name': 'instance-state-name',
-                'Values': ['running']
-            }
-        ]
-    )
-
-    instance_ids = []
-
-    for reservation in response['Reservations']:
-        for instance in reservation['Instances']:
-            instance_ids.append(instance['InstanceId'])
+    users = os.environ.get('users', '').split(',')
+    instance_ids = os.environ.get('instance_ids', '').split(',')
 
     for instance_id in instance_ids:
         instance = ec2_client.describe_instances(InstanceIds=[instance_id])['Reservations'][0]['Instances'][0]
-        users_to_check = ['Administrator', 'ec2-user']
         passwords = {}
 
-        for user in users_to_check:
+        for user in users:
             if does_user_exist(instance, user):
                 length = 14
                 uppercase_letters = string.ascii_uppercase

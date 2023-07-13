@@ -24,7 +24,6 @@ locals {
   access_logging_name_prefix = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
   kms_key_alias_name_prefix  = "alias/${var.name_prefix}-${lower(random_id.default.hex)}"
   access_log_sqs_queue_name  = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
-  lambda_function_name       = "${var.name_prefix}-${var.function_name}-${lower(random_id.default.hex)}"
   tags = merge(
     var.tags,
     {
@@ -190,6 +189,10 @@ locals {
     var.enable_self_managed_nodegroups ? local.mission_app_self_mg_node_group : {},
     var.enable_self_managed_nodegroups && var.keycloak_enabled ? local.keycloak_self_mg_node_group : {}
   )
+  ### Lambda Locals ###
+  # instance_ids = [module.bastion.instance_id]
+  users        = [ var.users ]
+  instance_ids = [ module.bastion.instance_id, "i-0687ea4aa5c9e5fa6", "i-03ce9c4675b637929" ]
 }
 
 ###########################################################
@@ -408,104 +411,12 @@ resource "aws_iam_policy" "additional" {
 }
 
 
-###########################################################
-################### Lambda Function #######################
-
 module "password_lambda" {
-  source               = "../../modules/lambda"
-  timeout              = var.timeout
-  function_name        = local.lambda_function_name
-  function_description = var.function_description
-  function_handler     = var.function_handler
-  lambda_runtime       = var.lambda_runtime
-  policy_statements = {
-    ec2 = {
-      effect    = "Allow",
-      actions   = ["ec2:DescribeInstances", "ec2:DescribeImages"]
-      resources = ["*"]
-      condition = {
-        stringequals_condition = {
-          test     = "StringEquals"
-          variable = "aws:RequestedRegion",
-          values   = var.region,
-          test     = "StringEquals"
-          variable = "aws:PrincipalAccount"
-          values   = data.aws_caller_identity.current.account_id
-        }
-      }
-    },
-    secretsmanager = {
-      effect = "Allow",
-      actions = [
-        "secretsmanager:CreateSecret",
-        "secretsmanager:PutResourcePolicy",
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:UpdateSecret"
-      ]
-      resources = ["arn:${data.aws_partition.current.partition}:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:*"]
-    },
-    logs = {
-      effect = "Allow",
-      actions = [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ]
-      resources = ["arn:${data.aws_partition.current.partition}:logs:${var.region}:${data.aws_caller_identity.current.account_id}:*"]
-    },
-    ssm = {
-      effect = "Allow"
-      actions = [
-        "ssm:SendCommand",
-        "ssm:GetCommandInvocation",
-        "ssm:PutParameter",
-        "ssm:GetParameter",
-        "ssm:DeleteParameter"
-      ]
-      resources = [
-        "arn:${data.aws_partition.current.partition}:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/*",
-        "arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:*",
-        "arn:${data.aws_partition.current.partition}:ssm:${var.region}::document/AWS-RunShellScript",
-        "arn:${data.aws_partition.current.partition}:ssm:${var.region}::document/AWS-RunPowerShellScript"
-      ]
-    },
-  }
-  depends_on  = [data.archive_file.lambda_archive_file]
-  output_path = var.output_path
-}
-
-
-
-data "archive_file" "lambda_archive_file" {
-  type        = "zip"
-  source_file = var.source_file
-  output_path = var.output_path
-}
-
-# CloudWatch Event Rule to execute function every 30 days.
-
-resource "aws_cloudwatch_event_rule" "cron_eventbridge_rule" {
-  name                = local.lambda_function_name
-  description         = "Monthly trigger for lambda function"
-  schedule_expression = "cron(0 0 1 * ? *)"
-  # depends_on = [ aws_lambda_function.lambda_password_function ]
-  event_pattern = <<EOF
-{
-  "detail-type": [
-    "Scheduled Event"
-  ],
-  "source": [
-    "aws.events"
-  ],
-  "resources": [
-    "${module.password_lambda.lambda_function_arn}"
-  ]
-}
-EOF
-}
-
-resource "aws_cloudwatch_event_target" "cron_event_target" {
-  rule      = aws_cloudwatch_event_rule.cron_eventbridge_rule.name
-  target_id = "TargetFunctionV1"
-  arn       = module.password_lambda.lambda_function_arn
+  source = "../../modules/lambda"
+  region = var.region
+  enable_password_rotation_lambda = var.enable_password_rotation_lambda
+  count = var.enable_password_rotation_lambda ? 1 : 0
+  users =  var.users 
+  instance_ids =  local.instance_ids 
+  depends_on = [ module.bastion ]
 }

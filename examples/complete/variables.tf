@@ -290,48 +290,26 @@ variable "zarf_version" {
   default     = ""
 }
 
-##########################################################
-################## Lambda Config #########################
 
-variable "function_name" {
-  description = "Name of lambda function"
-  type        = string
-  default     = "lambda_function"
+
+############################################################################
+################## Lambda Password Rotation Config #########################
+
+ variable "users" {
+  description = "This needs to be a list of users that will be on your ec2 instances that need password changes."
+  type = list(string)
+  default = [  ]
 }
 
-variable "function_description" {
-  description = "Description of what the lambda function does"
-  type        = string
-  default     = "function to change passwords"
+variable "instance_ids"{
+  description = "list of instances that need to have passwords changed."
+  type = list(string)
+  default = [ ]
 }
 
-variable "function_handler" {
-  description = "Method in function code that processes events"
-  type        = string
-  default     = "lambda_function.lambda_handler"
+variable "enable_password_rotation_lambda" {
+  description = "This will enable password rotation for your select users on your selected ec2 instances."
+  type = bool
+  default = false
 }
 
-variable "lambda_runtime" {
-  description = "lambda function runtime (eg python3.8)"
-  type        = string
-  default     = "python3.9"
-}
-
-
-variable "source_file" {
-  description = "File path where function resides"
-  type        = string
-  default     = ""
-}
-
-variable "output_path" {
-  description = "Path of output zip file for function"
-  type        = string
-  default     = ""
-}
-
-variable "timeout" {
-  description = "Timeout of lambda function"
-  type        = number
-  default     = 900
-}
