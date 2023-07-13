@@ -81,7 +81,7 @@ module "password_lambda" {
         "ssm:DeleteParameter"
       ]
       resources = [
-        #should be variable passed in per instance. 
+        #should be variable passed in per instance.
         "arn:${data.aws_partition.current.partition}:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/*",
         "arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:*",
         "arn:${data.aws_partition.current.partition}:ssm:${var.region}::document/AWS-RunShellScript",

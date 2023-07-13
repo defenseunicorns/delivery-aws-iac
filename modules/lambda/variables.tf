@@ -42,6 +42,6 @@ variable "password_lambda_function_name" {
 
 variable "random_id" {
   description = "random it for unique naming"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
