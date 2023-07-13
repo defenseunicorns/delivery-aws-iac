@@ -295,21 +295,26 @@ variable "zarf_version" {
 ############################################################################
 ################## Lambda Password Rotation Config #########################
 
- variable "users" {
+variable "users" {
   description = "This needs to be a list of users that will be on your ec2 instances that need password changes."
-  type = list(string)
-  default = [  ]
+  type        = list(string)
+  default     = []
 }
 
-variable "instance_ids"{
+variable "instance_ids" {
   description = "list of instances that need to have passwords changed."
-  type = list(string)
-  default = [ ]
+  type        = list(string)
+  default     = []
 }
 
 variable "enable_password_rotation_lambda" {
   description = "This will enable password rotation for your select users on your selected ec2 instances."
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
+variable "cron_schedule_password_rotation" {
+  description = "Schedule for password change function to run on"
+  type        = string
+  default     = "cron(0 0 1 * ? *)"
+}

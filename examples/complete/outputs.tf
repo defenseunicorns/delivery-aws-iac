@@ -72,14 +72,3 @@ output "efs_storageclass_name" {
   value       = try(module.eks.efs_storageclass_name, null)
 }
 
-output "users" {
-  description = "List of users"
-  value = local.users
-  sensitive = true
-}
-
-output "instance_ids" {
-  description = "list of instances"
-  value = local.instance_ids
-  sensitive = true
-}

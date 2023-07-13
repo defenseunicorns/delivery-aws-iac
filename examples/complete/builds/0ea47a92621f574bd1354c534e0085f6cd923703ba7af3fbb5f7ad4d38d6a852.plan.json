@@ -1,0 +1,1 @@
+{"filename": "builds/0ea47a92621f574bd1354c534e0085f6cd923703ba7af3fbb5f7ad4d38d6a852.zip", "runtime": "python3.9", "artifacts_dir": "builds", "build_plan": [["zip", "../../modules/lambda/fixtures/functions/password-rotation/lambda_function.py", null]]}

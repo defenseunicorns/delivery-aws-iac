@@ -7,19 +7,16 @@ locals {
 }
 
 module "password_lambda" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-lambda.git?ref=v5.0.0"
-  
-  count = var.enable_password_rotation_lambda ? 1 : 0
-
-  function_name  = var.password_function_name
-  description    = var.password_function_description
-  handler        = var.password_function_handler
-  runtime        = var.password_lambda_runtime
-  timeout        = var.timeout
-  # create_package = false
+  source        = "git::https://github.com/terraform-aws-modules/terraform-aws-lambda.git?ref=v5.0.0"
+  function_name = "${var.name_prefix}-password-function-${lower(random_id.default.hex)}"
+  count         = var.enable_password_rotation_lambda ? 1 : 0
+  description   = "Lambda Function that performs password rotation on ec2 windows and linux"
+  handler       = "lambda_function.lambda_handler"
+  runtime       = "python3.9"
+  timeout       = 900
 
   environment_variables = {
-    users = join(",", var.users)
+    users        = join(",", var.users)
     instance_ids = join(",", var.instance_ids)
   }
 
@@ -43,17 +40,17 @@ module "password_lambda" {
       actions   = ["ec2:DescribeInstances", "ec2:DescribeImages"]
       resources = ["*"]
       condition = {
-      stringequals_condition = {
-        test     = "StringEquals"
-        variable = "aws:RequestedRegion"
-        values   = [var.region]
+        stringequals_condition = {
+          test     = "StringEquals"
+          variable = "aws:RequestedRegion"
+          values   = [var.region]
+        }
+        stringequals_condition2 = {
+          test     = "StringEquals"
+          variable = "aws:PrincipalAccount"
+          values   = [data.aws_caller_identity.current.account_id]
+        }
       }
-      stringequals_condition2 = {
-        test     = "StringEquals"
-        variable = "aws:PrincipalAccount"
-        values   = [data.aws_caller_identity.current.account_id]
-      }
-    }
     },
     secretsmanager = {
       effect = "Allow",
@@ -84,6 +81,7 @@ module "password_lambda" {
         "ssm:DeleteParameter"
       ]
       resources = [
+        #should be variable passed in per instance. 
         "arn:${data.aws_partition.current.partition}:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/*",
         "arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:*",
         "arn:${data.aws_partition.current.partition}:ssm:${var.region}::document/AWS-RunShellScript",
@@ -95,11 +93,12 @@ module "password_lambda" {
 }
 
 resource "aws_cloudwatch_event_rule" "cron_eventbridge_rule" {
-  count = var.enable_password_rotation_lambda ? 1 : 0
-  name                = "${var.name_prefix}-${var.password_function_name}"
-  description         = "Monthly trigger for lambda function"
-  schedule_expression = "cron(0 0 1 * ? *)"
-  event_pattern = <<EOF
+  count       = var.enable_password_rotation_lambda ? 1 : 0
+  name        = "${var.name_prefix}-password-function-trigger-${var.random_id}"
+  description = "Monthly trigger for lambda function"
+  # schedule_expression = "cron(0 0 1 * ? *)"
+  schedule_expression = var.cron_schedule_password_rotation
+  event_pattern       = <<EOF
 {
   "detail-type": [
     "Scheduled Event"
@@ -115,7 +114,7 @@ EOF
 }
 
 resource "aws_cloudwatch_event_target" "cron_event_target" {
-  count = var.enable_password_rotation_lambda ? 1 : 0
+  count     = var.enable_password_rotation_lambda ? 1 : 0
   rule      = aws_cloudwatch_event_rule.cron_eventbridge_rule[count.index].name
   target_id = "TargetFunctionV1"
   arn       = module.password_lambda[0].lambda_function_arn

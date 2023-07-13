@@ -121,22 +121,14 @@ calico_helm_config = {
   version = "v3.25.1"
 }
 
+######################################################
+################## Lambda Config #####################
 
-###########################################################
-################## Lambda Config ##########################
-
+################# Password Rotation ##################
 enable_password_rotation_lambda = true
+# Add users that will be on your ec2 instances.
+users = ["ec2-user", "Administrator"]
 
-## TSTING REAMOVE
-users = ["ec2-user", "Administrator", "cyber"]
+cron_schedule_password_rotation = "cron(0 0 1 * ? *)"
 
-bastion_tenancy                = "dedicated"
-eks_worker_tenancy             = "dedicated"
-cluster_endpoint_public_access = false
-
-create_aws_auth_configmap = true
-
-region = "us-gov-east-1"
-region2 = "us-gov-west-1"
-enable_eks_managed_nodegroups = false
-enable_self_managed_nodegroups = true
+lambda_ffunction_name = ""

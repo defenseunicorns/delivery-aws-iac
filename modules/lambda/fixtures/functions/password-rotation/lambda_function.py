@@ -159,7 +159,7 @@ def retrieve_ssm_command_from_parameter_store(parameter_name, parameters):
     return ssm_command
 
 def create_instance_secrets(instance, passwords):
-    secret_name = f"{instance['InstanceId']}-1"
+    secret_name = f"{instance['InstanceId']}"
     secret_value = {}
 
     for username, password in passwords.items():

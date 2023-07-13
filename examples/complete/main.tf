@@ -17,13 +17,13 @@ resource "random_id" "default" {
 }
 
 locals {
-  vpc_name                   = "${var.name_prefix}-${lower(random_id.default.hex)}"
-  cluster_name               = "${var.name_prefix}-${lower(random_id.default.hex)}"
-  bastion_name               = "${var.name_prefix}-bastion-${lower(random_id.default.hex)}"
-  loki_name_prefix           = "${var.name_prefix}-loki-${lower(random_id.default.hex)}"
-  access_logging_name_prefix = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
-  kms_key_alias_name_prefix  = "alias/${var.name_prefix}-${lower(random_id.default.hex)}"
-  access_log_sqs_queue_name  = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
+  vpc_name                      = "${var.name_prefix}-${lower(random_id.default.hex)}"
+  cluster_name                  = "${var.name_prefix}-${lower(random_id.default.hex)}"
+  bastion_name                  = "${var.name_prefix}-bastion-${lower(random_id.default.hex)}"
+  loki_name_prefix              = "${var.name_prefix}-loki-${lower(random_id.default.hex)}"
+  access_logging_name_prefix    = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
+  kms_key_alias_name_prefix     = "alias/${var.name_prefix}-${lower(random_id.default.hex)}"
+  access_log_sqs_queue_name     = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
   tags = merge(
     var.tags,
     {
@@ -189,10 +189,6 @@ locals {
     var.enable_self_managed_nodegroups ? local.mission_app_self_mg_node_group : {},
     var.enable_self_managed_nodegroups && var.keycloak_enabled ? local.keycloak_self_mg_node_group : {}
   )
-  ### Lambda Locals ###
-  # instance_ids = [module.bastion.instance_id]
-  users        = [ var.users ]
-  instance_ids = [ module.bastion.instance_id, "i-0687ea4aa5c9e5fa6", "i-03ce9c4675b637929" ]
 }
 
 ###########################################################
@@ -267,8 +263,7 @@ module "bastion" {
   permissions_boundary           = var.iam_role_permissions_boundary
   tags = merge(
     local.tags,
-    { Function = "bastion-ssm" },
-    { Password-Rotation = "True" }
+    { Function = "bastion-ssm" }
   )
 }
 
@@ -412,11 +407,14 @@ resource "aws_iam_policy" "additional" {
 
 
 module "password_lambda" {
-  source = "../../modules/lambda"
-  region = var.region
+  source                          = "../../modules/lambda"
+  region                          = var.region
+  random_id = "${lower(random_id.default.hex)}"
+  name_prefix                     = var.name_prefix
   enable_password_rotation_lambda = var.enable_password_rotation_lambda
-  count = var.enable_password_rotation_lambda ? 1 : 0
-  users =  var.users 
-  instance_ids =  local.instance_ids 
-  depends_on = [ module.bastion ]
+  count                           = var.enable_password_rotation_lambda ? 1 : 0
+  users                           = var.users
+  instance_ids                    = [module.bastion.instance_id, "i-0ff61dfb439b9928e"]
+  depends_on                      = [module.bastion]
+  cron_schedule_password_rotation = var.cron_schedule_password_rotation
 }
