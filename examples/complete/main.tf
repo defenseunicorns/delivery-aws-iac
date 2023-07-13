@@ -408,13 +408,11 @@ resource "aws_iam_policy" "additional" {
 
 module "password_lambda" {
   source                          = "../../modules/lambda"
+  enable_password_rotation_lambda = var.enable_password_rotation_lambda
   region                          = var.region
   random_id                       = lower(random_id.default.hex)
   name_prefix                     = var.name_prefix
-  enable_password_rotation_lambda = var.enable_password_rotation_lambda
-  count                           = var.enable_password_rotation_lambda ? 1 : 0
   users                           = var.users
-  instance_ids                    = [module.bastion.instance_id, "i-0ff61dfb439b9928e"]
-  depends_on                      = [module.bastion]
+  instance_ids                    = [module.bastion.instance_id]
   cron_schedule_password_rotation = var.cron_schedule_password_rotation
 }
