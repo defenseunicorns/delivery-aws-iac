@@ -12,9 +12,9 @@ This example deploys:
   - S3 bucket for Loki
   - RDS database for Keycloak
 - Password rotation lambda module.
-  - This module can be enabled or disabled.
+  - This module can be enabled or disabled. Enabled by default for E2E testing.
   - you can also modify the crob job schedule by changing the cron_schedule_password_rotation variable
-  - if enabled ensure you pass instance ids and users to the function via tfvars and module.bastion.instance_id for example.
+  - if enabled ensure you pass instance ids as seen in examples/complete/main.tf `instance_ids = [module.bastion.instance_id]` and users to the function via fixtures.common.tfvars for example.
   - Note that this function deploys resources outside of terraform. Secrets and Parameter store resources are created by the function and need to be deleted manually. Looking to improve this process.
 
 > This example has 2 modes: "insecure" and "secure". Insecure mode uses managed nodegroups, default instance tenancy, and enables the public endpoint on the EKS cluster. Secure mode uses self-managed nodegroups, dedicated instance tenancy, and disables the public endpoint on the EKS cluster. The method of choosing which mode to use is by using either `fixtures.insecure.tfvars` or `fixtures.secure.tfvars` as an overlay on top of `fixtures.common.tfvars`.

@@ -405,6 +405,8 @@ resource "aws_iam_policy" "additional" {
   tags = local.tags
 }
 
+############################################################################
+##################### Lambda Password Rotation #############################
 
 module "password_lambda" {
   source                          = "../../modules/lambda"
@@ -413,6 +415,7 @@ module "password_lambda" {
   random_id                       = lower(random_id.default.hex)
   name_prefix                     = var.name_prefix
   users                           = var.users
+  # Add any additional instances you want the function to run against here
   instance_ids                    = [module.bastion.instance_id]
   cron_schedule_password_rotation = var.cron_schedule_password_rotation
 }

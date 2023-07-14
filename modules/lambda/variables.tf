@@ -27,7 +27,6 @@ variable "name_prefix" {
   }
 }
 
-
 variable "cron_schedule_password_rotation" {
   description = "Schedule for password change function to run on"
   type        = string

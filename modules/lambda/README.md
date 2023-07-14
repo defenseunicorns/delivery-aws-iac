@@ -82,9 +82,9 @@ assume_role_policy_statements = {
 
 ### Lambda Password Module
 
-This module deploys a Python function that securely generates and rotates EC2 instance passwords for Windows and EC2 Linux instances using AWS Systems Manager (SSM), Secrets Manager, and Parameter Store. It also sets up an Amazon EventBridge cron job to run every 30 days.
+This module deploys a Python function that securely generates and rotates EC2 instance passwords for Windows and EC2 Linux instances using AWS Systems Manager (SSM), Secrets Manager, and Parameter Store. It also sets up an Amazon EventBridge cron job to run every 30 days this cron job can be modified as seen in fixtures.common.tfvars.
 
-To use this module, provide the users who exist on the instances and the instance IDs as shown in the example below.
+To use this module, provide the users who exist on the instances and the instance IDs as shown in the example mentioned below.
 
 ## Examples
 

@@ -57,6 +57,6 @@ backend.tf
 
 examples/zarf-complete-example/build
 
-#ignore lamba zip file created from archive resource
+#ignore lamba builds json file created from deploying lambda resource
 
 examples/complete/builds
