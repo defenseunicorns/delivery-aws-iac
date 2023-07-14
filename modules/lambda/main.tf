@@ -2,9 +2,6 @@ data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
-locals {
-  region = var.region
-}
 
 module "password_lambda" {
   source        = "git::https://github.com/terraform-aws-modules/terraform-aws-lambda.git?ref=v5.0.0"

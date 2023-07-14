@@ -34,12 +34,6 @@ variable "cron_schedule_password_rotation" {
   default     = "cron(0 0 1 * ? *)"
 }
 
-variable "password_lambda_function_name" {
-  description = "password lambda function name"
-  type        = string
-  default     = ""
-}
-
 variable "random_id" {
   description = "random it for unique naming"
   type        = string

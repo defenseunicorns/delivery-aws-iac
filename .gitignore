@@ -59,4 +59,4 @@ examples/zarf-complete-example/build
 
 #ignore lamba zip file created from archive resource
 
-*.zip
+examples/complete/builds

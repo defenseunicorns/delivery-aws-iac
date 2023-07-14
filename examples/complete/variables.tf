@@ -301,12 +301,6 @@ variable "users" {
   default     = []
 }
 
-variable "instance_ids" {
-  description = "list of instances that need to have passwords changed."
-  type        = list(string)
-  default     = []
-}
-
 variable "enable_password_rotation_lambda" {
   description = "This will enable password rotation for your select users on your selected ec2 instances."
   type        = bool
