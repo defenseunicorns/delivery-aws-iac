@@ -24,7 +24,6 @@ locals {
   access_logging_name_prefix = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
   kms_key_alias_name_prefix  = "alias/${var.name_prefix}-${lower(random_id.default.hex)}"
   access_log_sqs_queue_name  = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
-
   tags = merge(
     var.tags,
     {
@@ -264,7 +263,8 @@ module "bastion" {
   permissions_boundary           = var.iam_role_permissions_boundary
   tags = merge(
     local.tags,
-  { Function = "bastion-ssm" })
+    { Function = "bastion-ssm" }
+  )
 }
 
 ###########################################################
@@ -403,4 +403,19 @@ resource "aws_iam_policy" "additional" {
   })
 
   tags = local.tags
+}
+
+############################################################################
+##################### Lambda Password Rotation #############################
+
+module "password_lambda" {
+  source                          = "../../modules/lambda"
+  enable_password_rotation_lambda = var.enable_password_rotation_lambda
+  region                          = var.region
+  random_id                       = lower(random_id.default.hex)
+  name_prefix                     = var.name_prefix
+  users                           = var.users
+  # Add any additional instances you want the function to run against here
+  instance_ids                    = [module.bastion.instance_id]
+  cron_schedule_password_rotation = var.cron_schedule_password_rotation
 }

@@ -120,3 +120,13 @@ calico_helm_config = {
   wait    = false
   version = "v3.25.1"
 }
+
+######################################################
+################## Lambda Config #####################
+
+################# Password Rotation ##################
+enable_password_rotation_lambda = true
+# Add users that will be on your ec2 instances.
+users = ["ec2-user", "Administrator"]
+
+cron_schedule_password_rotation = "cron(0 0 1 * ? *)"
