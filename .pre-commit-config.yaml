@@ -40,6 +40,6 @@ repos:
         args:
           - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 35.147.0
+    rev: 36.7.0
     hooks:
       - id: renovate-config-validator
