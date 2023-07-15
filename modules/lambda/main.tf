@@ -116,4 +116,3 @@ resource "aws_cloudwatch_event_target" "cron_event_target" {
   target_id = "TargetFunctionV1"
   arn       = module.password_lambda[0].lambda_function_arn
 }
-
