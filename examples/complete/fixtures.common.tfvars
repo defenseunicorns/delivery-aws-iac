@@ -20,7 +20,7 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
 # renovate: datasource=github-tags depName=defenseunicorns/zarf
-zarf_version         = "v0.26.3"
+zarf_version = "v0.26.3"
 
 ###########################################################
 #################### EKS Config ###########################
@@ -90,14 +90,14 @@ amazon_eks_aws_ebs_csi_driver_config = {
 
 enable_aws_node_termination_handler = true
 aws_node_termination_handler_helm_config = {
-  wait    = false
+  wait = false
   # Don't know where this one comes from versioning doesn't match AWS repo at all: https://github.com/aws/aws-node-termination-handler
   version = "v0.21.0"
 }
 
 enable_cluster_autoscaler = true
 cluster_autoscaler_helm_config = {
-  wait    = false
+  wait = false
   # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-chart-(?<version>.*)$
   version = "v9.28.0"
   set = [
@@ -106,7 +106,7 @@ cluster_autoscaler_helm_config = {
       value = "priority"
     },
     {
-      name  = "image.tag"
+      name = "image.tag"
       # renovate: datasource=docker depName=autoscaling/cluster-autoscaler repository=registry.k8s.io
       value = "v1.27.1"
     }
@@ -115,14 +115,14 @@ cluster_autoscaler_helm_config = {
 
 enable_metrics_server = true
 metrics_server_helm_config = {
-  wait    = false
+  wait = false
   # renovate: datasource=github-tags depName=kubernetes-sigs/metrics-server extractVersion=^metrics-server-helm-chart-(?<version>.*)$
   version = "v3.10.0"
 }
 
 enable_calico = true
 calico_helm_config = {
-  wait    = false
+  wait = false
   # renovate: datasource=github-tags depName=projectcalico/calico
   version = "v3.25.1"
 }
