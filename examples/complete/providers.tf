@@ -45,6 +45,10 @@ terraform {
       source  = "terraform-aws-modules/http"
       version = "2.4.1"
     }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "2.4.0"
+    }
   }
 }
 
