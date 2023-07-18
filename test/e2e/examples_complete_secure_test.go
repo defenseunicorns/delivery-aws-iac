@@ -38,7 +38,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"fixtures.secure.tfvars",
 		},
 		RetryableTerraformErrors: map[string]string{
-			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
 			".*timeout while waiting for state to become 'ACTIVE'.*": "Sometimes the EKS cluster takes a long time to create",
 		},
 		MaxRetries:         5,
@@ -55,7 +54,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"module.bastion",
 		},
 		RetryableTerraformErrors: map[string]string{
-			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
 			".*timeout while waiting for state to become 'ACTIVE'.*": "Sometimes the EKS cluster takes a long time to create",
 		},
 		MaxRetries:         5,
@@ -71,7 +69,6 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"module.eks",
 		},
 		RetryableTerraformErrors: map[string]string{
-			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
 			".*timeout while waiting for state to become 'ACTIVE'.*": "Sometimes the EKS cluster takes a long time to create",
 		},
 		MaxRetries:         5,

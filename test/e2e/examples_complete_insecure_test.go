@@ -21,7 +21,6 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 			"fixtures.insecure.tfvars",
 		},
 		RetryableTerraformErrors: map[string]string{
-			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
 			".*timeout while waiting for state to become 'ACTIVE'.*": "Sometimes the EKS cluster takes a long time to create",
 		},
 		MaxRetries:         5,
