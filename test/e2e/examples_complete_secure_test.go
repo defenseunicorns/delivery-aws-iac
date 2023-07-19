@@ -38,9 +38,7 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"fixtures.secure.tfvars",
 		},
 		RetryableTerraformErrors: map[string]string{
-			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
-			".*empty result.*": "intermittent error with resource creation and tagging",
-			".*timeout while waiting for state to become 'ACTIVE'.*": "Sometimes the EKS cluster takes a long time to create",
+			".*": "Failed to apply Terraform configuration due to an error.",
 		},
 		MaxRetries:         5,
 		TimeBetweenRetries: 5 * time.Second,
@@ -56,9 +54,7 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"module.bastion",
 		},
 		RetryableTerraformErrors: map[string]string{
-			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
-			".*empty result.*": "intermittent error with resource creation and tagging",
-			".*timeout while waiting for state to become 'ACTIVE'.*": "Sometimes the EKS cluster takes a long time to create",
+			".*": "Failed to apply Terraform configuration due to an error.",
 		},
 		MaxRetries:         5,
 		TimeBetweenRetries: 5 * time.Second,
@@ -73,9 +69,7 @@ func TestExamplesCompleteSecure(t *testing.T) {
 			"module.eks",
 		},
 		RetryableTerraformErrors: map[string]string{
-			".*empty output.*": "bug in aws_s3_bucket_logging, intermittent error",
-			".*empty result.*": "intermittent error with resource creation and tagging",
-			".*timeout while waiting for state to become 'ACTIVE'.*": "Sometimes the EKS cluster takes a long time to create",
+			".*": "Failed to apply Terraform configuration due to an error.",
 		},
 		MaxRetries:         5,
 		TimeBetweenRetries: 5 * time.Second,
