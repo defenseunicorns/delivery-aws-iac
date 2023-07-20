@@ -60,9 +60,9 @@
     },
     // Custom regex manager for the examples folder that follows the pattern documented here: https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
     {
-      "fileMatch": ["^examples\/complete\/.*\.tf$"],
+      "fileMatch": ["^examples\/complete\/.*\\.tf(vars)?$"],
       "matchStrings": [
-        "/datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?( extractVersion=(?<extractVersion>.*?))?( repository=(?<registryUrl>.*?))?\\s.*?=\\s*['\"]?v?(?<currentValue>.*?)['\"]?\\s"
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?( extractVersion=(?<extractVersion>.*?))?( repository=(?<registryUrl>.*?))?\\s.*?=\\s*['\"]?v?(?<currentValue>.*?)['\"]?\\s"
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}",
       "extractVersionTemplate": "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.*)${{/if}}"

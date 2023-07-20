@@ -24,7 +24,7 @@ zarf_version = "v0.26.3"
 
 ###########################################################
 #################### EKS Config ###########################
-# Not yet sure how to convert tag version that uses dashes to this: https://github.com/aws/eks-distro
+# renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
 cluster_version = "1.26"
 
 ###########################################################
@@ -91,7 +91,7 @@ amazon_eks_aws_ebs_csi_driver_config = {
 enable_aws_node_termination_handler = true
 aws_node_termination_handler_helm_config = {
   wait = false
-  # Don't know where this one comes from versioning doesn't match AWS repo at all: https://github.com/aws/aws-node-termination-handler
+  # renovate: datasource=docker depName=public.ecr.aws/aws-ec2/helm/aws-node-termination-handler
   version = "v0.21.0"
 }
 
@@ -107,7 +107,7 @@ cluster_autoscaler_helm_config = {
     },
     {
       name = "image.tag"
-      # renovate: datasource=docker depName=autoscaling/cluster-autoscaler repository=registry.k8s.io
+      # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-(?<version>.*)$
       value = "v1.27.1"
     }
   ]
