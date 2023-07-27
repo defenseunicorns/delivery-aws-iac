@@ -23,6 +23,7 @@ We also need to decide how we will do the releases. The current options being di
 ## Decision
 
 - We will do a SemVer version periodically, with no fixed release cadence. We will release when we feel it is important to do so.
+- We will set up a GitHub Action that runs every day that alerts us via Slack if a release has not been made in the last 14 days.
 - We will use the ReleasePlease bot to do the releases.
 
 Why:
@@ -34,4 +35,4 @@ Why:
 ## Consequences
 
 - Maintainers will need to use [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/) messages when merging PRs for ReleasePlease to work properly.
-- We will need to create some automation that runs on commits to main that alert us (likely via Slack) if a commit is made to main that does not conform to the Semantic Commit format.
+- We will need to set up a GitHub Action that runs on commits to main that alerts us via Slack if a commit is made to main that does not conform to the Semantic Commit format.
