@@ -17,7 +17,7 @@ We need to decide as a team what the branch protection setting will be on our re
   - Require at least 1 approving review
   - Dismiss stale pull request approvals when new commits are pushed
   - Require review from Code Owners
-  - Restrict who can dismiss pull request reviews to the `defenseunicorns/delivery-aws-iac-admin` team
+  - Restrict who can dismiss pull request reviews to organization and repository administrators
   - Do not allow specified actors to bypass required pull requests
   - Do not require approval of the most recent reviewable push
   - Require status checks to pass before merging
