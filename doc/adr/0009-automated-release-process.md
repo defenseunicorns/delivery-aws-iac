@@ -25,6 +25,7 @@ We also need to decide how we will do the releases. The current options being di
 - We will do a SemVer version periodically, with no fixed release cadence. We will release when we feel it is important to do so.
 - We will set up a GitHub Action that runs every day that alerts us via Slack if a release has not been made in the last 14 days.
 - We will use the ReleasePlease bot to do the releases.
+- We will delete any CalVer tags that are present in the repo so that ReleasePlease doesn't try to use them to determine the next version.
 
 Why:
 - We don't want to release on every commit to main because sometimes small commits to main to not warrant new releases.
