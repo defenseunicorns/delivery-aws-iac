@@ -25,7 +25,7 @@ We need to decide as a team what the branch protection setting will be on our re
     - Integration/E2E tests
   - Require conversation resolution before merging
   - Require signed commits
-  - Do not require linear history
+  - Require linear history
   - Do not require merge queue
   - Do not require deployments to succeed before merging
   - Do not lock the branch
