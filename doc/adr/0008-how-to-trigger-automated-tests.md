@@ -18,7 +18,7 @@ We need to decide as a team how tests should be triggered, whether automatically
 
 ## Decision
 
-- We will automatically trigger the tests if and only if the following conditions are met:
+- We will automatically trigger the tests if and only if all the following conditions are met:
   - The author of the pull request is Renovate
   - The pull request was just opened (i.e., it should only ever run automatically once per pull request)
 > This allows us to quickly merge Renovate PRs that were created overnight without having to wait for the tests to finish after a manual trigger.
