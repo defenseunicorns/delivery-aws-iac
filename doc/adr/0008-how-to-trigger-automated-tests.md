@@ -21,6 +21,7 @@ We need to decide as a team how tests should be triggered, whether automatically
 - We will automatically trigger the tests if and only if all the following conditions are met:
   - The author of the pull request is Renovate
   - The pull request was just opened (i.e., it should only ever run automatically once per pull request)
+- If the author is Renovate and an automatic test run is triggered, before running the automatic test run, we will first commit and push any pre-commit changes to the branch, so that the tests don't need to be run twice (once for the initial commit, again after making the changes pre-commit requires).
 > This allows us to quickly merge Renovate PRs that were created overnight without having to wait for the tests to finish after a manual trigger.
 - Otherwise, the tests will be triggered manually by a person by adding a comment to the PR that says `/test <test-name>`. Most of the time that will be `/test all` but there will likely be times when we may want to run a specific test, in which case we would use something like `/test e2e-commercial-insecure`
 > This lets us minimize the number of unnecessary tests we run.
