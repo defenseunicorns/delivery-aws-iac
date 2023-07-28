@@ -19,7 +19,7 @@ resource "aws_kms_alias" "default" {
 data "aws_iam_policy_document" "kms_access" {
   # checkov:skip=CKV_AWS_111: todo reduce perms on key
   # checkov:skip=CKV_AWS_109: todo be more specific with resources
-  # checkov:skip=CKV_AWS_356: todo be more specific with resources
+  # checkov:skip=CKV_AWS_356: todo be more specific with kms resources
   statement {
     sid = "KMS Key Default"
     principals {

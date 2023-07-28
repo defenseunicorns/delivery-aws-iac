@@ -222,7 +222,7 @@ variable "bastion_tenancy" {
 variable "bastion_instance_type" {
   description = "value for the instance type of the EKS worker nodes"
   type        = string
-  default     = "m6i.large"
+  default     = "m5.xlarge"
 }
 
 variable "bastion_ssh_user" {
