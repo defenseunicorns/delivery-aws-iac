@@ -5,9 +5,6 @@ name: test
 on:
   repository_dispatch:
     types: [test-command]
-  push:
-    branches:
-      - main
 
 permissions:
   id-token: write

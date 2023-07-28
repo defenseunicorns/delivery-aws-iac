@@ -1,11 +1,9 @@
+# This triggers an automatic test run if and only if Renovate is the author and the PR was just opened. See ADR #0008.
 name: auto-test
 on:
   pull_request:
     types:
       - opened
-      - reopened
-      - synchronize
-      - labeled
 
 permissions:
   id-token: write
@@ -17,38 +15,7 @@ defaults:
     shell: bash -e -o pipefail {0}
 
 jobs:
-  # Run the E2E tests on the commercial account
-  e2e-commercial:
+  auto-test:
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'ready-for-review')
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.PAT }}
-      - name: Run E2E Tests
-        uses: ./.github/actions/e2e
-        with:
-          token: ${{ secrets.PAT }}
-          role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
-          region: us-east-2
-          region2: us-east-1
-          github-context: "test / e2e-commercial (${{github.event_name}})"
-
-  # Run the E2E tests on the govcloud account
-  e2e-govcloud:
-    runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'ready-for-review')
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.PAT }}
-      - name: Run E2E Tests
-        uses: ./.github/actions/e2e
-        with:
-          token: ${{ secrets.PAT }}
-          role-to-assume: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
-          region: us-gov-east-1
-          region2: us-gov-west-1
-          github-context: "test / e2e-govcloud (${{github.event_name}})"
+      - name:
