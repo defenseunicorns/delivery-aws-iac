@@ -1,19 +1,19 @@
-name: Parse Slash Command Dispatch (/test)
+name: Parse Slash Command Dispatch (/update)
 
-description: Parse Slash Command Dispatch (/test)
+description: Parse Slash Command Dispatch (/update)
 
 outputs:
   run-ping:
     description: Will be 'true' if the 'ping' job should run
     value: ${{ steps.parse.outputs.ping }}
-  run-e2e:
-    description: Will be 'true' if the 'e2e' job should run
-    value: ${{ steps.parse.outputs.e2e }}
+  run-autoformat:
+    description: Will be 'true' if the 'autoformat' job should run
+    value: ${{ steps.parse.outputs.autoformat }}
 
 runs:
   using: composite
   steps:
-    - name: Parse Args
+    - name: Parse ARgs
       id: parse
       env:
         DEBUG: ${{ toJSON(github.event.client_payload.slash_command) }}
@@ -25,7 +25,7 @@ runs:
         printf "Event name is %s\n" "$EVENT_NAME"
         printf "Args are %s\n" "$ARGS"
         printf "\n\nslash_command is %s\n\n" "$DEBUG"
-        COMMANDS=(PING E2E) #all options here
+        COMMANDS=(PING AUTOFORMAT) #all options here
         if printf "%s" "${ARGS^^}" | grep -qE '\bALL\b'; then
           # "all" explicitly does not include "ping"
           for cmd in "${COMMANDS[@]}"; do
