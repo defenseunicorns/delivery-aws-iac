@@ -1,15 +1,14 @@
+# This autoformats using pre-commit, then triggers an automatic test run if and only if Renovate is the author and the PR was just opened. See ADR #0008.
 name: auto-test
 on:
   pull_request:
+    # WARNING: DO NOT ADD MORE EVENT TYPES HERE! Because this workflow will push a new commit to the PR in the Autoformat step, adding more event types may cause an infinite loop.
     types:
       - opened
-      - reopened
-      - synchronize
-      - labeled
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 defaults:
   run:
@@ -17,38 +16,31 @@ defaults:
     shell: bash -e -o pipefail {0}
 
 jobs:
-  # Run the E2E tests on the commercial account
-  e2e-commercial:
+  auto-test:
+    if: github.event.client_payload.github.actor == 'renovate[bot]' || github.actor == 'renovate[bot]'
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'ready-for-review')
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.PAT }}
-      - name: Run E2E Tests
-        uses: ./.github/actions/e2e
-        with:
-          token: ${{ secrets.PAT }}
-          role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
-          region: us-east-2
-          region2: us-east-1
-          github-context: "test / e2e-commercial (${{github.event_name}})"
+          repository: ${{ github.repository }}
+          ref: ${{ github.event.pull_request.head.ref }}
 
-  # Run the E2E tests on the govcloud account
-  e2e-govcloud:
-    runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'ready-for-review')
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
+      - name: Autoformat
+        uses: ./.github/actions/autoformat
         with:
           token: ${{ secrets.PAT }}
-      - name: Run E2E Tests
-        uses: ./.github/actions/e2e
+          github-context: "update / autoformat"
+
+      - name: Wait 5 seconds
+        run: sleep 5
+
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.PAT }}
-          role-to-assume: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
-          region: us-gov-east-1
-          region2: us-gov-west-1
-          github-context: "test / e2e-govcloud (${{github.event_name}})"
+          repository: ${{ github.repository }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            /test all
