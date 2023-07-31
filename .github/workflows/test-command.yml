@@ -36,7 +36,6 @@ jobs:
 
   # Update the comment that triggered the /test command to show the run url
   comment:
-    if: github.event_name == 'repository_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -86,7 +85,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
           region: us-east-2
           region2: us-east-1
-          github-context: "test / e2e-commercial (${{github.event_name}})"
+          github-context: "test / e2e-commercial"
 
   # Run the E2E tests on the govcloud account
   e2e-govcloud:
@@ -107,4 +106,4 @@ jobs:
           role-to-assume: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
           region: us-gov-east-1
           region2: us-gov-west-1
-          github-context: "test / e2e-govcloud (${{github.event_name}})"
+          github-context: "test / e2e-govcloud"

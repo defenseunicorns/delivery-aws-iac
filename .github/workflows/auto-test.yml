@@ -1,13 +1,14 @@
-# This triggers an automatic test run if and only if Renovate is the author and the PR was just opened. See ADR #0008.
+# This autoformats using pre-commit, then triggers an automatic test run if and only if Renovate is the author and the PR was just opened. See ADR #0008.
 name: auto-test
 on:
   pull_request:
+    # WARNING: DO NOT ADD MORE EVENT TYPES HERE! Because this workflow will push a new commit to the PR in the Autoformat step, adding more event types may cause an infinite loop.
     types:
       - opened
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 defaults:
   run:
@@ -16,6 +17,30 @@ defaults:
 
 jobs:
   auto-test:
+    if: github.event.client_payload.github.actor == 'renovate[bot]' || github.actor == 'renovate[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.repository }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Autoformat
+        uses: ./.github/actions/autoformat
+        with:
+          token: ${{ secrets.PAT }}
+          github-context: "update / autoformat"
+
+      - name: Wait 5 seconds
+        run: sleep 5
+
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.repository }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            /test all
