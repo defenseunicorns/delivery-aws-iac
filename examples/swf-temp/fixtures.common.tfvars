@@ -28,7 +28,7 @@ zarf_version = "v0.26.3"
 cluster_version = "1.27"
 
 enable_gp3_default_storage_class = true
-storageclass_reclaim_policy      = "" # set to `Retain` for non-dev use
+storageclass_reclaim_policy      = "Delete" # set to `Retain` for non-dev use
 
 ###########################################################
 ############## Big Bang Dependencies ######################
