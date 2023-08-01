@@ -88,9 +88,7 @@ locals {
     }
   }
 
-  self_managed_node_groups = merge(
-    var.enable_self_managed_nodegroups ? local.swf_self_mg_node_group : {}
-  )
+  self_managed_node_groups = local.swf_self_mg_node_group
 }
 
 ###########################################################
