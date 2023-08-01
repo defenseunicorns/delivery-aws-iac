@@ -21,7 +21,9 @@ Specifically:
 
 1. Pick an issue to work on, assign it to yourself, and drop a comment in the issue to let everyone know you're working on it.
 2. Create a Draft Pull Request targeting the `main` branch as soon as you are able to, even if it is just 5 minutes after you started working on it. We lean towards working in the open as much as we can. If you're not sure what to put in the PR description, just put a link to the issue you're working on. If you're not sure what to put in the PR title, just put "WIP" (Work In Progress) and we'll help you out with the rest.
-3. :key: Automated tests will run on your PR when you create it and for each commit you push to it. The PR will also have manually triggered workflows that you can run (if you have write access to the repo) by commenting on the PR with `/test all`
+3. :key: The automated tests have to pass for the PR to be able to be merged. To run the tests add a comment to the PR that says `/test all`. If you want to run a specific test, you can use `/test <test name>`. The tests are:
+    - `e2e-commercial` - Runs the E2E tests against the commercial environment
+    - `e2e-govcloud` - Runs the E2E tests against the govcloud environment
 4. If your PR is still set as a Draft transition it to "Ready for Review"
 5. Get it reviewed by a [CODEOWNER](./CODEOWNERS)
 6. Merge the PR and delete the branch

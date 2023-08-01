@@ -22,7 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       run-ping: ${{ steps.parse.outputs.run-ping }}
-      run-e2e: ${{ steps.parse.outputs.run-e2e }}
+      run-e2e-commercial: ${{ steps.parse.outputs.run-e2e-commercial }}
+      run-e2e-govcloud: ${{ steps.parse.outputs.run-e2e-govcloud }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -70,7 +71,7 @@ jobs:
   e2e-commercial:
     runs-on: ubuntu-latest
     needs: parse
-    if: needs.parse.outputs.run-e2e == 'true'
+    if: needs.parse.outputs.run-e2e-commercial == 'true'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -91,7 +92,7 @@ jobs:
   e2e-govcloud:
     runs-on: ubuntu-latest
     needs: parse
-    if: needs.parse.outputs.run-e2e == 'true'
+    if: needs.parse.outputs.run-e2e-govcloud == 'true'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
