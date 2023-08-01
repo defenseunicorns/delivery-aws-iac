@@ -20,7 +20,6 @@ locals {
   vpc_name                   = "${var.name_prefix}-${lower(random_id.default.hex)}"
   cluster_name               = "${var.name_prefix}-${lower(random_id.default.hex)}"
   bastion_name               = "${var.name_prefix}-bastion-${lower(random_id.default.hex)}"
-  loki_name_prefix           = "${var.name_prefix}-loki-${lower(random_id.default.hex)}"
   access_logging_name_prefix = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
   kms_key_alias_name_prefix  = "alias/${var.name_prefix}-${lower(random_id.default.hex)}"
   access_log_sqs_queue_name  = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
