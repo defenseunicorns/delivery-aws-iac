@@ -93,9 +93,9 @@ variable "eks_worker_tenancy" {
 variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
-  default     = "1.26"
+  default     = "1.27"
   validation {
-    condition     = contains(["1.26"], var.cluster_version)
+    condition     = contains(["1.26", "1.27"], var.cluster_version)
     error_message = "Kubernetes version must be equal to one that we support. See EKS module variables for supported versions."
   }
 }
@@ -143,6 +143,18 @@ variable "amazon_eks_aws_ebs_csi_driver_config" {
   description = "configMap for AWS EBS CSI Driver add-on"
   type        = any
   default     = {}
+}
+
+variable "enable_gp3_default_storage_class" {
+  description = "Enable gp3 as default storage class"
+  type        = bool
+  default     = false
+}
+
+variable "storageclass_reclaim_policy" {
+  description = "Reclaim policy for gp3 storage class, valid options are Delete and Retain"
+  type        = string
+  default     = "Delete"
 }
 
 #----------------Metrics Server-------------------------

@@ -27,6 +27,9 @@ zarf_version = "v0.26.3"
 # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
 cluster_version = "1.26"
 
+enable_gp3_default_storage_class = true
+storageclass_reclaim_policy      = "Delete" # set to `Retain` for non-dev use
+
 ###########################################################
 ############## Big Bang Dependencies ######################
 

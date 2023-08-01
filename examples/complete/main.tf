@@ -270,7 +270,7 @@ module "bastion" {
 ###########################################################
 ################### EKS Cluster ###########################
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.2"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.3"
 
   name                            = local.cluster_name
   aws_region                      = var.region
@@ -317,6 +317,8 @@ module "eks" {
   # AWS EKS EBS CSI Driver
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   amazon_eks_aws_ebs_csi_driver_config = var.amazon_eks_aws_ebs_csi_driver_config
+  enable_gp3_default_storage_class     = var.enable_gp3_default_storage_class
+  storageclass_reclaim_policy          = var.storageclass_reclaim_policy
 
   # AWS EKS EFS CSI Driver
   enable_efs     = var.enable_efs
