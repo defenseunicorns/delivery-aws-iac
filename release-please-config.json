@@ -1,0 +1,36 @@
+{
+  "packages": {
+    ".": {
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "changelog-host": "https://github.com",
+      "changelog-path": "CHANGELOG.md",
+      "changelog-sections": [
+        { "type": "feat", "section": "Features" },
+        { "type": "feature", "section": "Features" },
+        { "type": "fix", "section": "Bug Fixes" },
+        { "type": "perf", "section": "Performance Improvements" },
+        { "type": "revert", "section": "Reverts" },
+        { "type": "docs", "section": "Documentation" },
+        { "type": "style", "section": "Styles" },
+        { "type": "chore", "section": "Miscellaneous Chores" },
+        { "type": "refactor", "section": "Code Refactoring" },
+        { "type": "test", "section": "Tests" },
+        { "type": "build", "section": "Build System" },
+        { "type": "ci", "section": "Continuous Integration" }
+      ],
+      "changelog-type": "default",
+      "draft": false,
+      "draft-pull-request": false,
+      "include-component-in-tag": false,
+      "include-v-in-tag": true,
+      "prerelease": false,
+      "pull-request-header": ":robot: I have created a release *beep* *boop*",
+      "pull-request-title-pattern": "chore${scope}: release${component} ${version}",
+      "release-type": "simple",
+      "separate-pull-requests": false,
+      "skip-github-release": false,
+      "versioning": "default"
+    }
+  }
+}
