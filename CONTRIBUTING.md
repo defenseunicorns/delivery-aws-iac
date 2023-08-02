@@ -38,6 +38,14 @@ make run-pre-commit-hooks
 ```
 > NOTE: Sometimes file ownership of stuff in the `.cache` folder can get messed up. You can optionally add the `fix-cache-permissions` target to the above command to fix that. It is idempotent so it is safe to run it every time.
 
+### Commit Messages
+
+Because we use the [release-please](https://github.com/googleapis/release-please) bot, commit messages to main must follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. This is enforced by the [commitlint](https://commitlint.js.org/#/) tool. This requirement is only enforced on the `main` branch. Commit messages in PRs can be whatever you want them to be. "Squash" mode must be used when merging a PR, with a commit message that follows the Conventional Commits specification.
+
+### Release Process
+
+This repo uses the [release-please](https://github.com/googleapis/release-please) bot. Release-please will automatically open a PR to update the version of the repo when a commit is merged to `main` that follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. The bot will automatically keep the PR up to date until a human merges it. When that happens the bot will automatically create a new release.
+
 ### Backlog Management
 
 - We use [GitHub Issues](https://github.com/defenseunicorns/delivery-aws-iac/issues) to manage our backlog.
