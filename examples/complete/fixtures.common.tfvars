@@ -92,17 +92,6 @@ cluster_autoscaler_helm_config = {
   wait = false
   # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-chart-(?<version>.*)$
   version = "v9.29.1"
-  # set = [
-  #   {
-  #     name  = "extraArgs.expander"
-  #     value = "priority"
-  #   },
-  #   {
-  #     name = "image.tag"
-  #     # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-(?<version>.*)$
-  #     value = "v1.27.1"
-  #   }
-  # ]
 }
 
 enable_metrics_server = true
