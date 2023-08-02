@@ -59,14 +59,6 @@ provider "aws" {
   # }
 }
 
-provider "aws" {
-  alias  = "region2"
-  region = var.region2
-  # default_tags {
-  #   tags = var.tags #bug https://github.com/hashicorp/terraform-provider-aws/issues/19583#issuecomment-855773246
-  # }
-}
-
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
