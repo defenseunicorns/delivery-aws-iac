@@ -20,7 +20,6 @@ locals {
   vpc_name                   = "${var.name_prefix}-${lower(random_id.default.hex)}"
   cluster_name               = "${var.name_prefix}-${lower(random_id.default.hex)}"
   bastion_name               = "${var.name_prefix}-bastion-${lower(random_id.default.hex)}"
-  loki_name_prefix           = "${var.name_prefix}-loki-${lower(random_id.default.hex)}"
   access_logging_name_prefix = "${var.name_prefix}-accesslog-${lower(random_id.default.hex)}"
   kms_key_alias_name_prefix  = "alias/${var.name_prefix}-${lower(random_id.default.hex)}"
   access_log_sqs_queue_name  = "${var.name_prefix}-accesslog-access-${lower(random_id.default.hex)}"
@@ -66,8 +65,8 @@ locals {
 
     mixed_instances_policy = {
       instances_distribution = {
-        on_demand_base_capacity                  = 2
-        on_demand_percentage_above_base_capacity = 20
+        on_demand_base_capacity                  = 1
+        on_demand_percentage_above_base_capacity = 100
         spot_allocation_strategy                 = "capacity-optimized"
       }
 
@@ -270,7 +269,7 @@ module "bastion" {
 ###########################################################
 ################### EKS Cluster ###########################
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.2"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.3"
 
   name                            = local.cluster_name
   aws_region                      = var.region
@@ -317,6 +316,8 @@ module "eks" {
   # AWS EKS EBS CSI Driver
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
   amazon_eks_aws_ebs_csi_driver_config = var.amazon_eks_aws_ebs_csi_driver_config
+  enable_gp3_default_storage_class     = var.enable_gp3_default_storage_class
+  storageclass_reclaim_policy          = var.storageclass_reclaim_policy
 
   # AWS EKS EFS CSI Driver
   enable_efs     = var.enable_efs
