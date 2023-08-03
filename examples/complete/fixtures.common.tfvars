@@ -25,25 +25,17 @@ zarf_version = "v0.26.3"
 ###########################################################
 #################### EKS Config ###########################
 # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
-cluster_version = "1.26"
+cluster_version = "1.27"
+
+enable_gp3_default_storage_class = true
+storageclass_reclaim_policy      = "Delete" # set to `Retain` for non-dev use
 
 ###########################################################
 ############## Big Bang Dependencies ######################
 
-keycloak_enabled = true
+keycloak_enabled = true # provisions keycloak dedicated nodegroup
 
-
-#################### Keycloak ###########################
-
-keycloak_db_password        = "my-password"
-kc_db_engine_version        = "15.3"
-kc_db_family                = "postgres15" # DB parameter group
-kc_db_major_engine_version  = "15"         # DB option group
-kc_db_allocated_storage     = 20
-kc_db_max_allocated_storage = 100
-kc_db_instance_class        = "db.t4g.large"
-
-# #################### EKS Addon #########################
+# #################### EKS Addons #########################
 # add other "eks native" marketplace addons and configs to this list
 cluster_addons = {
   vpc-cni = {
@@ -99,18 +91,7 @@ enable_cluster_autoscaler = true
 cluster_autoscaler_helm_config = {
   wait = false
   # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-chart-(?<version>.*)$
-  version = "v9.28.0"
-  set = [
-    {
-      name  = "extraArgs.expander"
-      value = "priority"
-    },
-    {
-      name = "image.tag"
-      # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-(?<version>.*)$
-      value = "v1.27.1"
-    }
-  ]
+  version = "v9.29.1"
 }
 
 enable_metrics_server = true
@@ -124,7 +105,7 @@ enable_calico = true
 calico_helm_config = {
   wait = false
   # renovate: datasource=github-tags depName=projectcalico/calico
-  version = "v3.25.1"
+  version = "v3.26.1"
 }
 
 ######################################################

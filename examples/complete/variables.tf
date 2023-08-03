@@ -6,11 +6,6 @@ variable "region" {
   type        = string
 }
 
-variable "region2" {
-  description = "The AWS region to deploy into"
-  type        = string
-}
-
 variable "name_prefix" {
   description = "The prefix to use when naming all resources"
   type        = string
@@ -93,9 +88,9 @@ variable "eks_worker_tenancy" {
 variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
-  default     = "1.26"
+  default     = "1.27"
   validation {
-    condition     = contains(["1.26"], var.cluster_version)
+    condition     = contains(["1.27"], var.cluster_version)
     error_message = "Kubernetes version must be equal to one that we support. See EKS module variables for supported versions."
   }
 }
@@ -143,6 +138,18 @@ variable "amazon_eks_aws_ebs_csi_driver_config" {
   description = "configMap for AWS EBS CSI Driver add-on"
   type        = any
   default     = {}
+}
+
+variable "enable_gp3_default_storage_class" {
+  description = "Enable gp3 as default storage class"
+  type        = bool
+  default     = false
+}
+
+variable "storageclass_reclaim_policy" {
+  description = "Reclaim policy for gp3 storage class, valid options are Delete and Retain"
+  type        = string
+  default     = "Delete"
 }
 
 #----------------Metrics Server-------------------------
@@ -237,60 +244,20 @@ variable "bastion_ssh_password" {
   default     = "my-password"
 }
 
-###########################################################
-############## Big Bang Dependencies ######################
-
-variable "keycloak_enabled" {
-  description = "Whether to enable Keycloak"
-  type        = bool
-  default     = false
-}
-
-#################### Keycloak ###########################
-
-variable "keycloak_db_password" {
-  description = "The password to use for the Keycloak database"
-  type        = string
-  default     = "my-password"
-}
-
-variable "kc_db_engine_version" {
-  description = "The database engine to use for Keycloak"
-  type        = string
-}
-
-variable "kc_db_family" {
-  description = "The database family to use for Keycloak"
-  type        = string
-}
-
-variable "kc_db_major_engine_version" {
-  description = "The database major engine version to use for Keycloak"
-  type        = string
-}
-
-variable "kc_db_instance_class" {
-  description = "The database instance class to use for Keycloak"
-  type        = string
-}
-
-variable "kc_db_allocated_storage" {
-  description = "The database allocated storage to use for Keycloak"
-  type        = number
-}
-
-variable "kc_db_max_allocated_storage" {
-  description = "The database allocated storage to use for Keycloak"
-  type        = number
-}
-
 variable "zarf_version" {
   description = "The version of Zarf to use"
   type        = string
   default     = ""
 }
 
+############################################################################
+####################### DUBBD Add-on Dependencies ########################
 
+variable "keycloak_enabled" {
+  description = "Enable Keycloak dedicated nodegroup"
+  type        = bool
+  default     = false
+}
 
 ############################################################################
 ################## Lambda Password Rotation Config #########################
