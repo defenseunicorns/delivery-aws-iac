@@ -23,6 +23,36 @@ This example deploys:
 
 See the [examples README](../README.md) for instructions on how to deploy/destroy this example. The make targets for this example are either `test-complete-insecure` or `test-complete-secure`.
 
+or - try this:
+
+```bash
+# option 1 use the buildharness container (it has all the tools you need)
+# pre-reqs
+#   active aws session in terminal
+#   docker
+#   make
+
+#see this readme https://github.com/defenseunicorns/delivery-aws-iac/blob/3d8a501195863aa76999cdfde08ca48bf35b3b1c/examples/README.md
+export SKIP_TEARDOWN=1
+unset SKIP_SETUP
+unset SKIP_TEST
+export EXAMPLE_DIR=examples/swf-temp
+export TF_VAR_region=us-east-2
+make test-complete-insecure
+
+# option 2 use your own machine
+# pre-reqs
+#   active aws session in terminal
+#   terraform
+#   make
+#   aws cli
+#   kubectl
+
+pushd examples/swf-temp && \
+  terraform init && \
+  terraform apply -var-file=fixtures.common.tfvars -var-file=fixtures.insecure.tfvars -auto-approve
+```
+
 ## Connect
 
 ### Insecure mode
