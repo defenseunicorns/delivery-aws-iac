@@ -23,11 +23,35 @@ locals {
 
   self_managed_node_group_defaults = {
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
-    instance_type                          = "c4.8xlarge" # should be compatible with dedicated tenancy in GovCloud region https://aws.amazon.com/ec2/pricing/dedicated-instances/#Dedicated_On-Demand_instances
+    instance_type                          = "m7i.4xlarge" # should be compatible with dedicated tenancy in GovCloud region https://aws.amazon.com/ec2/pricing/dedicated-instances/#Dedicated_On-Demand_instances
     update_launch_template_default_version = true
+
+    use_mixed_instances_policy = true
 
     placement = {
       tenancy = var.eks_worker_tenancy
+    }
+
+    mixed_instances_policy = {
+      instances_distribution = {
+        on_demand_base_capacity                  = 1
+        on_demand_percentage_above_base_capacity = 100
+        spot_allocation_strategy                 = "capacity-optimized"
+      }
+
+      override = [
+        {
+          instance_requirements = {
+            allowed_instance_types = ["m7i.4xlarge", "m6a.4xlarge", "m5a.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
+            memory_mib = {
+              min = 16000
+            }
+            vcpu_count = {
+              min = 16
+            }
+          }
+        }
+      ]
     }
 
     pre_bootstrap_userdata = <<-EOT
@@ -237,17 +261,17 @@ module "eks" {
   calico_helm_config = var.calico_helm_config
 }
 
-############################################################################
-##################### Lambda Password Rotation #############################
+# ############################################################################
+# ##################### Lambda Password Rotation #############################
 
-module "password_lambda" {
-  source                          = "../../modules/lambda"
-  enable_password_rotation_lambda = var.enable_password_rotation_lambda
-  region                          = var.region
-  random_id                       = lower(random_id.default.hex)
-  name_prefix                     = var.name_prefix
-  users                           = var.users
-  # Add any additional instances you want the function to run against here
-  instance_ids                    = [module.bastion.instance_id]
-  cron_schedule_password_rotation = var.cron_schedule_password_rotation
-}
+# module "password_lambda" {
+#   source                          = "../../modules/lambda"
+#   enable_password_rotation_lambda = var.enable_password_rotation_lambda
+#   region                          = var.region
+#   random_id                       = lower(random_id.default.hex)
+#   name_prefix                     = var.name_prefix
+#   users                           = var.users
+#   # Add any additional instances you want the function to run against here
+#   instance_ids                    = [module.bastion.instance_id]
+#   cron_schedule_password_rotation = var.cron_schedule_password_rotation
+# }

@@ -1,6 +1,7 @@
 package e2e_test
 
 import (
+	"os"
 	"os/exec"
 	"testing"
 	"time"
@@ -26,7 +27,11 @@ import (
 func TestExamplesCompleteSecure(t *testing.T) {
 	t.Parallel()
 	// Setup options
-	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
+	exampleDir := os.Getenv("EXAMPLE_DIR")
+	if exampleDir == "" {
+		exampleDir = ExampleDirDefault // Default value if not set
+	}
+	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", exampleDir)
 	terraformInitOptions := &terraform.Options{
 		TerraformDir: tempFolder,
 		Upgrade:      false,

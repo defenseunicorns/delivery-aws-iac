@@ -63,11 +63,12 @@ _test-all: _create-folders
 		-e SKIP_TEARDOWN \
 		-e TF_VAR_region \
 		-e TF_VAR_region2 \
+		-e EXAMPLE_DIR \
 		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
-		bash -c 'git config --global --add safe.directory /app && asdf install && cd examples/complete && terraform init -upgrade=true && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
+		bash -c 'git config --global --add safe.directory /app && asdf install && cd ${EXAMPLE_DIR} && terraform init -upgrade=true && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
 
 .PHONY: bastion-connect
-bastion-connect: _create-folders ## To be used after deploying "secure mode" of examples/complete. It (a) creates a tunnel through the bastion host using sshuttle, and (b) sets up the KUBECONFIG so that the EKS cluster is able to be interacted with. Requires the standard AWS cred environment variables to be set. We recommend using 'aws-vault' to set them.
+bastion-connect: _create-folders ## To be used after deploying "secure mode" of ${EXAMPLE_DIR}. It (a) creates a tunnel through the bastion host using sshuttle, and (b) sets up the KUBECONFIG so that the EKS cluster is able to be interacted with. Requires the standard AWS cred environment variables to be set. We recommend using 'aws-vault' to set them.
 	# TODO: Figure out a better way to deal with the bastion's SSH password. Ideally it should come from a terraform output but you can't directly pass inputs to outputs (at least not when you are using "-target")
 	docker run $(TTY_ARG) --rm \
 		--cap-add=NET_ADMIN \
@@ -78,7 +79,7 @@ bastion-connect: _create-folders ## To be used after deploying "secure mode" of 
 		-v "${PWD}/.cache/go-build:/root/.cache/go-build" \
 		-v "${PWD}/.cache/.terraform.d/plugin-cache:/root/.terraform.d/plugin-cache" \
 		-v "${PWD}/.cache/.zarf-cache:/root/.zarf-cache" \
-		--workdir "/app/examples/complete" \
+		--workdir "/app/${EXAMPLE_DIR}" \
 		-e TF_LOG_PATH \
 		-e TF_LOG \
 		-e GOPATH=/root/go \
@@ -92,12 +93,13 @@ bastion-connect: _create-folders ## To be used after deploying "secure mode" of 
 		-e AWS_SESSION_TOKEN \
 		-e AWS_SECURITY_TOKEN \
 		-e AWS_SESSION_EXPIRATION \
+		-e EXAMPLE_DIR \
 		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
 		bash -c 'git config --global --add safe.directory /app \
 				&& asdf install \
 				&& terraform init -upgrade=true \
-				&& sshuttle -D -e '"'"'sshpass -p "my-password" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="aws ssm --region $(shell cd examples/complete && terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p"'"'"' --dns --disable-ipv6 -vr ec2-user@$(shell cd examples/complete && terraform output -raw bastion_instance_id) $(shell cd examples/complete && terraform output -raw vpc_cidr) \
-				&& aws eks --region $(shell cd examples/complete && terraform output -raw bastion_region) update-kubeconfig --name $(shell cd examples/complete && terraform output -raw eks_cluster_name) \
+				&& sshuttle -D -e '"'"'sshpass -p "my-password" ssh -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="aws ssm --region $(shell cd ${EXAMPLE_DIR} && terraform output -raw bastion_region) start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p"'"'"' --dns --disable-ipv6 -vr ec2-user@$(shell cd ${EXAMPLE_DIR} && terraform output -raw bastion_instance_id) $(shell cd ${EXAMPLE_DIR} && terraform output -raw vpc_cidr) \
+				&& aws eks --region $(shell cd ${EXAMPLE_DIR} && terraform output -raw bastion_region) update-kubeconfig --name $(shell cd ${EXAMPLE_DIR} && terraform output -raw eks_cluster_name) \
 				&& echo "SShuttle is running and KUBECONFIG has been set. Try running kubectl get nodes." \
 				&& bash'
 

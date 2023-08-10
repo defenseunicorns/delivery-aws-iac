@@ -3,9 +3,9 @@
 
 tags = {
   Environment = "dev"
-  Project     = "du-iac-cicd"
+  Project     = "swf-temp"
 }
-name_prefix               = "ex-complete"
+name_prefix               = "swf-temp"
 manage_aws_auth_configmap = true
 
 ###########################################################
@@ -20,7 +20,8 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
 # renovate: datasource=github-tags depName=defenseunicorns/zarf
-zarf_version = "v0.26.3"
+zarf_version          = "v0.26.3"
+bastion_instance_type = "m7i.xlarge"
 
 ###########################################################
 #################### EKS Config ###########################
@@ -33,7 +34,7 @@ storageclass_reclaim_policy      = "Delete" # set to `Retain` for non-dev use
 ###########################################################
 ############## Big Bang Dependencies ######################
 
-keycloak_enabled = true
+# keycloak_enabled = true
 
 
 #################### Keycloak ###########################
@@ -134,7 +135,7 @@ calico_helm_config = {
 ################## Lambda Config #####################
 
 ################# Password Rotation ##################
-enable_password_rotation_lambda = true
+enable_password_rotation_lambda = false
 # Add users that will be on your ec2 instances.
 users = ["ec2-user", "Administrator"]
 

@@ -9,6 +9,8 @@ import (
 	"github.com/defenseunicorns/delivery-aws-iac/test/e2e/utils"
 )
 
+const ExampleDirDefault = "examples/complete"
+
 // TestMain is the entry point for all tests. We are using a custom one so that we can log a message to the console every few seconds. Without this there is a risk of GitHub Actions killing the test run if it believes it is hung.
 func TestMain(m *testing.M) {
 	ctx, cancel := context.WithCancel(context.Background())

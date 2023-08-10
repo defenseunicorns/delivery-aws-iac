@@ -24,9 +24,9 @@ crash.*.log
 *.tfvars.json
 
 # Except ones that we do want to commit because they are used for automated tests
-!examples/complete/fixtures.common.tfvars
-!examples/complete/fixtures.insecure.tfvars
-!examples/complete/fixtures.secure.tfvars
+!examples/**/fixtures.common.tfvars
+!examples/**/fixtures.insecure.tfvars
+!examples/**/fixtures.secure.tfvars
 !modules/cloudtrail/examples/complete/fixtures.create-bucket.tfvars
 
 # Ignore override files as they are usually used to override resources locally and so

@@ -1,6 +1,7 @@
 package e2e_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -9,7 +10,11 @@ import (
 
 func TestExamplesCompletePlanOnly(t *testing.T) {
 	t.Parallel()
-	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
+	exampleDir := os.Getenv("EXAMPLE_DIR")
+	if exampleDir == "" {
+		exampleDir = ExampleDirDefault // Default value if not set
+	}
+	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", exampleDir)
 	terraformOptionsPlan := &terraform.Options{
 		TerraformDir: tempFolder,
 		Upgrade:      false,
@@ -19,7 +24,6 @@ func TestExamplesCompletePlanOnly(t *testing.T) {
 		},
 		// Set any overrides for variables you would like to validate
 		Vars: map[string]interface{}{
-			"keycloak_enabled":                false,
 			"enable_password_rotation_lambda": false,
 		},
 		SetVarsAfterVarFiles: true,
