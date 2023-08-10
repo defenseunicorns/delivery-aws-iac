@@ -23,9 +23,9 @@ func TestExamplesCompletePlanOnly(t *testing.T) {
 			"fixtures.insecure.tfvars",
 		},
 		// Set any overrides for variables you would like to validate
-		Vars: map[string]interface{}{
-			"enable_password_rotation_lambda": false,
-		},
+		// Vars: map[string]interface{}{
+		// 	"enable_password_rotation_lambda": false,
+		// },
 		SetVarsAfterVarFiles: true,
 	}
 	teststructure.RunTestStage(t, "SETUP", func() {

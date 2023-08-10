@@ -1,6 +1,8 @@
 ###########################################################
 ################## Global Settings ########################
 
+region = "us-east-2"
+
 tags = {
   Environment = "dev"
   Project     = "swf-temp"
