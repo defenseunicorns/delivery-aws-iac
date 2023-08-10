@@ -9,9 +9,6 @@ inputs:
   region:
     description: The AWS region to deploy to
     required: true
-  region2:
-    description: The alternate AWS region where cross-region backups will go
-    required: true
   role-to-assume:
     description: The AWS IAM Role to assume in the target account
     required: true
@@ -98,7 +95,6 @@ runs:
       shell: bash -e -o pipefail {0}
       env:
         TF_VAR_region: ${{ inputs.region }}
-        TF_VAR_region2: ${{ inputs.region2 }}
       run: |
         echo "Running Secure E2E tests" && \
         make test-complete-secure fix-cache-permissions
@@ -108,7 +104,6 @@ runs:
       shell: bash -e -o pipefail {0}
       env:
         TF_VAR_region: ${{ inputs.region }}
-        TF_VAR_region2: ${{ inputs.region2 }}
       run: |
         echo "Running Insecure E2E tests" && \
         make test-complete-insecure fix-cache-permissions

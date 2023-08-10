@@ -62,7 +62,6 @@ _test-all: _create-folders
 		-e SKIP_TEST \
 		-e SKIP_TEARDOWN \
 		-e TF_VAR_region \
-		-e TF_VAR_region2 \
 		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
 		bash -c 'git config --global --add safe.directory /app && asdf install && cd examples/complete && terraform init -upgrade=true && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
 
