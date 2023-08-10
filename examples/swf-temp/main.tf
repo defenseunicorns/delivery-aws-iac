@@ -23,7 +23,7 @@ locals {
 
   self_managed_node_group_defaults = {
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
-    instance_type                          = "m7i.4xlarge" # should be compatible with dedicated tenancy in GovCloud region https://aws.amazon.com/ec2/pricing/dedicated-instances/#Dedicated_On-Demand_instances
+    instance_type                          = null
     update_launch_template_default_version = true
 
     use_mixed_instances_policy = true
@@ -32,26 +32,14 @@ locals {
       tenancy = var.eks_worker_tenancy
     }
 
-    mixed_instances_policy = {
-      instances_distribution = {
-        on_demand_base_capacity                  = 1
-        on_demand_percentage_above_base_capacity = 100
-        spot_allocation_strategy                 = "capacity-optimized"
+    instance_requirements = {
+      allowed_instance_types = ["m7i.4xlarge", "m6a.4xlarge", "m5a.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
+      memory_mib = {
+        min = 64000
       }
-
-      override = [
-        {
-          instance_requirements = {
-            allowed_instance_types = ["m7i.4xlarge", "m6a.4xlarge", "m5a.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
-            memory_mib = {
-              min = 16000
-            }
-            vcpu_count = {
-              min = 16
-            }
-          }
-        }
-      ]
+      vcpu_count = {
+        min = 16
+      }
     }
 
     pre_bootstrap_userdata = <<-EOT
