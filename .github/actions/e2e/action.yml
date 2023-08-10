@@ -84,7 +84,7 @@ runs:
         path: "${{ github.workspace }}/.cache/.terraform.d/plugin-cache"
         key: "${{ runner.os }}-terraform-plugins|${{ steps.get_tf_version.outputs.tf_version }}|${{ hashFiles('examples/complete/providers.tf') }}"
 
-    - name: Configure AWS Credentials for Commercial
+    - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ inputs.role-to-assume }}
@@ -93,13 +93,25 @@ runs:
         # 21600 seconds == 6 hours
         role-duration-seconds: 21600
 
-    - name: "Run E2E tests"
+    - name: "Run Secure E2E tests"
+      if: inputs.github-context == 'test / e2e-govcloud'
       shell: bash -e -o pipefail {0}
       env:
         TF_VAR_region: ${{ inputs.region }}
         TF_VAR_region2: ${{ inputs.region2 }}
       run: |
-        make test fix-cache-permissions
+        echo "Running Secure E2E tests" && \
+        make test-complete-secure fix-cache-permissions
+
+    - name: "Run Insecure E2E tests"
+      if: inputs.github-context == 'test / e2e-commercial'
+      shell: bash -e -o pipefail {0}
+      env:
+        TF_VAR_region: ${{ inputs.region }}
+        TF_VAR_region2: ${{ inputs.region2 }}
+      run: |
+        echo "Running Insecure E2E tests" && \
+        make test-complete-insecure fix-cache-permissions
 
     # Update GitHub status for successful pipeline run
     - name: "Update GitHub Status for success"
