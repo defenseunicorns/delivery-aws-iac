@@ -9,14 +9,14 @@ inputs:
   region:
     description: The AWS region to deploy to
     required: true
-  region2:
-    description: The alternate AWS region where cross-region backups will go
-    required: true
   role-to-assume:
     description: The AWS IAM Role to assume in the target account
     required: true
   github-context:
     description: The GitHub Status Context to use when updating the status
+    required: true
+  test-to-run:
+    description: Which test to run, either "secure" or "insecure"
     required: true
 
 runs:
@@ -36,6 +36,14 @@ runs:
         GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
         GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login || github.repository_owner }}
+
+    - name: Validate test-to-run input
+      shell: bash -e -o pipefail {0}
+      run: |
+          if [[ "${{ inputs.test-to-run }}" != "secure" && "${{ inputs.test-to-run }}" != "insecure" ]]; then
+          echo "Invalid test-to-run input: '${{ inputs.test-to-run }}'. Valid inputs are 'secure' or 'insecure'."
+          exit 1
+          fi
 
     - name: Init gopath cache
       uses: actions/cache@v3
@@ -84,7 +92,7 @@ runs:
         path: "${{ github.workspace }}/.cache/.terraform.d/plugin-cache"
         key: "${{ runner.os }}-terraform-plugins|${{ steps.get_tf_version.outputs.tf_version }}|${{ hashFiles('examples/complete/providers.tf') }}"
 
-    - name: Configure AWS Credentials for Commercial
+    - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ inputs.role-to-assume }}
@@ -97,9 +105,9 @@ runs:
       shell: bash -e -o pipefail {0}
       env:
         TF_VAR_region: ${{ inputs.region }}
-        TF_VAR_region2: ${{ inputs.region2 }}
       run: |
-        make test fix-cache-permissions
+        echo "Running E2E tests" && \
+        make test-complete-${{ inputs.test-to-run }} fix-cache-permissions
 
     # Update GitHub status for successful pipeline run
     - name: "Update GitHub Status for success"
