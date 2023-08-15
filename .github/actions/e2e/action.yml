@@ -15,6 +15,9 @@ inputs:
   github-context:
     description: The GitHub Status Context to use when updating the status
     required: true
+  test-to-run:
+    description: Which test to run, either "secure" or "insecure"
+    required: true
 
 runs:
   using: composite
@@ -33,6 +36,14 @@ runs:
         GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
         GITHUB_OWNER: ${{ github.event.client_payload.github.payload.repository.owner.login || github.repository_owner }}
+
+    - name: Validate test-to-run input
+      shell: bash -e -o pipefail {0}
+      run: |
+          if [[ "${{ inputs.test-to-run }}" != "secure" && "${{ inputs.test-to-run }}" != "insecure" ]]; then
+          echo "Invalid test-to-run input: '${{ inputs.test-to-run }}'. Valid inputs are 'secure' or 'insecure'."
+          exit 1
+          fi
 
     - name: Init gopath cache
       uses: actions/cache@v3
@@ -90,23 +101,13 @@ runs:
         # 21600 seconds == 6 hours
         role-duration-seconds: 21600
 
-    - name: "Run Secure E2E tests"
-      if: inputs.github-context == 'test / e2e-govcloud'
+    - name: "Run E2E tests"
       shell: bash -e -o pipefail {0}
       env:
         TF_VAR_region: ${{ inputs.region }}
       run: |
-        echo "Running Secure E2E tests" && \
-        make test-complete-secure fix-cache-permissions
-
-    - name: "Run Insecure E2E tests"
-      if: inputs.github-context == 'test / e2e-commercial'
-      shell: bash -e -o pipefail {0}
-      env:
-        TF_VAR_region: ${{ inputs.region }}
-      run: |
-        echo "Running Insecure E2E tests" && \
-        make test-complete-insecure fix-cache-permissions
+        echo "Running E2E tests" && \
+        make test-complete-${{ inputs.test-to-run }} fix-cache-permissions
 
     # Update GitHub status for successful pipeline run
     - name: "Update GitHub Status for success"
