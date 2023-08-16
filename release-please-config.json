@@ -2,7 +2,7 @@
   "packages": {
     ".": {
       "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": false,
+      "bump-patch-for-minor-pre-major": true,
       "changelog-host": "https://github.com",
       "changelog-path": "CHANGELOG.md",
       "changelog-sections": [

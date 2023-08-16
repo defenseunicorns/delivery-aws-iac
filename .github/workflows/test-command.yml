@@ -22,14 +22,15 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       run-ping: ${{ steps.parse.outputs.run-ping }}
-      run-e2e: ${{ steps.parse.outputs.run-e2e }}
+      run-e2e-commercial-insecure: ${{ steps.parse.outputs.run-e2e-commercial-insecure }}
+      run-e2e-govcloud-secure: ${{ steps.parse.outputs.run-e2e-govcloud-secure }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.PAT }}
           repository: ${{ github.event.client_payload.pull_request.head.repo.full_name || github.repository }}
-          ref: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
+          ref: "refs/heads/main"
       - name: Parse Args
         id: parse
         uses: ./.github/actions/parse-test
@@ -66,11 +67,11 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
 
-  # Run the E2E tests on the commercial account
-  e2e-commercial:
+  # Run the E2E insecure tests on the commercial account
+  e2e-commercial-insecure:
     runs-on: ubuntu-latest
     needs: parse
-    if: needs.parse.outputs.run-e2e == 'true'
+    if: needs.parse.outputs.run-e2e-commercial-insecure == 'true'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -84,14 +85,14 @@ jobs:
           token: ${{ secrets.PAT }}
           role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
           region: us-east-2
-          region2: us-east-1
-          github-context: "test / e2e-commercial"
+          github-context: "test / e2e-commercial-insecure"
+          test-to-run: "insecure"
 
-  # Run the E2E tests on the govcloud account
-  e2e-govcloud:
+  # Run the E2E secure tests on the govcloud account
+  e2e-govcloud-secure:
     runs-on: ubuntu-latest
     needs: parse
-    if: needs.parse.outputs.run-e2e == 'true'
+    if: needs.parse.outputs.run-e2e-govcloud-secure == 'true'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -105,5 +106,5 @@ jobs:
           token: ${{ secrets.PAT }}
           role-to-assume: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
           region: us-gov-east-1
-          region2: us-gov-west-1
-          github-context: "test / e2e-govcloud"
+          github-context: "test / e2e-govcloud-secure"
+          test-to-run: "secure"
