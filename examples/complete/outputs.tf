@@ -3,7 +3,7 @@
 
 output "bastion_instance_id" {
   description = "The ID of the bastion host"
-  value       = try(module.bastion.instance_id, null)
+  value       = try(module.bastion[0].instance_id, null)
   sensitive   = true
 }
 
