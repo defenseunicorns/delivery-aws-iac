@@ -30,7 +30,121 @@ locals {
       GithubRepo   = "github.com/defenseunicorns/delivery-aws-iac"
     }
   )
+}
 
+################################################################################
+# VPC
+################################################################################
+
+module "vpc" {
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-vpc.git?ref=v0.0.2"
+
+  name                  = local.vpc_name
+  vpc_cidr              = var.vpc_cidr
+  secondary_cidr_blocks = var.secondary_cidr_blocks
+  azs                   = ["${var.region}a", "${var.region}b", "${var.region}c"]
+  public_subnets        = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k)]
+  private_subnets       = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 4)]
+  database_subnets      = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 8)]
+  intra_subnets         = [for k, v in module.vpc.azs : cidrsubnet(element(module.vpc.vpc_secondary_cidr_blocks, 0), 5, k)]
+  single_nat_gateway    = true
+  enable_nat_gateway    = true
+
+  private_subnet_tags = {
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"             = 1
+  }
+  create_database_subnet_group = true
+
+  instance_tenancy                  = "default"
+  vpc_flow_log_permissions_boundary = var.iam_role_permissions_boundary
+
+  tags = local.tags
+}
+
+################################################################################
+# Bastion instance
+################################################################################
+
+locals {
+  enable_bastion_access = try(length(module.bastion[0].bastion_role_arn) > 0 && length(module.bastion[0].bastion_role_name), false)
+  ingress_bastion_to_cluster = {
+    description              = "Bastion SG to Cluster"
+    security_group_id        = module.eks.cluster_security_group_id
+    from_port                = 443
+    to_port                  = 443
+    protocol                 = "tcp"
+    type                     = "ingress"
+    source_security_group_id = module.bastion[0].security_group_ids[0]
+  }
+
+  # if bastion role vars are defined, add bastion role to aws_auth_roles list
+  bastion_aws_auth_entry = local.enable_bastion_access ? [
+    {
+      rolearn  = try(module.bastion[0].bastion_role_arn)
+      username = try(module.bastion[0].bastion_role_name)
+      groups   = ["system:masters"]
+  }] : []
+}
+
+data "aws_ami" "amazonlinux2" {
+  count = var.enable_bastion ? 1 : 0
+
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm*x86_64-gp2"]
+  }
+
+  owners = ["amazon"]
+}
+
+module "bastion" {
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-bastion.git?ref=v0.0.2-alpha"
+
+  count = var.enable_bastion ? 1 : 0
+
+  enable_bastion_terraform_permissions = true
+
+  ami_id        = data.aws_ami.amazonlinux2[0].id
+  instance_type = var.bastion_instance_type
+  root_volume_config = {
+    volume_type = "gp3"
+    volume_size = "20"
+    encrypted   = true
+  }
+  name                           = local.bastion_name
+  vpc_id                         = module.vpc.vpc_id
+  subnet_id                      = module.vpc.private_subnets[0]
+  region                         = var.region
+  access_logs_bucket_name        = aws_s3_bucket.access_log_bucket.id
+  session_log_bucket_name_prefix = "${local.bastion_name}-sessionlogs"
+  kms_key_arn                    = aws_kms_key.default.arn
+  ssh_user                       = var.bastion_ssh_user
+  ssh_password                   = var.bastion_ssh_password
+  assign_public_ip               = false
+  enable_log_to_s3               = true
+  enable_log_to_cloudwatch       = true
+  tenancy                        = var.bastion_tenancy
+  zarf_version                   = var.zarf_version
+  permissions_boundary           = var.iam_role_permissions_boundary
+  tags = merge(
+    local.tags,
+  { Function = "bastion-ssm" })
+}
+
+################################################################################
+# EKS Cluster
+################################################################################
+
+locals {
+  cluster_security_group_additional_rules = merge(
+    var.enable_bastion ? { ingress_bastion_to_cluster = local.ingress_bastion_to_cluster } : {},
+    #other rules here
+  )
+
+  # eks managed node groups settings
   eks_managed_node_group_defaults = {
     # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/node_groups.tf
     iam_role_permissions_boundary = var.iam_role_permissions_boundary
@@ -56,6 +170,7 @@ locals {
     # var.enable_eks_managed_nodegroups && var.keycloak_enabled ? local.keycloak_mg_node_group : {}
   )
 
+  # self managed node groups settings
   self_managed_node_group_defaults = {
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
     instance_type                          = null # conflicts with instance_requirements settings
@@ -176,111 +291,8 @@ locals {
     var.enable_self_managed_nodegroups ? local.mission_app_self_mg_node_group : {},
     var.enable_self_managed_nodegroups && var.keycloak_enabled ? local.keycloak_self_mg_node_group : {}
   )
-
-  ingress_bastion_to_cluster = var.enable_bastion ? {
-    # name        = "allow bastion ingress to cluster"
-    description              = "Bastion SG to Cluster"
-    security_group_id        = module.eks.cluster_security_group_id
-    from_port                = 443
-    to_port                  = 443
-    protocol                 = "tcp"
-    type                     = "ingress"
-    source_security_group_id = module.bastion[0].security_group_ids[0]
-  } : {}
-
-  # if bastion role vars are defined, add bastion role to aws_auth_roles list
-  enable_bastion_access = try(length(module.bastion[0].bastion_role_arn) > 0 && length(module.bastion[0].bastion_role_name), false)
-  bastion_aws_auth_entry = local.enable_bastion_access ? [
-    {
-      rolearn  = try(module.bastion[0].bastion_role_arn)
-      username = try(module.bastion[0].bastion_role_name)
-      groups   = ["system:masters"]
-  }] : []
 }
 
-###########################################################
-####################### VPC ###############################
-
-module "vpc" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-vpc.git?ref=v0.0.2"
-
-  name                  = local.vpc_name
-  vpc_cidr              = var.vpc_cidr
-  secondary_cidr_blocks = var.secondary_cidr_blocks
-  azs                   = ["${var.region}a", "${var.region}b", "${var.region}c"]
-  public_subnets        = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k)]
-  private_subnets       = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 4)]
-  database_subnets      = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 8)]
-  intra_subnets         = [for k, v in module.vpc.azs : cidrsubnet(element(module.vpc.vpc_secondary_cidr_blocks, 0), 5, k)]
-  single_nat_gateway    = true
-  enable_nat_gateway    = true
-
-  private_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"             = 1
-  }
-  create_database_subnet_group = true
-
-  instance_tenancy                  = "default"
-  vpc_flow_log_permissions_boundary = var.iam_role_permissions_boundary
-
-  tags = local.tags
-}
-
-################################################################################
-# Bastion instance
-################################################################################
-
-data "aws_ami" "amazonlinux2" {
-  count = var.enable_bastion ? 1 : 0
-
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm*x86_64-gp2"]
-  }
-
-  owners = ["amazon"]
-}
-
-module "bastion" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-bastion.git?ref=v0.0.2-alpha"
-
-  count = var.enable_bastion ? 1 : 0
-
-  enable_bastion_terraform_permissions = true
-
-  ami_id        = data.aws_ami.amazonlinux2[0].id
-  instance_type = var.bastion_instance_type
-  root_volume_config = {
-    volume_type = "gp3"
-    volume_size = "20"
-    encrypted   = true
-  }
-  name                           = local.bastion_name
-  vpc_id                         = module.vpc.vpc_id
-  subnet_id                      = module.vpc.private_subnets[0]
-  region                         = var.region
-  access_logs_bucket_name        = aws_s3_bucket.access_log_bucket.id
-  session_log_bucket_name_prefix = "${local.bastion_name}-sessionlogs"
-  kms_key_arn                    = aws_kms_key.default.arn
-  ssh_user                       = var.bastion_ssh_user
-  ssh_password                   = var.bastion_ssh_password
-  assign_public_ip               = false
-  enable_log_to_s3               = true
-  enable_log_to_cloudwatch       = true
-  tenancy                        = var.bastion_tenancy
-  zarf_version                   = var.zarf_version
-  permissions_boundary           = var.iam_role_permissions_boundary
-  tags = merge(
-    local.tags,
-  { Function = "bastion-ssm" })
-}
-
-################################################################################
-# EKS Cluster
-################################################################################
 module "eks" {
   source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=feature/issue-26/blueprints-v5-migration"
 
@@ -292,7 +304,7 @@ module "eks" {
   private_subnet_ids                      = module.vpc.private_subnets
   control_plane_subnet_ids                = module.vpc.private_subnets
   iam_role_permissions_boundary           = var.iam_role_permissions_boundary
-  cluster_security_group_additional_rules = local.ingress_bastion_to_cluster
+  cluster_security_group_additional_rules = local.cluster_security_group_additional_rules
   cluster_endpoint_public_access          = var.cluster_endpoint_public_access
   cluster_endpoint_private_access         = true
   vpc_cni_custom_subnet                   = module.vpc.intra_subnets
