@@ -419,4 +419,5 @@ module "password_lambda" {
   # Add any additional instances you want the function to run against here
   instance_ids                    = [module.bastion.instance_id]
   cron_schedule_password_rotation = var.cron_schedule_password_rotation
+  slack_notification_enabled      = var.slack_notification_enabled
 }

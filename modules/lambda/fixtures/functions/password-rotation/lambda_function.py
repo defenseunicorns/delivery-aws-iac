@@ -5,6 +5,8 @@ import json
 import logging
 from botocore.exceptions import WaiterError
 import random
+import http.client
+import json
 
 ssm_client = boto3.client('ssm')
 ec2_client = boto3.client('ec2')
@@ -12,6 +14,7 @@ secrets_manager_client = boto3.client('secretsmanager')
 sts_client = boto3.client("sts")
 
 AWS_REGION = os.environ['AWS_REGION']
+
 
 # Configure logging
 logger = logging.getLogger()
@@ -189,10 +192,61 @@ def create_instance_secrets(instance, passwords):
     logger.info(f"Instance secrets created for {instance['InstanceId']}")
 
 
+
+def send_to_slack(response_message):
+    slack_webhook_url = os.environ.get('SLACK_WEBHOOK_URL')
+    slack_notification_enabled = os.environ.get('SLACK_NOTIFICATION_ENABLED', 'false').lower() == 'true'
+
+    if not slack_notification_enabled:
+        logger.info("Slack notifications are disabled.")
+        return
+
+    if not slack_webhook_url:
+        logger.error("SLACK_WEBHOOK_URL is not set.")
+        return
+    # Ensure the URL is properly formatted
+    if "://" not in slack_webhook_url:
+        logger.error(f"Invalid webhook URL format: {slack_webhook_url}")
+        return
+
+    parts = slack_webhook_url.split("://", 1)
+    if "/" in parts[1]:
+        domain, path = parts[1].split("/", 1)
+    else:
+        domain = parts[1]
+        path = ""
+
+    headers = {
+        'Content-Type': 'application/json',
+    }
+
+    body = {
+        "text": response_message
+    }
+
+    connection = http.client.HTTPSConnection(domain)
+    connection.request("POST", "/" + path, json.dumps(body), headers)
+    response = connection.getresponse()
+
+    if response.status != 200:
+        logger.error(f"Failed to send message to Slack. Status: {response.status}, Reason: {response.reason}")
+    else:
+        logger.info("Message sent to Slack successfully!")
+
+def get_instance_name(instance):
+    """Return the Name of the instance from its Tags, or its ID if Name is not found."""
+    tags = instance.get('Tags', [])
+    for tag in tags:
+        if tag.get('Key') == 'Name':
+            return tag.get('Value')
+    return instance.get('InstanceId')
+
+
 def lambda_handler(event, context):
 
     users = os.environ.get('users', '').split(',')
     instance_ids = os.environ.get('instance_ids', '').split(',')
+    successful_rotations = []
 
     for instance_id in instance_ids:
         instance = ec2_client.describe_instances(InstanceIds=[instance_id])['Reservations'][0]['Instances'][0]
@@ -222,13 +276,33 @@ def lambda_handler(event, context):
 
                 # Shuffle the characters to make the password more random
                 new_password = ''.join(random.sample(new_password, len(new_password)))
-                change_user_password(instance, user, new_password)
-                passwords[user] = new_password
+
+                if change_user_password(instance, user, new_password):
+                    passwords[user] = new_password
 
         if passwords:
             create_instance_secrets(instance, passwords)
 
+            instance_name = next((tag['Value'] for tag in instance['Tags'] if tag['Key'] == 'Name'), instance_id)
+            success_message = f"Password was rotated successfully for instance {instance_name}."
+            successful_rotations.append(success_message)
+
+    try:
+        if successful_rotations:
+            slack_message = "\n\n".join(successful_rotations)
+            send_to_slack(slack_message)
+        else:
+            send_to_slack(f"No password rotations were successful in region {AWS_REGION}.")
+    except Exception as e:
+        error_message = f"Error during password rotation: {e}"
+        logger.error(error_message)
+        send_to_slack(error_message)  # Send an error message to Slack
+        return {
+            'statusCode': 500,
+            'body': error_message
+        }
+
     return {
         'statusCode': 200,
-        'body': 'EC2 instance passwords updated successfully'
+        'body': f"Password rotation successful for region {AWS_REGION}."
     }

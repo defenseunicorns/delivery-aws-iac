@@ -117,3 +117,7 @@ enable_password_rotation_lambda = true
 users = ["ec2-user", "Administrator"]
 
 cron_schedule_password_rotation = "cron(0 0 1 * ? *)"
+
+slack_notification_enabled = true
+
+slack_webhook_url = "https://hooks.slack.com/services/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"

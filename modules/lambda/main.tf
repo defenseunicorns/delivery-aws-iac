@@ -13,8 +13,10 @@ module "password_lambda" {
   timeout       = 900
 
   environment_variables = {
-    users        = join(",", var.users)
-    instance_ids = join(",", var.instance_ids)
+    users                      = join(",", var.users)
+    instance_ids               = join(",", var.instance_ids)
+    webhook_url                = var.webhook_url
+    slack_notification_enabled = var.slack_notification_enabled
   }
 
 
