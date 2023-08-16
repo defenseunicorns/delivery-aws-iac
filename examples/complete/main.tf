@@ -58,7 +58,7 @@ locals {
 
   self_managed_node_group_defaults = {
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
-    instance_type                          = null
+    instance_type                          = null # conflicts with instance_requirements settings
     update_launch_template_default_version = true
 
     use_mixed_instances_policy = true
@@ -139,7 +139,7 @@ locals {
     keycloak_ng_sso = {
       platform      = "bottlerocket"
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
-      instance_type = "m5.large"
+      instance_type = null # conflicts with instance_requirements settings
       min_size      = 2
       max_size      = 2
       desired_size  = 2
@@ -430,6 +430,9 @@ resource "aws_iam_policy" "additional" {
 ##################### Lambda Password Rotation #############################
 
 module "password_lambda" {
+
+  count = var.enable_bastion ? 1 : 0
+
   source                          = "../../modules/lambda"
   enable_password_rotation_lambda = var.enable_password_rotation_lambda
   region                          = var.region
@@ -437,6 +440,6 @@ module "password_lambda" {
   name_prefix                     = var.name_prefix
   users                           = var.users
   # Add any additional instances you want the function to run against here
-  instance_ids                    = [module.bastion.instance_id]
+  instance_ids                    = [try(module.bastion[0].instance_id)]
   cron_schedule_password_rotation = var.cron_schedule_password_rotation
 }

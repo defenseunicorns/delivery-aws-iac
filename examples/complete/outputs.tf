@@ -32,6 +32,6 @@ output "eks_cluster_name" {
 }
 
 output "efs_storageclass_name" {
-  description = "The name of the EFS storageclass that was created (if var.enable_efs was set to true)"
+  description = "The name of the EFS storageclass that was created (if var.enable_amazon_eks_aws_efs_csi_driver was set to true)"
   value       = try(module.eks.efs_storageclass_name, null)
 }

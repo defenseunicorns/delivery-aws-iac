@@ -64,6 +64,11 @@ variable "enable_sqs_events_on_access_log_access" {
   default     = false
 }
 
+variable "eks_use_mfa" {
+  description = "Use MFA for auth_eks_role"
+  type        = bool
+}
+
 ###########################################################
 #################### VPC Config ###########################
 variable "vpc_cidr" {
