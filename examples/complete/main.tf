@@ -298,7 +298,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=feature/issue-26/blueprints-v5-migration"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.5"
 
 
 
