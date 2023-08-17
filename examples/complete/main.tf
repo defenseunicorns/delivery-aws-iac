@@ -67,7 +67,11 @@ module "vpc" {
 ################################################################################
 
 locals {
-  enable_bastion_access = try(length(module.bastion[0].bastion_role_arn) > 0 && length(module.bastion[0].bastion_role_name), false)
+  bastion_role_arn  = try(module.bastion[0].bastion_role_arn, "")
+  bastion_role_name = try(module.bastion[0].bastion_role_name, "")
+
+  enable_bastion_access = length(local.bastion_role_arn) > 0 && length(local.bastion_role_name) > 0
+
   ingress_bastion_to_cluster = {
     description              = "Bastion SG to Cluster"
     security_group_id        = module.eks.cluster_security_group_id
@@ -75,14 +79,14 @@ locals {
     to_port                  = 443
     protocol                 = "tcp"
     type                     = "ingress"
-    source_security_group_id = module.bastion[0].security_group_ids[0]
+    source_security_group_id = try(module.bastion[0].security_group_ids[0], null)
   }
 
   # if bastion role vars are defined, add bastion role to aws_auth_roles list
   bastion_aws_auth_entry = local.enable_bastion_access ? [
     {
-      rolearn  = try(module.bastion[0].bastion_role_arn)
-      username = try(module.bastion[0].bastion_role_name)
+      rolearn  = local.bastion_role_arn
+      username = local.bastion_role_name
       groups   = ["system:masters"]
   }] : []
 }
