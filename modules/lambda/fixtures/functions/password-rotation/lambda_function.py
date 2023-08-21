@@ -4,6 +4,7 @@ import os
 import json
 import logging
 from botocore.exceptions import WaiterError
+from botocore.exceptions import ClientError
 import random
 import http.client
 import json
@@ -194,8 +195,8 @@ def create_instance_secrets(instance, passwords):
 
 
 def send_to_slack(response_message):
-    slack_webhook_url = os.environ.get('SLACK_WEBHOOK_URL')
-    slack_notification_enabled = os.environ.get('SLACK_NOTIFICATION_ENABLED', 'false').lower() == 'true'
+    slack_webhook_url = os.environ.get('slack_webhook_url')
+    slack_notification_enabled = os.environ.get('slack_notification_enabled', 'false').lower() == 'true'
 
     if not slack_notification_enabled:
         logger.info("Slack notifications are disabled.")
@@ -249,43 +250,55 @@ def lambda_handler(event, context):
     successful_rotations = []
 
     for instance_id in instance_ids:
-        instance = ec2_client.describe_instances(InstanceIds=[instance_id])['Reservations'][0]['Instances'][0]
-        passwords = {}
+        try:
+            instance = ec2_client.describe_instances(InstanceIds=[instance_id])['Reservations'][0]['Instances'][0]
+            passwords = {}
 
-        for user in users:
-            if does_user_exist(instance, user):
-                length = 14
-                uppercase_letters = string.ascii_uppercase
-                lowercase_letters = string.ascii_lowercase
-                digits = string.digits
-                special_characters = "!@#$%&*+=-<?"
+            for user in users:
+                if does_user_exist(instance, user):
+                    length = 14
+                    uppercase_letters = string.ascii_uppercase
+                    lowercase_letters = string.ascii_lowercase
+                    digits = string.digits
+                    special_characters = "!@#$%&*+=-<?"
 
-                # Ensure at least one character from each set is included in the password
-                new_password = (
-                    random.choice(uppercase_letters)
-                    + random.choice(lowercase_letters)
-                    + random.choice(digits)
-                    + random.choice(special_characters)
-                )
+                    # Ensure at least one character from each set is included in the password
+                    new_password = (
+                        random.choice(uppercase_letters)
+                        + random.choice(lowercase_letters)
+                        + random.choice(digits)
+                        + random.choice(special_characters)
+                    )
 
-                # Fill the remaining characters randomly from all character sets
-                new_password += ''.join(
-                    random.choice(uppercase_letters + lowercase_letters + digits + special_characters)
-                    for _ in range(length - 4)
-                )
+                    # Fill the remaining characters randomly from all character sets
+                    new_password += ''.join(
+                        random.choice(uppercase_letters + lowercase_letters + digits + special_characters)
+                        for _ in range(length - 4)
+                    )
 
-                # Shuffle the characters to make the password more random
-                new_password = ''.join(random.sample(new_password, len(new_password)))
+                    # Shuffle the characters to make the password more random
+                    new_password = ''.join(random.sample(new_password, len(new_password)))
 
-                if change_user_password(instance, user, new_password):
-                    passwords[user] = new_password
+                    if change_user_password(instance, user, new_password):
+                        passwords[user] = new_password
 
-        if passwords:
-            create_instance_secrets(instance, passwords)
+            if passwords:
+                create_instance_secrets(instance, passwords)
 
-            instance_name = next((tag['Value'] for tag in instance['Tags'] if tag['Key'] == 'Name'), instance_id)
-            success_message = f"Password was rotated successfully for instance {instance_name}."
-            successful_rotations.append(success_message)
+                instance_name = next((tag['Value'] for tag in instance['Tags'] if tag['Key'] == 'Name'), instance_id)
+                success_message = f"Password was rotated successfully for instance {instance_name}."
+                successful_rotations.append(success_message)
+
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'InvalidInstanceId':
+                error_message = f"Error: Cannot connect to SSM agent on the instance {instance_id}. Ensure the SSM agent is running and the instance is in a valid state."
+                logger.error(error_message)
+                send_to_slack(error_message)
+            else:
+                # Handle other boto3 exceptions
+                error_message = f"Unexpected error: {e}"
+                logger.error(error_message)
+                send_to_slack(error_message)
 
     try:
         if successful_rotations:

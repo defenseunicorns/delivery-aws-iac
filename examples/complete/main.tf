@@ -420,4 +420,5 @@ module "password_lambda" {
   instance_ids                    = [module.bastion.instance_id]
   cron_schedule_password_rotation = var.cron_schedule_password_rotation
   slack_notification_enabled      = var.slack_notification_enabled
+  slack_webhook_url               = var.slack_webhook_url
 }

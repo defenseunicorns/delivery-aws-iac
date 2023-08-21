@@ -15,7 +15,7 @@ module "password_lambda" {
   environment_variables = {
     users                      = join(",", var.users)
     instance_ids               = join(",", var.instance_ids)
-    webhook_url                = var.webhook_url
+    slack_webhook_url          = var.slack_webhook_url
     slack_notification_enabled = var.slack_notification_enabled
   }
 

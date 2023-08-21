@@ -86,6 +86,10 @@ This module deploys a Python function that securely generates and rotates EC2 in
 
 To use this module, provide the users who exist on the instances and the instance IDs as shown in the example mentioned below.
 
+You can also enable slack notifications in the function in order to do so you must first create a slack app and get the webhook url.
+
+Once you have that you can set the variable slack_notification_enabled = true and set the slack_webhook_url = (your webhook url)
+
 ## Examples
 
 To see examples of how to leverage this Lambda Module, please refer to the [examples](https://github.com/defenseunicorns/delivery-aws-iac/tree/main/examples) directory.
@@ -129,13 +133,9 @@ To see examples of how to leverage this Lambda Module, please refer to the [exam
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Name prefix for all resources that use a randomized suffix | `string` | n/a | yes |
 | <a name="input_random_id"></a> [random\_id](#input\_random\_id) | random it for unique naming | `string` | `""` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region | `string` | n/a | yes |
-| <a name="input_slack_notification_enabled"></a> [slack\_notification\_enabled](#input\_slack\_notification\_enabled) | enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work | `bool` | `false` | no |
-| <a name="input_slack_webhook_url"></a> [slack\_webhook\_url](#input\_slack\_webhook\_url) | value | `string` | `null` | no |
 | <a name="input_users"></a> [users](#input\_users) | List of users to change passwords for password lambda function | `list(string)` | n/a | yes |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_lambda_password_function_arn"></a> [lambda\_password\_function\_arn](#output\_lambda\_password\_function\_arn) | Arn for lambda password function |
+No outputs.
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

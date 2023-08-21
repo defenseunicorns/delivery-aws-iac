@@ -290,8 +290,4 @@ variable "slack_webhook_url" {
   description = "value"
   type        = string
   default     = null
-  validation {
-    condition     = var.slack_notification_enabled == true ? var.slack_webhook_url != null : true
-    error_message = "If slack notifications are enabled you need to create a slack app and input the webhook url in this variable please see https://api.slack.com/messaging/webhooks"
-  }
 }

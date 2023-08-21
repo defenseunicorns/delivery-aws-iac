@@ -35,3 +35,8 @@ output "efs_storageclass_name" {
   description = "The name of the EFS storageclass that was created (if var.enable_efs was set to true)"
   value       = try(module.eks.efs_storageclass_name, null)
 }
+
+output "lambda_password_function_arn" {
+  description = "Arn for lambda password function"
+  value       = module.password_lambda[0].lambda_function_arn
+}
