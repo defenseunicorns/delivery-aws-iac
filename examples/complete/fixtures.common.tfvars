@@ -26,9 +26,7 @@ zarf_version = "v0.26.3"
 #################### EKS Config ###########################
 # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
 cluster_version = "1.27"
-
-enable_gp3_default_storage_class = true
-storageclass_reclaim_policy      = "Delete" # set to `Retain` for non-dev use
+eks_use_mfa     = false
 
 ###########################################################
 ############## Big Bang Dependencies ######################
@@ -66,46 +64,51 @@ cluster_addons = {
   kube-proxy = {
     most_recent = true
   }
+  aws-ebs-csi-driver = {
+    most_recent = true
+  }
 }
 
 
 #################### Blueprints addons ###################
 #wait false for all addons, as it times out on teardown in the test pipeline
 
-enable_efs = true
-
-enable_amazon_eks_aws_ebs_csi_driver = true
-amazon_eks_aws_ebs_csi_driver_config = {
-  wait        = false
-  most_recent = true
+enable_amazon_eks_aws_efs_csi_driver = true
+aws_efs_csi_driver = {
+  wait          = false
+  chart_version = "2.4.8"
 }
 
+enable_amazon_eks_aws_ebs_csi_driver = true
+enable_gp3_default_storage_class     = true
+storageclass_reclaim_policy          = "Delete" # set to `Retain` for non-dev use
+
 enable_aws_node_termination_handler = true
-aws_node_termination_handler_helm_config = {
+aws_node_termination_handler = {
   wait = false
   # renovate: datasource=docker depName=public.ecr.aws/aws-ec2/helm/aws-node-termination-handler
-  version = "v0.21.0"
+  chart_version = "v0.21.0"
 }
 
 enable_cluster_autoscaler = true
-cluster_autoscaler_helm_config = {
+cluster_autoscaler = {
   wait = false
   # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-chart-(?<version>.*)$
-  version = "v9.29.1"
+  chart_version = "v9.29.1"
 }
 
 enable_metrics_server = true
-metrics_server_helm_config = {
+metrics_server = {
   wait = false
   # renovate: datasource=github-tags depName=kubernetes-sigs/metrics-server extractVersion=^metrics-server-helm-chart-(?<version>.*)$
-  version = "v3.10.0"
+  chart_version = "v3.10.0"
 }
 
 enable_calico = true
-calico_helm_config = {
+calico = {
   wait = false
   # renovate: datasource=github-tags depName=projectcalico/calico
-  version = "v3.26.1"
+  chart_version = "v3.26.1"
 }
 
 ######################################################

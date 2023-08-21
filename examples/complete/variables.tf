@@ -64,6 +64,11 @@ variable "enable_sqs_events_on_access_log_access" {
   default     = false
 }
 
+variable "eks_use_mfa" {
+  description = "Use MFA for auth_eks_role"
+  type        = bool
+}
+
 ###########################################################
 #################### VPC Config ###########################
 variable "vpc_cidr" {
@@ -129,15 +134,9 @@ EOD
 
 #----------------AWS EBS CSI Driver-------------------------
 variable "enable_amazon_eks_aws_ebs_csi_driver" {
-  description = "Enable EKS Managed AWS EBS CSI Driver add-on; enable_amazon_eks_aws_ebs_csi_driver and enable_self_managed_aws_ebs_csi_driver are mutually exclusive"
+  description = "Enable EKS Managed AWS EBS CSI Driver add-on"
   type        = bool
   default     = false
-}
-
-variable "amazon_eks_aws_ebs_csi_driver_config" {
-  description = "configMap for AWS EBS CSI Driver add-on"
-  type        = any
-  default     = {}
 }
 
 variable "enable_gp3_default_storage_class" {
@@ -159,8 +158,8 @@ variable "enable_metrics_server" {
   default     = false
 }
 
-variable "metrics_server_helm_config" {
-  description = "Metrics Server Helm Chart config"
+variable "metrics_server" {
+  description = "Metrics Server config for aws-ia/eks-blueprints-addon/aws"
   type        = any
   default     = {}
 }
@@ -172,8 +171,8 @@ variable "enable_aws_node_termination_handler" {
   default     = false
 }
 
-variable "aws_node_termination_handler_helm_config" {
-  description = "AWS Node Termination Handler Helm Chart config"
+variable "aws_node_termination_handler" {
+  description = "AWS Node Termination Handler config for aws-ia/eks-blueprints-addon/aws"
   type        = any
   default     = {}
 }
@@ -185,17 +184,23 @@ variable "enable_cluster_autoscaler" {
   default     = false
 }
 
-variable "cluster_autoscaler_helm_config" {
+variable "cluster_autoscaler" {
   description = "Cluster Autoscaler Helm Chart config"
   type        = any
   default     = {}
 }
 
 #----------------Enable_EFS_CSI-------------------------
-variable "enable_efs" {
+variable "enable_amazon_eks_aws_efs_csi_driver" {
   description = "Enable EFS CSI add-on"
   type        = bool
   default     = false
+}
+
+variable "aws_efs_csi_driver" {
+  description = "AWS EFS CSI Driver helm chart config"
+  type        = any
+  default     = {}
 }
 
 variable "reclaim_policy" {
@@ -211,15 +216,20 @@ variable "enable_calico" {
   default     = true
 }
 
-variable "calico_helm_config" {
+variable "calico" {
   description = "Calico Helm Chart config"
   type        = any
   default     = {}
 }
 
-
 ###########################################################
 ################## Bastion Config #########################
+variable "enable_bastion" {
+  description = "If true, a bastion will be created"
+  type        = bool
+  default     = true
+}
+
 variable "bastion_tenancy" {
   description = "The tenancy of the bastion"
   type        = string

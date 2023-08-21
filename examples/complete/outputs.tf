@@ -3,19 +3,19 @@
 
 output "bastion_instance_id" {
   description = "The ID of the bastion host"
-  value       = module.bastion.instance_id
+  value       = try(module.bastion[0].instance_id, null)
   sensitive   = true
 }
 
 output "bastion_region" {
   description = "The region that the bastion host was deployed to"
-  value       = module.bastion.region
+  value       = try(module.bastion[0].region, null)
   sensitive   = true
 }
 
 output "bastion_private_dns" {
   description = "The private DNS address of the bastion host"
-  value       = module.bastion.private_dns
+  value       = try(module.bastion[0].private_dns, null)
   sensitive   = true
 }
 
@@ -32,7 +32,7 @@ output "eks_cluster_name" {
 }
 
 output "efs_storageclass_name" {
-  description = "The name of the EFS storageclass that was created (if var.enable_efs was set to true)"
+  description = "The name of the EFS storageclass that was created (if var.enable_amazon_eks_aws_efs_csi_driver was set to true)"
   value       = try(module.eks.efs_storageclass_name, null)
 }
 
