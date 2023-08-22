@@ -1,3 +1,6 @@
+# When someone with write access to the repo adds a comment to a PR that contains "/test <command>", dispatch the workflow found in "test-command.yml"
+# When someone with write access to the repo adds a comment to a PR that contains "/update <command>", dispatch the workflow found in "update-command.yml"
+
 name: Slash Command Dispatch
 on:
   issue_comment:
