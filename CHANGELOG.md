@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.9](https://github.com/defenseunicorns/delivery-aws-iac/compare/v0.0.8...v0.0.9) (2023-08-23)
+
+
+### Features
+
+* update eks module for blueprints v5 migration ([#337](https://github.com/defenseunicorns/delivery-aws-iac/issues/337)) ([2b7e7d5](https://github.com/defenseunicorns/delivery-aws-iac/commit/2b7e7d5f136f6eaa5f1fa74ff0318a26a02eefdb))
+
+
+### Miscellaneous Chores
+
+* **ci:** Add support for using the merge queue, refactor workflow file names, and add more docs to the workflow files ([#340](https://github.com/defenseunicorns/delivery-aws-iac/issues/340)) ([410ee6c](https://github.com/defenseunicorns/delivery-aws-iac/commit/410ee6ca4c1ba659cfce3b423b64d75793d0a1e5))
+* **ci:** Fix typo in merge_group test jobs ([#342](https://github.com/defenseunicorns/delivery-aws-iac/issues/342)) ([cc15c5c](https://github.com/defenseunicorns/delivery-aws-iac/commit/cc15c5c9e85df42b44b3b8797079644bb4118386))
+
 ## 0.0.8 (2023-08-16)
 
 
