@@ -15,7 +15,7 @@ This example deploys:
   - This module can be enabled or disabled. Enabled by default for E2E testing.
   - you can also modify the crob job schedule by changing the cron_schedule_password_rotation variable
   - if enabled ensure you pass instance ids as seen in examples/complete/main.tf `instance_ids = [module.bastion.instance_id]` and users to the function via fixtures.common.tfvars for example.
-  - You also have the option of enabling slack notifications for the password rotation status by setting the variables slack_notification_enabled and slack_webhook_url 
+  - You also have the option of enabling slack notifications for the password rotation status by setting the variables slack_notification_enabled and slack_webhook_url
   - Note that this function deploys resources outside of terraform. Secrets and Parameter store resources are created by the function and need to be deleted manually. If slack notifications are enabled you will need to create a slack webhook url to put into the variable.
 
 > This example has 2 modes: "insecure" and "secure". Insecure mode uses managed nodegroups, default instance tenancy, and enables the public endpoint on the EKS cluster. Secure mode uses self-managed nodegroups, dedicated instance tenancy, and disables the public endpoint on the EKS cluster. The method of choosing which mode to use is by using either `fixtures.insecure.tfvars` or `fixtures.secure.tfvars` as an overlay on top of `fixtures.common.tfvars`.
@@ -213,5 +213,6 @@ kubectl get nodes
 | <a name="output_bastion_region"></a> [bastion\_region](#output\_bastion\_region) | The region that the bastion host was deployed to |
 | <a name="output_efs_storageclass_name"></a> [efs\_storageclass\_name](#output\_efs\_storageclass\_name) | The name of the EFS storageclass that was created (if var.enable\_amazon\_eks\_aws\_efs\_csi\_driver was set to true) |
 | <a name="output_eks_cluster_name"></a> [eks\_cluster\_name](#output\_eks\_cluster\_name) | The name of the EKS cluster |
+| <a name="output_lambda_password_function_arn"></a> [lambda\_password\_function\_arn](#output\_lambda\_password\_function\_arn) | Arn for lambda password function |
 | <a name="output_vpc_cidr"></a> [vpc\_cidr](#output\_vpc\_cidr) | The CIDR block of the VPC |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
