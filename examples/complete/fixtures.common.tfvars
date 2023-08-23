@@ -123,4 +123,4 @@ cron_schedule_password_rotation = "cron(0 0 1 * ? *)"
 
 slack_notification_enabled = false
 
-slack_webhook_url = "<your slack webhook url>"
+slack_webhook_url = ""
