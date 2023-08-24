@@ -1,7 +1,7 @@
 # This code is used to validate that PVCs backed by EFS are working as expected. None of it is needed in production.
 
 resource "kubernetes_persistent_volume_claim_v1" "test_claim" {
-  count = var.enable_efs ? 1 : 0
+  count = var.enable_amazon_eks_aws_efs_csi_driver ? 1 : 0
   metadata {
     name      = "test-claim"
     namespace = "default"
@@ -20,7 +20,7 @@ resource "kubernetes_persistent_volume_claim_v1" "test_claim" {
 
 resource "kubernetes_job_v1" "test_write" {
   # checkov:skip=CKV_K8S_21: "The default namespace should not be used" -- This is test code, not production
-  count = var.enable_efs ? 1 : 0
+  count = var.enable_amazon_eks_aws_efs_csi_driver ? 1 : 0
   metadata {
     name      = "test-write"
     namespace = "default"

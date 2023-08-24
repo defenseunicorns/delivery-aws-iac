@@ -1,7 +1,10 @@
+# If the workflow trigger is "pull_request" or "merge_group", run the pre-commit checks.
+
 name: pre-commit
 
 on:
   pull_request:
+  merge_group:
 
 jobs:
   common:

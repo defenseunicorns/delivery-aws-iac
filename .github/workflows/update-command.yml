@@ -1,3 +1,5 @@
+# This workflow is triggered by a comment on a pull request. The comment must contain "/update <command>" to trigger the workflow.
+
 name: update
 on:
   repository_dispatch:

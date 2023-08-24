@@ -1,0 +1,54 @@
+# If the workflow trigger is "merge_group", run the automated tests.
+
+name: merge-group-test
+
+on:
+  merge_group:
+
+permissions:
+  id-token: write
+  contents: read
+
+defaults:
+  run:
+    # We need -e -o pipefail for consistency with GitHub Actions' default behavior
+    shell: bash -e -o pipefail {0}
+
+jobs:
+  # Run the E2E insecure tests on the commercial account
+  e2e-commercial-insecure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
+      - name: Run E2E Tests
+        uses: ./.github/actions/e2e
+        with:
+          token: ${{ secrets.PAT }}
+          role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+          region: us-east-2
+          github-context: "test / e2e-commercial-insecure"
+          test-to-run: "insecure"
+
+  # Run the E2E secure tests on the govcloud account
+  e2e-govcloud-secure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.event.client_payload.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.client_payload.pull_request.head.ref || github.ref_name }}
+      - name: Run E2E Tests
+        uses: ./.github/actions/e2e
+        with:
+          token: ${{ secrets.PAT }}
+          role-to-assume: ${{ secrets.AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          region: us-gov-east-1
+          github-context: "test / e2e-govcloud-secure"
+          test-to-run: "secure"

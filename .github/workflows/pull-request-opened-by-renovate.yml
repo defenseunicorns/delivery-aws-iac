@@ -1,4 +1,10 @@
-# This autoformats using pre-commit, then triggers an automatic test run if and only if Renovate is the author and the PR was just opened. See ADR #0008.
+# If Renovate is not the author of the PR that triggers this workflow, it will do nothing.
+# If Renovate is the author of the PR that triggers this workflow, but the workflow event is anything but "opened", it will do nothing.
+# If Renovate is the author of the PR that triggers this workflow, and the workflow event is "opened", it will:
+#   1. Autoformat using pre-commit and, if necessary, push an additional commit to the PR with the autoformat fixes.
+#   2. Add the "/test all" comment to the PR, so that the Slash Command Dispatch workflow is triggered automatically.
+#
+# See ADR #0008.
 name: auto-test
 on:
   pull_request:
