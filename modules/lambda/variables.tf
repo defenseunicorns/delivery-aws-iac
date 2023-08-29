@@ -38,3 +38,15 @@ variable "random_id" {
   type        = string
   default     = ""
 }
+
+variable "slack_notification_enabled" {
+  description = "enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work"
+  type        = bool
+  default     = false
+}
+
+variable "slack_webhook_url" {
+  description = "value"
+  type        = string
+  default     = null
+}

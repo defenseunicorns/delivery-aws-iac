@@ -289,3 +289,15 @@ variable "cron_schedule_password_rotation" {
   type        = string
   default     = "cron(0 0 1 * ? *)"
 }
+
+variable "slack_notification_enabled" {
+  description = "enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work"
+  type        = bool
+  default     = false
+}
+
+variable "slack_webhook_url" {
+  description = "value"
+  type        = string
+  default     = null
+}

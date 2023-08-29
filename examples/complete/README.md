@@ -15,7 +15,8 @@ This example deploys:
   - This module can be enabled or disabled. Enabled by default for E2E testing.
   - you can also modify the crob job schedule by changing the cron_schedule_password_rotation variable
   - if enabled ensure you pass instance ids as seen in examples/complete/main.tf `instance_ids = [module.bastion.instance_id]` and users to the function via fixtures.common.tfvars for example.
-  - Note that this function deploys resources outside of terraform. Secrets and Parameter store resources are created by the function and need to be deleted manually. Looking to improve this process.
+  - You also have the option of enabling slack notifications for the password rotation status by setting the variables slack_notification_enabled and slack_webhook_url
+  - Note that this function deploys resources outside of terraform. Secrets and Parameter store resources are created by the function and need to be deleted manually. If slack notifications are enabled you will need to create a slack webhook url to put into the variable.
 
 > This example has 2 modes: "insecure" and "secure". Insecure mode uses managed nodegroups, default instance tenancy, and enables the public endpoint on the EKS cluster. Secure mode uses self-managed nodegroups, dedicated instance tenancy, and disables the public endpoint on the EKS cluster. The method of choosing which mode to use is by using either `fixtures.insecure.tfvars` or `fixtures.secure.tfvars` as an overlay on top of `fixtures.common.tfvars`.
 
@@ -195,6 +196,8 @@ kubectl get nodes
 | <a name="input_reclaim_policy"></a> [reclaim\_policy](#input\_reclaim\_policy) | Reclaim policy for EFS storage class, valid options are Delete and Retain | `string` | `"Delete"` | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy into | `string` | n/a | yes |
 | <a name="input_secondary_cidr_blocks"></a> [secondary\_cidr\_blocks](#input\_secondary\_cidr\_blocks) | A list of secondary CIDR blocks for the VPC | `list(string)` | `[]` | no |
+| <a name="input_slack_notification_enabled"></a> [slack\_notification\_enabled](#input\_slack\_notification\_enabled) | enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work | `bool` | `false` | no |
+| <a name="input_slack_webhook_url"></a> [slack\_webhook\_url](#input\_slack\_webhook\_url) | value | `string` | `null` | no |
 | <a name="input_storageclass_reclaim_policy"></a> [storageclass\_reclaim\_policy](#input\_storageclass\_reclaim\_policy) | Reclaim policy for gp3 storage class, valid options are Delete and Retain | `string` | `"Delete"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to apply to all resources | `map(string)` | `{}` | no |
 | <a name="input_users"></a> [users](#input\_users) | This needs to be a list of users that will be on your ec2 instances that need password changes. | `list(string)` | `[]` | no |
@@ -210,5 +213,6 @@ kubectl get nodes
 | <a name="output_bastion_region"></a> [bastion\_region](#output\_bastion\_region) | The region that the bastion host was deployed to |
 | <a name="output_efs_storageclass_name"></a> [efs\_storageclass\_name](#output\_efs\_storageclass\_name) | The name of the EFS storageclass that was created (if var.enable\_amazon\_eks\_aws\_efs\_csi\_driver was set to true) |
 | <a name="output_eks_cluster_name"></a> [eks\_cluster\_name](#output\_eks\_cluster\_name) | The name of the EKS cluster |
+| <a name="output_lambda_password_function_arn"></a> [lambda\_password\_function\_arn](#output\_lambda\_password\_function\_arn) | Arn for lambda password function |
 | <a name="output_vpc_cidr"></a> [vpc\_cidr](#output\_vpc\_cidr) | The CIDR block of the VPC |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
