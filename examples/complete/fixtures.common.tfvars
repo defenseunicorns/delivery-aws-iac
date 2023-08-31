@@ -20,7 +20,7 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
 # renovate: datasource=github-tags depName=defenseunicorns/zarf
-zarf_version = "v0.26.3"
+zarf_version = "v0.29.1"
 
 ###########################################################
 #################### EKS Config ###########################
@@ -87,21 +87,21 @@ enable_aws_node_termination_handler = true
 aws_node_termination_handler = {
   wait = false
   # renovate: datasource=docker depName=public.ecr.aws/aws-ec2/helm/aws-node-termination-handler
-  chart_version = "v0.21.0"
+  chart_version = "v0.22.0"
 }
 
 enable_cluster_autoscaler = true
 cluster_autoscaler = {
   wait = false
   # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-chart-(?<version>.*)$
-  chart_version = "v9.29.1"
+  chart_version = "v9.29.3"
 }
 
 enable_metrics_server = true
 metrics_server = {
   wait = false
   # renovate: datasource=github-tags depName=kubernetes-sigs/metrics-server extractVersion=^metrics-server-helm-chart-(?<version>.*)$
-  chart_version = "v3.10.0"
+  chart_version = "v3.11.0"
 }
 
 enable_calico = true
