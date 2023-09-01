@@ -209,19 +209,6 @@ variable "reclaim_policy" {
   default     = "Delete"
 }
 
-#----------------Calico-------------------------
-variable "enable_calico" {
-  description = "Enable Calico add-on"
-  type        = bool
-  default     = true
-}
-
-variable "calico" {
-  description = "Calico Helm Chart config"
-  type        = any
-  default     = {}
-}
-
 ###########################################################
 ################## Bastion Config #########################
 variable "enable_bastion" {
