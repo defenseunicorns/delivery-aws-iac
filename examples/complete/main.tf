@@ -366,14 +366,6 @@ module "eks" {
   # k8s Cluster Autoscaler
   enable_cluster_autoscaler = var.enable_cluster_autoscaler
   cluster_autoscaler        = var.cluster_autoscaler
-
-  #----------------------------------------------------------------
-  # custom helm charts
-  #----------------------------------------------------------------
-
-  #Calico
-  enable_calico = var.enable_calico
-  calico        = var.calico
 }
 
 #---------------------------------------------------------------
