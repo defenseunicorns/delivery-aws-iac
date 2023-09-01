@@ -48,7 +48,8 @@ cluster_addons = {
           "WARM_PREFIX_TARGET": "1",
           "ANNOTATE_POD_IP": "true",
           "POD_SECURITY_GROUP_ENFORCING_MODE": "standard"
-        }
+        },
+        "enableNetworkPolicy": "true",
       }
     JSON
   }
