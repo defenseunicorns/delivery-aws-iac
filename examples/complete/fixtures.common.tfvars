@@ -105,13 +105,6 @@ metrics_server = {
   chart_version = "v3.11.0"
 }
 
-enable_calico = true
-calico = {
-  wait = false
-  # renovate: datasource=github-tags depName=projectcalico/calico
-  chart_version = "v3.26.1"
-}
-
 ######################################################
 ################## Lambda Config #####################
 
