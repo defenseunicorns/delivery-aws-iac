@@ -25,5 +25,5 @@ jobs:
 
       - uses: google-github-actions/release-please-action@v3
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ steps.get_workflow_token.outputs.token }}
           command: manifest
