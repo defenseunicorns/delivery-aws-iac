@@ -11,6 +11,8 @@ on:
     # WARNING: DO NOT ADD MORE EVENT TYPES HERE! Because this workflow will push a new commit to the PR in the Autoformat step, adding more event types may cause an infinite loop.
     types:
       - opened
+    branches:
+      - 'renovate/**'
 
 permissions:
   id-token: write
@@ -22,31 +24,11 @@ defaults:
     shell: bash -e -o pipefail {0}
 
 jobs:
-  auto-test:
+  renovate-test:
     if: github.event.client_payload.github.actor == 'renovate[bot]' || github.actor == 'renovate[bot]'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.PAT }}
-          repository: ${{ github.repository }}
-          ref: ${{ github.event.pull_request.head.ref }}
-
-      - name: Autoformat
-        uses: ./.github/actions/autoformat
-        with:
-          token: ${{ secrets.PAT }}
-          github-context: "update / autoformat"
-
-      - name: Wait 5 seconds
-        run: sleep 5
-
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          token: ${{ secrets.PAT }}
-          repository: ${{ github.repository }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            /test all
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/renovate-test.yml@main
+    secrets:
+      APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
+      APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
+      AWS_COMMERCIAL_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+      AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
