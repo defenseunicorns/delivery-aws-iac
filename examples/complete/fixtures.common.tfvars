@@ -92,8 +92,10 @@ aws_efs_csi_driver = {
 enable_aws_node_termination_handler = true
 aws_node_termination_handler = {
   wait = false
+
   # renovate: datasource=docker depName=public.ecr.aws/aws-ec2/helm/aws-node-termination-handler
-  chart_version = "v0.21.0"
+  chart_version = "0.21.0"
+  repository    = "oci://public.ecr.aws/aws-ec2/helm/aws-node-termination-handler"
 }
 
 enable_cluster_autoscaler = true

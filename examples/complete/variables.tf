@@ -93,11 +93,8 @@ variable "eks_worker_tenancy" {
 variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
-  default     = "1.26"
-  validation {
-    condition     = contains(["1.26"], var.cluster_version)
-    error_message = "Kubernetes version must be equal to one that we support. See EKS module variables for supported versions."
-  }
+  # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
+  default = "1.26"
 }
 
 variable "cluster_endpoint_public_access" {
