@@ -95,7 +95,8 @@ aws_node_termination_handler = {
 
   # renovate: datasource=docker depName=public.ecr.aws/aws-ec2/helm/aws-node-termination-handler
   chart_version = "0.22.0"
-  repository    = "oci://public.ecr.aws/aws-ec2/helm/aws-node-termination-handler"
+  chart         = "aws-node-termination-handler"
+  repository    = "oci://public.ecr.aws/aws-ec2/helm"
 }
 
 enable_cluster_autoscaler = true
