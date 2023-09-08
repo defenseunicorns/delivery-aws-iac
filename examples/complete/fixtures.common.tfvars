@@ -94,7 +94,7 @@ aws_node_termination_handler = {
   wait = false
 
   # renovate: datasource=docker depName=public.ecr.aws/aws-ec2/helm/aws-node-termination-handler
-  chart_version = "0.21.0"
+  chart_version = "0.22.0"
   repository    = "oci://public.ecr.aws/aws-ec2/helm/aws-node-termination-handler"
 }
 
