@@ -2,31 +2,51 @@
 # When someone with write access to the repo adds a comment to a PR that contains "/update <command>", dispatch the workflow found in "update-command.yml"
 
 name: Slash Command Dispatch
+
 on:
   issue_comment:
     types: [created]
+
 jobs:
+
   slashCommandDispatchTest:
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/test')
-    runs-on: ubuntu-latest
+    runs-on:  ubuntu-latest
     steps:
+
+      - name: Get token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v2
+        with:
+          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+
       - name: Slash Command Dispatch
         uses: peter-evans/slash-command-dispatch@v3
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ steps.get_workflow_token.outputs.token }}
+          reaction-token: ${{ steps.get_workflow_token.outputs.token }}
           commands: test
           permission: write
           issue-type: pull-request
 
-
   slashCommandDispatchUpdate:
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/update')
-    runs-on: ubuntu-latest
+    runs-on:  ubuntu-latest
     steps:
-      - name: Slash Command Dispatch
-        uses: peter-evans/slash-command-dispatch@v3
-        with:
-          token: ${{ secrets.PAT }}
-          commands: update
-          permission: write
-          issue-type: pull-request
+
+    - name: Get token
+      id: get_workflow_token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+        application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+
+    - name: Slash Command Dispatch
+      uses: peter-evans/slash-command-dispatch@v3
+      with:
+        token: ${{ steps.get_workflow_token.outputs.token }}
+        reaction-token: ${{ steps.get_workflow_token.outputs.token }}
+        commands: update
+        permission: write
+        issue-type: pull-request
