@@ -69,7 +69,7 @@ cluster_addons = {
     most_recent = true
 
     timeouts = {
-      create = "2m"
+      create = "4m"
       delete = "10m"
     }
   }
@@ -92,8 +92,11 @@ aws_efs_csi_driver = {
 enable_aws_node_termination_handler = true
 aws_node_termination_handler = {
   wait = false
+
   # renovate: datasource=docker depName=public.ecr.aws/aws-ec2/helm/aws-node-termination-handler
-  chart_version = "v0.21.0"
+  chart_version = "0.22.0"
+  chart         = "aws-node-termination-handler"
+  repository    = "oci://public.ecr.aws/aws-ec2/helm"
 }
 
 enable_cluster_autoscaler = true
