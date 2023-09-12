@@ -94,7 +94,7 @@ variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
   # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
-  default = "1.26"
+  default = "1.27"
 }
 
 variable "cluster_endpoint_public_access" {
