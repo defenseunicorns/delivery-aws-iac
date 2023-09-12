@@ -1,10 +1,6 @@
 terraform {
   required_version = ">= 1.0.0"
   required_providers {
-    kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = ">= 1.14.0"
-    }
     aws = {
       source  = "hashicorp/aws"
       version = ">= 4.62.0"
@@ -78,16 +74,5 @@ provider "helm" {
       command     = "/bin/sh"
       args        = ["-c", "for i in $(seq 1 30); do curl -s -k -f ${module.eks.cluster_endpoint}/healthz > /dev/null && break || sleep 10; done && aws eks --region ${var.region} get-token --cluster-name ${local.cluster_name}"]
     }
-  }
-}
-
-provider "kubectl" {
-  apply_retry_count      = 5
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "/bin/sh"
-    args        = ["-c", "for i in $(seq 1 30); do curl -s -k -f ${module.eks.cluster_endpoint}/healthz > /dev/null && break || sleep 10; done && aws eks --region ${var.region} get-token --cluster-name ${local.cluster_name}"]
   }
 }

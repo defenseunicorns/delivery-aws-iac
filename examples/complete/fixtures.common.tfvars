@@ -20,7 +20,7 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
 # renovate: datasource=github-tags depName=defenseunicorns/zarf
-zarf_version = "v0.29.1"
+zarf_version = "v0.29.2"
 
 ###########################################################
 #################### EKS Config ###########################
@@ -49,7 +49,7 @@ cluster_addons = {
           "ANNOTATE_POD_IP": "true",
           "POD_SECURITY_GROUP_ENFORCING_MODE": "standard"
         },
-        "enableNetworkPolicy": "true",
+        "enableNetworkPolicy": "true"
       }
     JSON
   }

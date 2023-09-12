@@ -103,7 +103,6 @@ kubectl get nodes
 | <a name="requirement_cloudinit"></a> [cloudinit](#requirement\_cloudinit) | >= 2.0.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.5.1 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 2.4.1 |
-| <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | >= 1.14.0 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.10.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.1.0 |
@@ -125,7 +124,7 @@ kubectl get nodes
 |------|--------|---------|
 | <a name="module_bastion"></a> [bastion](#module\_bastion) | git::https://github.com/defenseunicorns/terraform-aws-uds-bastion.git | v0.0.5 |
 | <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 1.5 |
-| <a name="module_eks"></a> [eks](#module\_eks) | git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git | v0.0.7 |
+| <a name="module_eks"></a> [eks](#module\_eks) | git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git | v0.0.8 |
 | <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
 | <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | ../../modules/lambda | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | git::https://github.com/defenseunicorns/terraform-aws-uds-vpc.git | v0.0.3 |
