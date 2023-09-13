@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.0.10](https://github.com/defenseunicorns/delivery-aws-iac/compare/v0.0.9...v0.0.10) (2023-09-13)
+
+
+### Miscellaneous Chores
+
+* **deps:** update all dependencies ([#315](https://github.com/defenseunicorns/delivery-aws-iac/issues/315)) ([ccc71d9](https://github.com/defenseunicorns/delivery-aws-iac/commit/ccc71d9c94ee8aa904a0decb4bb776335dda15e5))
+* **deps:** update all dependencies ([#345](https://github.com/defenseunicorns/delivery-aws-iac/issues/345)) ([41e5da0](https://github.com/defenseunicorns/delivery-aws-iac/commit/41e5da049e99e09ed5f65e605f8fc2bf85ef59f1))
+* **deps:** update all dependencies ([#349](https://github.com/defenseunicorns/delivery-aws-iac/issues/349)) ([6144bf9](https://github.com/defenseunicorns/delivery-aws-iac/commit/6144bf9b4761648ddcb85620cf60a28aff2bcc54))
+
+
+### Code Refactoring
+
+* removal of kubectl provider ([#348](https://github.com/defenseunicorns/delivery-aws-iac/issues/348)) ([98ca153](https://github.com/defenseunicorns/delivery-aws-iac/commit/98ca153745879625dc7ab3cbf5816a71678e061b))
+
+
+### Continuous Integration
+
+* fix some inputs for renovate to monitor properly ([#347](https://github.com/defenseunicorns/delivery-aws-iac/issues/347)) ([bf60547](https://github.com/defenseunicorns/delivery-aws-iac/commit/bf60547b1d206266c030a537baf40cba5acf5ddb))
+* refactor for shared workflows ([#346](https://github.com/defenseunicorns/delivery-aws-iac/issues/346)) ([5c4bb84](https://github.com/defenseunicorns/delivery-aws-iac/commit/5c4bb845d1b293d83a2b2657ecf2ec42bb53c312))
+
 ## [0.0.9](https://github.com/defenseunicorns/delivery-aws-iac/compare/v0.0.8...v0.0.9) (2023-08-23)
 
 
