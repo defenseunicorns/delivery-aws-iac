@@ -11,8 +11,6 @@ on:
     # WARNING: DO NOT ADD MORE EVENT TYPES HERE! Because this workflow will push a new commit to the PR in the Autoformat step, adding more event types may cause an infinite loop.
     types:
       - opened
-    branches:
-      - 'renovate/**'
 
 permissions:
   id-token: write
