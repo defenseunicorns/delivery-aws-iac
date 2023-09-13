@@ -15,9 +15,9 @@ jobs:
 
       - name: update e2e-commercial-insecure success
         uses: docker://cloudposse/github-status-updater
-        with:
-          args: "-action update_state -state success"
         env:
+          GITHUB_ACTION: update_state
+          GITHUB_STATE: success
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_CONTEXT:  "test / e2e-commercial-insecure"
           GITHUB_DESCRIPTION: "started by @${{ github.event.client_payload.github.actor || github.actor }}"
@@ -28,9 +28,9 @@ jobs:
 
       - name: update e2e-govcloud-secure success
         uses: docker://cloudposse/github-status-updater
-        with:
-          args: "-action update_state -state success"
         env:
+          GITHUB_ACTION: update_state
+          GITHUB_STATE: success
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_CONTEXT:  "test / e2e-commercial-insecure"
           GITHUB_DESCRIPTION: "started by @${{ github.event.client_payload.github.actor || github.actor }}"
