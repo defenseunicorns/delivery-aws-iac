@@ -35,7 +35,7 @@ jobs:
           REPO_SHA: ${{ github.event.client_payload.pull_request.head.sha || github.event.pull_request.head.sha || github.sha }}
           REPO_NAME: ${{ github.event.client_payload.github.payload.repository.name || github.event.repository.name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_CONTEXT:  "test / e2e-govcloud-insecure"
+          GITHUB_CONTEXT:  "test / e2e-govcloud-secure"
           GITHUB_DESCRIPTION: "started by @${{ github.event.client_payload.github.actor || github.actor }}"
           GITHUB_TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GITHUB_REF: ${{ github.event.client_payload.pull_request.head.ref || github.event.pull_request.head.ref || github.ref_name }}
