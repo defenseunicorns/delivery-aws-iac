@@ -37,7 +37,7 @@ locals {
 ################################################################################
 
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-vpc.git?ref=v0.0.3"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-vpc.git?ref=v0.0.5"
 
   name                  = local.vpc_name
   vpc_cidr              = var.vpc_cidr
@@ -298,7 +298,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.8"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.9"
 
   name                                    = local.cluster_name
   aws_region                              = var.region
