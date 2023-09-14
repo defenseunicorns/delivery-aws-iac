@@ -1,52 +1,20 @@
-# If the workflow trigger is "pull_request" or "merge_group", run the pre-commit checks.
-
+# If the workflow trigger is "pull_request", run pre-commit checks.
 name: pre-commit
 
 on:
   pull_request:
   merge_group:
 
+
+permissions:
+  pull-requests: write
+  id-token: write
+  contents: read
+
 jobs:
-  common:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
 
-      - name: pre-commit
-        uses: ./.github/actions/pre-commit
-        with:
-          check-type: common
-
-  terraform:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: pre-commit
-        uses: ./.github/actions/pre-commit
-        with:
-          check-type: terraform
-
-  golang:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: pre-commit
-        uses: ./.github/actions/pre-commit
-        with:
-          check-type: golang
-
-  renovate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: pre-commit
-        uses: ./.github/actions/pre-commit
-        with:
-          check-type: renovate
+  pre-commit:
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/pre-commit.yml@main
+    secrets:
+      APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
+      APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}

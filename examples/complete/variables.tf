@@ -93,11 +93,8 @@ variable "eks_worker_tenancy" {
 variable "cluster_version" {
   description = "Kubernetes version to use for EKS cluster"
   type        = string
-  default     = "1.27"
-  validation {
-    condition     = contains(["1.27"], var.cluster_version)
-    error_message = "Kubernetes version must be equal to one that we support. See EKS module variables for supported versions."
-  }
+  # renovate: datasource=endoflife-date depName=amazon-eks versioning=loose extractVersion=^(?<version>.*)-eks.+$
+  default = "1.27"
 }
 
 variable "cluster_endpoint_public_access" {
@@ -209,19 +206,6 @@ variable "reclaim_policy" {
   default     = "Delete"
 }
 
-#----------------Calico-------------------------
-variable "enable_calico" {
-  description = "Enable Calico add-on"
-  type        = bool
-  default     = true
-}
-
-variable "calico" {
-  description = "Calico Helm Chart config"
-  type        = any
-  default     = {}
-}
-
 ###########################################################
 ################## Bastion Config #########################
 variable "enable_bastion" {
@@ -288,4 +272,16 @@ variable "cron_schedule_password_rotation" {
   description = "Schedule for password change function to run on"
   type        = string
   default     = "cron(0 0 1 * ? *)"
+}
+
+variable "slack_notification_enabled" {
+  description = "enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work"
+  type        = bool
+  default     = false
+}
+
+variable "slack_webhook_url" {
+  description = "value"
+  type        = string
+  default     = null
 }

@@ -37,7 +37,7 @@ locals {
 ################################################################################
 
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-vpc.git?ref=v0.0.2"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-vpc.git?ref=v0.0.5"
 
   name                  = local.vpc_name
   vpc_cidr              = var.vpc_cidr
@@ -105,7 +105,7 @@ data "aws_ami" "amazonlinux2" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-bastion.git?ref=v0.0.2-alpha"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-bastion.git?ref=v0.0.5"
 
   count = var.enable_bastion ? 1 : 0
 
@@ -298,9 +298,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.5"
-
-
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.9"
 
   name                                    = local.cluster_name
   aws_region                              = var.region
@@ -366,14 +364,6 @@ module "eks" {
   # k8s Cluster Autoscaler
   enable_cluster_autoscaler = var.enable_cluster_autoscaler
   cluster_autoscaler        = var.cluster_autoscaler
-
-  #----------------------------------------------------------------
-  # custom helm charts
-  #----------------------------------------------------------------
-
-  #Calico
-  enable_calico = var.enable_calico
-  calico        = var.calico
 }
 
 #---------------------------------------------------------------
@@ -394,7 +384,7 @@ module "key_pair" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 1.5"
+  version = "~> 2.0"
 
   count = var.keycloak_enabled ? 1 : 0
 
@@ -458,4 +448,6 @@ module "password_lambda" {
   # Add any additional instances you want the function to run against here
   instance_ids                    = [try(module.bastion[0].instance_id)]
   cron_schedule_password_rotation = var.cron_schedule_password_rotation
+  slack_notification_enabled      = var.slack_notification_enabled
+  slack_webhook_url               = var.slack_webhook_url
 }

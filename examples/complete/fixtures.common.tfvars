@@ -20,7 +20,7 @@ secondary_cidr_blocks = ["100.64.0.0/16"] #https://aws.amazon.com/blogs/containe
 bastion_ssh_user     = "ec2-user" # local user in bastion used to ssh
 bastion_ssh_password = "my-password"
 # renovate: datasource=github-tags depName=defenseunicorns/zarf
-zarf_version = "v0.26.3"
+zarf_version = "v0.29.2"
 
 ###########################################################
 #################### EKS Config ###########################
@@ -48,7 +48,8 @@ cluster_addons = {
           "WARM_PREFIX_TARGET": "1",
           "ANNOTATE_POD_IP": "true",
           "POD_SECURITY_GROUP_ENFORCING_MODE": "standard"
-        }
+        },
+        "enableNetworkPolicy": "true"
       }
     JSON
   }
@@ -57,7 +58,7 @@ cluster_addons = {
     most_recent = true
 
     timeouts = {
-      create = "25m"
+      create = "2m"
       delete = "10m"
     }
   }
@@ -66,49 +67,50 @@ cluster_addons = {
   }
   aws-ebs-csi-driver = {
     most_recent = true
+
+    timeouts = {
+      create = "4m"
+      delete = "10m"
+    }
   }
-}
-
-
-#################### Blueprints addons ###################
-#wait false for all addons, as it times out on teardown in the test pipeline
-
-enable_amazon_eks_aws_efs_csi_driver = true
-aws_efs_csi_driver = {
-  wait          = false
-  chart_version = "2.4.8"
 }
 
 enable_amazon_eks_aws_ebs_csi_driver = true
 enable_gp3_default_storage_class     = true
 storageclass_reclaim_policy          = "Delete" # set to `Retain` for non-dev use
 
+#################### Blueprints addons ###################
+#wait false for all addons, as it times out on teardown in the test pipeline
+
+enable_amazon_eks_aws_efs_csi_driver = true
+#todo - move from blueprints to marketplace addons in terraform-aws-uds-eks
+aws_efs_csi_driver = {
+  wait          = false
+  chart_version = "2.4.8"
+}
+
 enable_aws_node_termination_handler = true
 aws_node_termination_handler = {
   wait = false
+
   # renovate: datasource=docker depName=public.ecr.aws/aws-ec2/helm/aws-node-termination-handler
-  chart_version = "v0.21.0"
+  chart_version = "0.22.0"
+  chart         = "aws-node-termination-handler"
+  repository    = "oci://public.ecr.aws/aws-ec2/helm"
 }
 
 enable_cluster_autoscaler = true
 cluster_autoscaler = {
   wait = false
   # renovate: datasource=github-tags depName=kubernetes/autoscaler extractVersion=^cluster-autoscaler-chart-(?<version>.*)$
-  chart_version = "v9.29.1"
+  chart_version = "v9.29.3"
 }
 
 enable_metrics_server = true
 metrics_server = {
   wait = false
   # renovate: datasource=github-tags depName=kubernetes-sigs/metrics-server extractVersion=^metrics-server-helm-chart-(?<version>.*)$
-  chart_version = "v3.10.0"
-}
-
-enable_calico = true
-calico = {
-  wait = false
-  # renovate: datasource=github-tags depName=projectcalico/calico
-  chart_version = "v3.26.1"
+  chart_version = "v3.11.0"
 }
 
 ######################################################
@@ -120,3 +122,7 @@ enable_password_rotation_lambda = true
 users = ["ec2-user", "Administrator"]
 
 cron_schedule_password_rotation = "cron(0 0 1 * ? *)"
+
+slack_notification_enabled = false
+
+slack_webhook_url = ""
