@@ -4,7 +4,7 @@ Date: 2023-09-14
 
 ## Status
 
-Accepted
+Superceded by [11. e2e testing improvement](0011-e2e-testing-improvement.md)
 
 ## Context
 e2e testing is crucial for ensuring that our IaC (Infrastructure as Code) is functional and robust. However, there are aspects of the current e2e testing workflow that we can improve to make it more efficient and effective. This ADR outlines these proposed enhancements.
@@ -35,20 +35,6 @@ If we only utilize public EKS endpoints for pipeline purposes, our e2e tests wil
 
 1. **Streamline Testing with Merge Queue**: We can optimize our testing process by integrating it with the merge queue.
     - **Implementation Plan**: A workflow triggered on `pull request` will either skip the e2e test status checks or succeed them, followed by the actual tests running in the `merge_group` workflow.
-
-## Decision:
-- In a PR we are able to run both insecure and secure tests
-  - not required to pass to be added to merge queue
-  - maintainers can use slash command dispatch
-- Insecure test is required in merge event (merge queue... required)
-  - test must pass to merge to main
-- Secure test is required to run at least nightly and be integrated with slack notification
-  - maintains validation of all things
-  - failures must become the top priority of the iac team
-- Release Please PR should not be added to the merge queue unless the merge queue is empty
-  - It should be at the head of the queue, else it will miss other commits to main in its commit
-- Release Please PRs will run both tests to ensure that all tests pass before a tag is cut
-  - needed because Release Please kicks off a tag job when merged to main occurs
 
 ## Consequences
 
