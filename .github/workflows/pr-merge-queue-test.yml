@@ -34,7 +34,7 @@ jobs:
           application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
           github-context: "pr-merge-queue-test / e2e-commercial-insecure"
 
-  short-circuit-pul-request-event:
+  short-circuit-pull-request-event:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
