@@ -34,6 +34,17 @@ jobs:
           application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
           github-context: "pr-merge-queue-test / e2e-commercial-insecure"
 
+  short-circuit-pul-request-event:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Run E2E Tests
+        uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/pull_request_status_check_dummy@ci/merge-queue-workflow  #this will fail
+        with:
+          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+          github-context: "pr-merge-queue-test / e2e-commercial-insecure"
+
   # Run the E2E insecure tests on the commercial account in the merge queue
   # e2e-commercial-insecure:
   #   runs-on: ubuntu-latest
