@@ -4,7 +4,7 @@ Date: 2023-07-27
 
 ## Status
 
-Accepted
+Superceded by [10. e2e testing improvement](0010-e2e-testing-improvement.md)
 
 ## Context
 
