@@ -11,14 +11,8 @@ defaults:
     shell: bash -eo pipefail {0}
 
 jobs:
-  short-circuit-test-dumb:
-    runs-on: ubuntu-latest
-    steps:
-      - run: exit 1
-
   e2e-commercial-insecure:
     runs-on: ubuntu-latest
-    needs: short-circuit-test-dumb
     if: github.event_name == 'merge_group'
     steps:
       - name: Run E2E Tests
