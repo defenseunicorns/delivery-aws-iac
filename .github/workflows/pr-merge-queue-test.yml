@@ -1,6 +1,6 @@
 # triggers on merge_group and pull_request events
 
-name: pr-merge-queue-test
+name: merge-queue-test
 
 on:
   merge_group:
