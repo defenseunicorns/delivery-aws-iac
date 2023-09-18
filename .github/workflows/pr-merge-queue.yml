@@ -12,7 +12,14 @@ defaults:
     shell: bash -eo pipefail {0}
 
 jobs:
+  short-circuit:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - run: exit 1
+
   e2e-commercial-insecure:
+    needs: short-circuit
     runs-on: ubuntu-latest
     if: github.event_name == 'merge_group'
     steps:
@@ -25,6 +32,7 @@ jobs:
 
   # Run the E2E secure tests on the govcloud account in the merge queue if this is a release-please branch into main
   e2e-govcloud-secure:
+    needs: short-circuit
     runs-on: ubuntu-latest
     if: github.event_name == 'merge_group' && github.ref_name == 'ci/refactor_for_merge_queue_testing'
     steps:
