@@ -17,7 +17,7 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - name: Report Success
-        uses: defenseunicorns/delivery-github-actions-workflows/.github/workdlows/report-status@ci/merge-queue-workflow
+        uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/report-status@ci/merge-queue-workflow
         with:
           application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
           application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
