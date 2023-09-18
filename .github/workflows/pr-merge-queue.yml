@@ -24,7 +24,7 @@ jobs:
 
   e2e-commercial-insecure:
     if: github.event_name == 'merge_group'
-    uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/report-status.yml@ci/merge-queue-workflow  #this will fail
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/report-status.yml@ci/merge-queue-workflow  #this will fail
     secrets:
       APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
       APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
@@ -36,7 +36,7 @@ jobs:
   # Run the E2E secure tests on the govcloud account in the merge queue if this is a release-please branch into main
   e2e-govcloud-secure:
     if: github.event_name == 'merge_group' && github.ref_name == 'ci/refactor_for_merge_queue_testing'
-    uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/report-status.yml@ci/merge-queue-workflow #this will fail
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/report-status.yml@ci/merge-queue-workflow #this will fail
     secrets:
       APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
       APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
