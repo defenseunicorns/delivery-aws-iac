@@ -1,10 +1,11 @@
 # triggers on merge_group and pull_request events
 
-name: merge-queue-test
-
+name: pr-merge-queue
 on:
   merge_group:
   pull_request:
+    branches:
+      - merge-queue
 
 defaults:
   run:
@@ -20,7 +21,7 @@ jobs:
         with:
           application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
           application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
-          github-context: "pr-merge-queue-test / e2e-commercial-insecure"
+          github-context: "pr-merge-queue / e2e-commercial-insecure"
 
   # Run the E2E secure tests on the govcloud account in the merge queue if this is a release-please branch into main
   e2e-govcloud-secure:
@@ -32,7 +33,7 @@ jobs:
         with:
           application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
           application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
-          github-context: "pr-merge-queue-test / e2e-commercial-insecure"
+          github-context: "pr-merge-queue / e2e-govcloud-secure"
 
   # short-circuit-pull-request-event:
   #   runs-on: ubuntu-latest
