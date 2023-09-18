@@ -13,43 +13,37 @@ defaults:
 
 jobs:
   report-success-status: # on PRs, report success for required status checks. this allows the testing to only run inside the merge queue.
-    runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    steps:
-      - name: Report Success
-        uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/report-status.yml@ci/merge-queue-workflow
-        with:
-          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
-          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
-          status-checks: '["pr-merge-queue / e2e-commercial-insecure", "pr-merge-queue / e2e-govcloud-secure"]'
-          description: 'automated report success in pull request'
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/report-status.yml@ci/merge-queue-workflow
+    secrets:
+      APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
+      APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
+    with:
+      status-checks: '["pr-merge-queue / e2e-commercial-insecure", "pr-merge-queue / e2e-govcloud-secure"]'
+      description: 'automated report success in pull request'
 
   e2e-commercial-insecure:
-    runs-on: ubuntu-latest
     if: github.event_name == 'merge_group'
-    steps:
-      - name: Run E2E Tests
-        uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/report-status.yml@ci/merge-queue-workflow  #this will fail
-        with:
-          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
-          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
-          status-checks: '["pr-merge-queue / e2e-govcloud-secure"]'
-          description: 'failing in merge queue on purpose'
-          status: 'failure'
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/report-status.yml@ci/merge-queue-workflow  #this will fail
+    secrets:
+      APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
+      APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
+    with:
+      status-checks: '["pr-merge-queue / e2e-govcloud-secure"]'
+      description: 'failing in merge queue on purpose'
+      status: 'failure'
 
   # Run the E2E secure tests on the govcloud account in the merge queue if this is a release-please branch into main
   e2e-govcloud-secure:
-    runs-on: ubuntu-latest
     if: github.event_name == 'merge_group' && github.ref_name == 'ci/refactor_for_merge_queue_testing'
-    steps:
-      - name: Run E2E Tests
-        uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/report-status.yml@ci/merge-queue-workflow #this will fail
-        with:
-          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
-          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
-          status-checks: '["pr-merge-queue / e2e-govcloud-secure"]'
-          description: 'failing in merge queue on purpose'
-          status: 'failure'
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/report-status.yml@ci/merge-queue-workflow #this will fail
+    secrets:
+      APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
+      APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
+    with:
+      status-checks: '["pr-merge-queue / e2e-govcloud-secure"]'
+      description: 'failing in merge queue on purpose'
+      status: 'failure'
 
   # short-circuit-pull-request-event:
   #   runs-on: ubuntu-latest
