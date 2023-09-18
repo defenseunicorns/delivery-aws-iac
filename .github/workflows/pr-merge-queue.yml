@@ -12,6 +12,11 @@ defaults:
     shell: bash -eo pipefail {0}
 
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: hmarr/debug-action@v2
+
   report-success-status: # on PRs, report success for required status checks. this allows the testing to only run inside the merge queue.
     if: github.event_name == 'pull_request'
     uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/report-status.yml@ci/merge-queue-workflow
