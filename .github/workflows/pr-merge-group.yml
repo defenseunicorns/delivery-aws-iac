@@ -31,7 +31,35 @@ jobs:
     if: github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     steps:
+      # check if there are any relevant changes to run the tests on
+      - uses: dorny/paths-filter@v2
+        id: relevant_changes
+        with:
+          base: ${{ github.event.pull_request.base.ref || github.event.merge_group.base_ref }}
+          ref: ${{ github.event.pull_request.head.ref || github.event.merge_group.head_ref }}
+          filters: |
+            changes:
+              - '**/*.tf*'
+              - test/**
+              - .env
+              - .release-please-manifest.json
+              - go.mod
+              - go.sum
+              - Makefile
+
+      - name: Report status success if no matching files
+        if: steps.relevant_changes.outputs.changes == 'false'
+        uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/report-status-context@ci/merge-queue-workflow
+        with:
+          status-check: "test / e2e-commercial-insecure"
+          status: "success"
+          description: "no relevant changes to run tests on"
+          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+          token: ${{ secrets.TOKEN }}
+
       - name: Run E2E commercial insecure tests
+        if: steps.relevant_changes.outputs.changes == 'true'
         uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/e2e@ci/merge-queue-workflow
         with:
           application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
@@ -50,13 +78,41 @@ jobs:
       startsWith(github.event.merge_group.head_commit.message, 'chore(main): release')
     runs-on: ubuntu-latest
     steps:
-    - name: Run E2E govcloud secure tests
-      uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/e2e@ci/merge-queue-workflow
-      with:
-        application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
-        application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
-        token: ${{ secrets.TOKEN }}
-        role-to-assume: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
-        region: us-gov-east-1
-        github-context: "test / e2e-govcloud-secure"
-        test-to-run: "secure"
+      # check if there are any relevant changes to run the tests on
+      - uses: dorny/paths-filter@v2
+        id: relevant_changes
+        with:
+          base: ${{ github.event.pull_request.base.ref || github.event.merge_group.base_ref }}
+          ref: ${{ github.event.pull_request.head.ref || github.event.merge_group.head_ref }}
+          filters: |
+            changes:
+              - '**/*.tf*'
+              - test/**
+              - .env
+              - .release-please-manifest.json
+              - go.mod
+              - go.sum
+              - Makefile
+
+      - name: Report status success if no matching files
+        if: steps.relevant_changes.outputs.changes == 'false'
+        uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/report-status-context@ci/merge-queue-workflow
+        with:
+          status-check: "test / e2e-govcloud-secure"
+          status: "success"
+          description: "no relevant changes to run tests on"
+          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+          token: ${{ secrets.TOKEN }}
+
+      - name: Run E2E govcloud secure tests
+        if: steps.relevant_changes.outputs.changes == 'true'
+        uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/e2e@ci/merge-queue-workflow
+        with:
+          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+          token: ${{ secrets.TOKEN }}
+          role-to-assume: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+          region: us-gov-east-1
+          github-context: "test / e2e-govcloud-secure"
+          test-to-run: "secure"
