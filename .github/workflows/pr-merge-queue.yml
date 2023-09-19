@@ -34,7 +34,7 @@ jobs:
       APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
       APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
     with:
-      status-checks: '["pr-merge-queue / e2e-govcloud-secure"]'
+      status-checks: '["pr-merge-queue / e2e-commercial-insecure"]'
       description: 'failing in merge queue on purpose'
       status: 'failure'
 
