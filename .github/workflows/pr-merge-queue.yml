@@ -1,6 +1,6 @@
 # triggers on merge_group and pull_request events
 
-name: pr-merge-queue
+name: pr-merge-group
 on:
   merge_group:
   pull_request:
@@ -12,16 +12,19 @@ defaults:
     shell: bash -eo pipefail {0}
 
 jobs:
-  report-success-status: # on PRs, report success for required status checks. this allows the testing to only run inside the merge queue. "status-checks" is a json array of status checks to report the status for.
+  # on PRs, report success for required status checks. this allows the testing to only run inside the merge queue.
+  # "status-checks" is a json array of status checks to report the status for.
+  # valid values for "status" are success, failure, error, pending
+  report-success-status:
     if: github.event_name == 'pull_request'
     uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/report-status.yml@ci/merge-queue-workflow
     secrets:
       APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
       APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
     with:
-      status-checks: '["pr-merge-queue / e2e-commercial-insecure", "pr-merge-queue / e2e-govcloud-secure"]'
-      description: 'automated report success in pull request'
-      status: 'success'
+      status-checks: '["test / e2e-commercial-insecure", "test / e2e-govcloud-secure"]'
+      description: "automated report success in pull request"
+      status: "success"
 
   e2e-commercial-insecure:
     if: github.event_name == 'merge_group'
@@ -37,11 +40,12 @@ jobs:
           region: us-east-2
           github-context: "test / e2e-commercial-insecure"
           test-to-run: "insecure"
-          send-slack-message: "false"
 
-  # Run the E2E secure tests on the govcloud account in the merge queue if this is a release-please branch that merges into main
+  # Only Run the E2E secure tests in the govcloud account in the merge queue if this is a release-please branch that merges into main
   e2e-govcloud-secure:
-    if: github.event_name == 'merge_group' && github.ref_name == 'release-please--branches--main'
+    if: |
+      github.event_name == 'merge_group' &&
+      github.ref_name == 'release-please--branches--main'
     runs-on: ubuntu-latest
     steps:
     - name: Run E2E govcloud secure tests
@@ -54,4 +58,60 @@ jobs:
         region: us-gov-east-1
         github-context: "test / e2e-govcloud-secure"
         test-to-run: "secure"
-        send-slack-message: "true"
+
+  # Build the slack message strings from merge_group event data
+  build-slack-message-strings:
+    needs: e2e-govcloud-secure
+    if: |
+      github.event_name == 'merge_group' &&
+      github.ref_name == 'release-please--branches--main' &&
+      contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build slack message strings
+        id: slack-message-strings
+        shell: bash -eo pipefail {0}
+        run: |
+          GITHUB_PR_NUMBER_FROM_MERGE_QUEUE_BRANCH=echo "$GITHUB_REF_NAME" | grep -o 'pr-[0-9]*' | sed 's/pr-//'
+
+          echo "pull_request_url=https://github.com/$GITHUB_REPOSITORY/pull/$GITHUB_PR_NUMBER_FROM_MERGE_QUEUE_BRANCH" >> $GITHUB_OUTPUT
+          echo "run_url=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
+
+
+  # Send a slack message if the pipeline fails
+  send-slack-message:
+    needs: e2e-govcloud-secure
+    if: |
+      github.event_name == 'merge_group' &&
+      github.ref_name == 'release-please--branches--main' &&
+      contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Send slack message"
+      id: slack
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        # For posting a rich message using Block Kit
+        payload: |
+          {
+              "blocks": [
+                  {
+                      "type": "header",
+                      "text": {
+                          "type": "plain_text",
+                          "text": ":boom::poop::fan: Pipeline failed :fan::poop::boom:",
+                          "emoji": true
+                      }
+                  },
+                  {
+                      "type": "section",
+                      "text": {
+                          "type": "mrkdwn",
+                          "text": "See the pipeline run here: This is a mrkdwn section block :ghost: *this is bold*, and ~this is crossed out~, and <https://google.com|this is a link>"
+                      }
+                  }
+              ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
