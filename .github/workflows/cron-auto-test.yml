@@ -1,0 +1,65 @@
+name: scheduled-e2e-secure-test
+
+on:
+  schedule:
+    # daily at 12:00 UTC
+    - cron: '0 12 * * *'
+
+defaults:
+  run:
+    shell: bash -eo pipefail {0}
+
+jobs:
+  # Run secure e2e tests in govcloud
+  e2e-govcloud-secure:
+    runs-on: ubuntu-latest
+    continue-on-error: true # if the pipeline fails, we want to send a slack message
+    steps:
+    - name: Run E2E govcloud secure tests
+      uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/e2e@ci/merge-queue-workflow
+      with:
+        application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+        application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+        token: ${{ secrets.TOKEN }}
+        role-to-assume: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+        region: us-gov-east-1
+        github-context: "test / e2e-govcloud-secure"
+        test-to-run: "secure"
+
+  # Send slack message if the e2e-govcloud-secure test fails
+  send-slack-message:
+    needs: e2e-govcloud-secure
+    if: contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build slack message string
+        run: |
+          echo "GITHUB_ACTION_RUN_URL=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> $GITHUB_ENV
+
+      - name: "Send slack message"
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+                "blocks": [
+                    {
+                        "type": "header",
+                        "text": {
+                            "type": "plain_text",
+                            "text": ":boom::poop::fan: Pipeline failed :fan::poop::boom:",
+                            "emoji": true
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "See the pipeline run *<${{ env.GITHUB_ACTION_RUN_URL }}|here>*"
+                        }
+                    }
+                ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

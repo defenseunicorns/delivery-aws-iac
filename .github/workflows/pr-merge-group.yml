@@ -1,0 +1,62 @@
+# triggers on merge_group and pull_request events
+
+name: pr-merge-group
+on:
+  merge_group:
+  pull_request:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash -eo pipefail {0}
+
+jobs:
+  # on pull_request, report success for required status checks. this allows the testing to only run inside the merge queue.
+  # "status-checks" is a json array of status checks to report the status for.
+  # valid values for "status" are success, failure, error, pending
+  report-success-status:
+    if: github.event_name == 'pull_request'
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/report-status.yml@ci/merge-queue-workflow
+    secrets:
+      APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
+      APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
+    with:
+      status-checks: '["test / e2e-commercial-insecure", "test / e2e-govcloud-secure"]'
+      description: "automated report success in pull request"
+      status: "success"
+
+  # Run the E2E insecure tests in the commercial account only in the merge queue.
+  e2e-commercial-insecure:
+    if: github.event_name == 'merge_group'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run E2E commercial insecure tests
+        uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/e2e@ci/merge-queue-workflow
+        with:
+          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+          token: ${{ secrets.TOKEN }}
+          role-to-assume: ${{ secrets.NARWHAL_AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+          region: us-east-2
+          github-context: "test / e2e-commercial-insecure"
+          test-to-run: "insecure"
+
+  # Only Run the E2E secure tests in the govcloud account while in the merge queue when it is a release-please branch into main.
+  # There is no direct way to determine if the  merge queued job is a release-please branch, so we check if this string is at the beginning of the commit message.
+  e2e-govcloud-secure:
+    if: |
+      github.event_name == 'merge_group' &&
+      startsWith(github.event.merge_group.head_commit.message, 'chore(main): release')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run E2E govcloud secure tests
+      uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/e2e@ci/merge-queue-workflow
+      with:
+        application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+        application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+        token: ${{ secrets.TOKEN }}
+        role-to-assume: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+        region: us-gov-east-1
+        github-context: "test / e2e-govcloud-secure"
+        test-to-run: "secure"
