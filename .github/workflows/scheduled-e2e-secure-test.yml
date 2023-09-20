@@ -4,7 +4,6 @@ on:
   schedule:
     # daily at 12:00 UTC
     - cron: '0 12 * * *'
-  pull_request:
 
 defaults:
   run:
