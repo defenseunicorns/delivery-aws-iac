@@ -11,8 +11,8 @@ defaults:
     shell: bash -eo pipefail {0}
 
 jobs:
-  cron-test:
-    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/secure-test-with-chatops.yml@ci/merge-queue-workflow
+  scheduled-e2e-secure-test:
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/secure-test-with-chatops.yml@main
     secrets:
       APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
       APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}

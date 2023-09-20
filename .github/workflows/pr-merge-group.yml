@@ -12,7 +12,7 @@ defaults:
 
 jobs:
   pr-merge-group-test:
-    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/pr-merge-group-test.yml@ci/merge-queue-workflow
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/pr-merge-group-test.yml@main
     secrets:
       APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
       APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
