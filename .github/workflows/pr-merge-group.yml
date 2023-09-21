@@ -10,6 +10,10 @@ defaults:
   run:
     shell: bash -eo pipefail {0}
 
+permissions:
+  id-token: write # needed for oidc auth for AWS creds
+  contents: read
+
 jobs:
   pr-merge-group-test:
     uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/pr-merge-group-test.yml@main
