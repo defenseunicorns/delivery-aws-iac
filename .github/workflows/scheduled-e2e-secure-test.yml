@@ -1,0 +1,23 @@
+name: scheduled-e2e-secure-test
+
+on:
+  schedule:
+    # daily at 12:00 UTC
+    - cron: '0 12 * * *'
+
+defaults:
+  run:
+    shell: bash -eo pipefail {0}
+
+permissions:
+  id-token: write # needed for oidc auth for AWS creds
+  contents: read
+
+jobs:
+  scheduled-e2e-secure-test:
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/secure-test-with-chatops.yml@main
+    secrets:
+      APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
+      APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
+      AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+      SLACK_WEBHOOK_URL: ${{ secrets.NARWHAL_SLACK_URL }}
