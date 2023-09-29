@@ -1,0 +1,32 @@
+name: debug-update
+
+on:
+  pull_request:
+
+jobs:
+  update:
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/update.yml@ci/try-to-fix-graphql-commit-take5
+    secrets:
+      APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
+      APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
+
+  autoformat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get buildharness software versions
+        id: buildharness-software-versions
+        uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/get-buildharness-software-versions@main
+        with:
+          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+
+      - name: Autoformat
+        uses: defenseunicorns/delivery-github-actions-workflows/.github/actions/autoformat@main
+        with:
+          application_id: ${{ secrets.NARWHAL_BOT_APP_ID }}
+          application_private_key: ${{ secrets.NARWHAL_BOT_SECRET }}
+          github-context: "update / autoformat"
+          buildharness_version: ${{ steps.buildharness-software-versions.outputs.buildharness_version }}
+          golang_version: ${{ steps.buildharness-software-versions.outputs.golang_version }}
+          terraform_version: ${{ steps.buildharness-software-versions.outputs.terraform_version }}
+          zarf_version: ${{ steps.buildharness-software-versions.outputs.zarf_version }}
