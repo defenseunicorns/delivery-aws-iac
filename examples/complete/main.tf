@@ -105,7 +105,7 @@ data "aws_ami" "amazonlinux2" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-bastion.git?ref=v0.0.5"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-bastion.git?ref=v0.0.8"
 
   count = var.enable_bastion ? 1 : 0
 
@@ -298,7 +298,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.9"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks.git?ref=v0.0.10"
 
   name                                    = local.cluster_name
   aws_region                              = var.region
