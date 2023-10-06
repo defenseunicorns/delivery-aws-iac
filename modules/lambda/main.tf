@@ -14,7 +14,7 @@ module "password_lambda" {
   allowed_triggers = {
     password-rotation = {
       principal  = "events.amazonaws.com"
-      source_arn = aws_cloudwatch_event_rule.cron_eventbridge_rule.arn
+      source_arn = aws_cloudwatch_event_rule.cron_eventbridge_rule[count.index].arn
     }
   }
   environment_variables = {
