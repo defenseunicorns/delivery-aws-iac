@@ -11,6 +11,7 @@ module "password_lambda" {
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.9"
   timeout       = 900
+  publish       = true
   allowed_triggers = {
     password-rotation = {
       principal  = "events.amazonaws.com"
