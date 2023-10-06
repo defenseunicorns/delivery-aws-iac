@@ -11,7 +11,12 @@ module "password_lambda" {
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.9"
   timeout       = 900
-
+  allowed_triggers = {
+    password-rotation = {
+      principal  = "events.amazonaws.com"
+      source_arn = aws_cloudwatch_event_rule.cron_eventbridge_rule.arn
+    }
+  }
   environment_variables = {
     users                      = join(",", var.users)
     instance_ids               = join(",", var.instance_ids)
