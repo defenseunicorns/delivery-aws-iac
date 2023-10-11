@@ -10,8 +10,9 @@ jobs:
       - name: Debug
         shell: bash -exo pipefail {0}
         run: |
-          echo "${{ toJson('env.var1, env.var2') }}"
+          echo "${{ env.json }}"
         env:
           var1: "foo"
           var2: "bar"
+          json: ${{ toJson('env.var1, env.var2') }}
 
