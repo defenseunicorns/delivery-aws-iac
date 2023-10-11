@@ -1,3 +1,4 @@
+# gh workflow run matrix_debug.yml --ref ci/make-e2e-flexible
 name: matrix_debug
 
 on: workflow_dispatch
@@ -15,4 +16,4 @@ jobs:
       AWS_COMMERCIAL_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_COMMERCIAL_ROLE_TO_ASSUME }}
       AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
     with:
-      e2e-test-matrix: ${{ (github.event.client_payload.slash_command_args.named.make == '' || github.event.client_payload.slash_command_args.named.region == '') && null || format('[{{"make-target":"{0}", "region":"{1}"}}]', github.event.client_payload.slash_command_args.named.make, github.event.client_payload.slash_command_args.named.region) }}
+      e2e-test-matrix: ${{ (fromJson(github.event.client_payload.slash_command_args.named).make == null || fromJson(github.event.client_payload.slash_command_args.named).region == null) && null || format('[{{"make-target":"{0}", "region":"{1}"}}]', github.event.client_payload.slash_command_args.named.make, github.event.client_payload.slash_command_args.named.region) }}
