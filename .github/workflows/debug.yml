@@ -1,20 +1,69 @@
-name: debug
+name: populate_matrix_from_json
 
-on:
-  pull_request:
+on: workflow_dispatch
+
+defaults:
+  run:
+    shell: bash -exo pipefail {0}
 
 jobs:
-  debug:
+  step1:
     runs-on: ubuntu-latest
-    env:
-      ACTIONS_RUNNER_DEBUG: true
-    steps:
-      - name: Debug
-        shell: bash -exo pipefail {0}
-        run: |
-          echo "${{ env.json }}"
-        env:
-          var1: "foo"
-          var2: "bar"
-          json: ${{ toJson('env.var1, env.var2') }}
 
+    outputs:
+      matrix: ${{ steps.setup.outputs.matrix }}
+
+    steps:
+    - name: Setup
+      id: setup
+      env:
+        CONFIG: >-
+          [
+            {
+              "project": "foo",
+              "config": "Debug",
+              "nested": [
+                {
+                  "val": "val1"
+                }
+              ]
+            },
+            {
+              "project": "bar",
+              "config": "Release",
+              "nested": [
+                {
+                  "val": "val2"
+                },
+                {
+                  "val": "val3"
+                }
+              ]
+            }
+          ]
+      run: echo "matrix=$(jq -r -c . <<< "$CONFIG")" >> $GITHUB_OUTPUT
+
+    - name: Check
+      run: jq . <<< '${{ steps.setup.outputs.matrix }}'
+
+  step2:
+    needs: step1
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include: ${{ fromJSON(needs.step1.outputs.matrix) }}
+
+    steps:
+    - name: Check
+      env:
+        MATRIX: ${{ toJSON(matrix) }}
+        PROJECT: ${{ fromJSON(toJSON(matrix)).project }}
+        CONFIG: ${{ fromJSON(toJSON(matrix)).config }}
+        NESTED: ${{ join(fromJSON(toJSON(matrix)).nested.*.val, ', ') }}
+      run: |
+        echo "MATRIX: $(jq -r -c '.' <<< "$MATRIX")"
+        echo "PROJECT: [$PROJECT]"
+        echo "CONFIG: [$CONFIG]"
+        echo "NESTED: [$NESTED]"
