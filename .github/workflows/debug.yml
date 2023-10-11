@@ -1,0 +1,17 @@
+name: debug
+
+on:
+  pull_request:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug
+        shell: bash -exo pipefail {0}
+        run: |
+          echo "${{ toJson('env.var1, env.var2') }}"
+        env:
+          var1: "foo"
+          var2: "bar"
+

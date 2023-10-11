@@ -19,9 +19,11 @@ defaults:
 
 jobs:
   e2e-test:
-    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/e2e-test.yml@main
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/e2e-test.yml@ci/make-e2e-test-accept-arbitrary-targets
     secrets:
       APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
       APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
       AWS_COMMERCIAL_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_COMMERCIAL_ROLE_TO_ASSUME }}
       AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+    with:
+      e2e-test-matrix: ${{ github.event.client_payload.slash_command_args.named.make }}
