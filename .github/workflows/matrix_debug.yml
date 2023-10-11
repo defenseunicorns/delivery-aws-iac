@@ -1,21 +1,10 @@
-# This workflow is triggered by a comment on a pull request. The comment must contain "/test <command>" to trigger the workflow.
+name: matrix_debug
 
-# Attribution for a bunch of this goes to CloudPosse
-# https://github.com/cloudposse/actions/blob/master/.github/workflows/test-command.yml
-
-name: test
-on:
-  repository_dispatch:
-    types: [test-command]
-
-permissions:
-  id-token: write
-  contents: read
+on: workflow_dispatch
 
 defaults:
   run:
-    # We need -e -o pipefail for consistency with GitHub Actions' default behavior
-    shell: bash -e -o pipefail {0}
+    shell: bash -exo pipefail {0}
 
 jobs:
   e2e-test:
@@ -27,4 +16,3 @@ jobs:
       AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
     with:
       e2e-test-matrix: ${{ (github.event.client_payload.slash_command_args.named.make == '' || github.event.client_payload.slash_command_args.named.region == '') && 'null' || format('[{"make-target": "{0}", "region": "{1}"}]', github.event.client_payload.slash_command_args.named.make, github.event.client_payload.slash_command_args.named.region) }}
-      # e2e-test-matrix: '[{"make-target": "${{ github.event.client_payload.slash_command_args.named.make }}", "region": "${{ github.event.client_payload.slash_command_args.named.region}}"}]'
