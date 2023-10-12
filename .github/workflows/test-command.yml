@@ -14,7 +14,6 @@ name: test
 on:
   repository_dispatch:
     types: [test-command]
-  workflow_dispatch:
 
 
 permissions:
@@ -28,7 +27,7 @@ defaults:
 
 jobs:
   e2e-test:
-    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/e2e-test.yml@ci/make-e2e-test-accept-arbitrary-targets
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/e2e-test.yml@main
     secrets:
       APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
       APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
