@@ -103,17 +103,17 @@ bastion-connect: _create-folders ## To be used after deploying "secure mode" of 
 test: ## Run all automated tests. Requires access to an AWS account. Costs real money.
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h"
 
-.PHONY: test-complete-insecure
-test-complete-insecure: ## Run one test (TestExamplesCompleteInsecure). Requires access to an AWS account. Costs real money.
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteInsecure"
+.PHONY: ci-test-complete-common
+ci-test-complete-common: ## Run one test (TestExamplesCompleteCommon). Requires access to an AWS account. Costs real money.
+	$(MAKE) _test-all TF_VAR_region='us-east-2' EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteCommon"
 
-.PHONY: test-complete-secure
-test-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires access to an AWS account. Costs real money.
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteSecure"
+.PHONY: ci-test-complete-govcloud
+ci-test-complete-govcloud: ## Run one test (TestExamplesCompleteGovcloud). Requires access to an AWS account. Costs real money.
+	$(MAKE) _test-all TF_VAR_region='us-gov-west-1' EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteGovcloud"
 
 .PHONY: test-complete-plan-only
 test-complete-plan-only: ## Run one test (TestExamplesCompletePlanOnly). Requires access to an AWS account. It will not cost money or create any resources since it is just running `terraform plan`.
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run  TestExamplesCompletePlanOnly"
+	$(MAKE) _test-all TF_VAR_region='us-east-2 EXTRA_TEST_ARGS="-timeout 2h -run  TestExamplesCompletePlanOnly"
 
 .PHONY: docker-save-build-harness
 docker-save-build-harness: _create-folders ## Pulls the build harness docker image and saves it to a tarball
@@ -170,3 +170,4 @@ fix-cache-permissions: ## Fixes the permissions on the pre-commit cache
 .PHONY: autoformat
 autoformat: ## Update files with automatic formatting tools. Uses Docker for maximum compatibility.
 	$(MAKE) _runhooks HOOK="" SKIP="check-added-large-files,check-merge-conflict,detect-aws-credentials,detect-private-key,check-yaml,golangci-lint,terraform_checkov,terraform_tflint,renovate-config-validator"
+
