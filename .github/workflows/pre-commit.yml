@@ -1,9 +1,10 @@
-# # If the workflow trigger is "pull_request", run pre-commit checks.
+# If the workflow trigger is "pull_request", run pre-commit checks.
 name: pre-commit
 
 on:
   pull_request:
   merge_group:
+  workflow_dispatch:
 
 
 permissions:
