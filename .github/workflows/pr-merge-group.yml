@@ -1,24 +1,24 @@
-# # triggers on merge_group and pull_request events
+# triggers on merge_group and pull_request events
 
-# name: pr-merge-group
-# on:
-#   merge_group:
-#     types: [checks_requested]
-#   pull_request:
+name: pr-merge-group
+on:
+  merge_group:
+    types: [checks_requested]
+  pull_request:
 
-# defaults:
-#   run:
-#     shell: bash -eo pipefail {0}
+defaults:
+  run:
+    shell: bash -eo pipefail {0}
 
-# permissions:
-#   id-token: write # needed for oidc auth for AWS creds
-#   contents: read
+permissions:
+  id-token: write # needed for oidc auth for AWS creds
+  contents: read
 
-# jobs:
-#   pr-merge-group-test:
-#     uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/pr-merge-group-test.yml@main
-#     secrets:
-#       APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
-#       APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
-#       AWS_COMMERCIAL_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_COMMERCIAL_ROLE_TO_ASSUME }}
-#       AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
+jobs:
+  pr-merge-group-test:
+    uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/pr-merge-group-test.yml@main
+    secrets:
+      APPLICATION_ID: ${{ secrets.NARWHAL_BOT_APP_ID }}
+      APPLICATION_PRIVATE_KEY: ${{ secrets.NARWHAL_BOT_SECRET }}
+      AWS_COMMERCIAL_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+      AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
