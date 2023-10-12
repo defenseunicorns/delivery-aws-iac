@@ -1,7 +1,14 @@
-# This workflow is triggered by a comment on a pull request. The comment must contain "/test <command>" to trigger the workflow.
+# usage:
+  # A user with write status to the repo can from a PR comment:
 
-# Attribution for a bunch of this goes to CloudPosse
-# https://github.com/cloudposse/actions/blob/master/.github/workflows/test-command.yml
+  # run a single test
+  # /test make <make-target> region <region>
+
+  # run ping test
+  # /test ping
+
+  # run all tests in the makefile
+  # /test
 
 name: test
 on:
@@ -28,7 +35,5 @@ jobs:
       AWS_COMMERCIAL_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_COMMERCIAL_ROLE_TO_ASSUME }}
       AWS_GOVCLOUD_ROLE_TO_ASSUME: ${{ secrets.NARWHAL_AWS_GOVCLOUD_ROLE_TO_ASSUME }}
     with:
-      # this is a hack to check if the required slash command args are present, if so populate the json matrix, else pass in null and relevant e2e tests that would require a make target and region will be skipped
-      # /test ping will be ran or other jobs that don't require the matrix can be ran based on additional job logic
-      # e2e-test-matrix: ${{ (contains(github.event.client_payload.slash_command_args.named, 'make') && contains(github.event.client_payload.slash_command_args.named, 'region')) && format('[{{"make-target":"{0}", "region":"{1}"}}]', github.event.client_payload.slash_command_args.named.make, github.event.client_payload.slash_command_args.named.region) || null }}
-      e2e-test-matrix: ${{ format('[{{"make-target":"{0}", "region":"{1}"}}]', 'test-complete-plan-only', 'us-east-2')}}
+      # check if the required slash command args are present, if so populate the json matrix, else pass in null and relevant e2e tests that would require a make target and region will be skipped
+      e2e-test-matrix: ${{ (contains(github.event.client_payload.slash_command_args.named, 'make') && contains(github.event.client_payload.slash_command_args.named, 'region')) && format('[{{"make-target":"{0}", "region":"{1}"}}]', github.event.client_payload.slash_command_args.named.make, github.event.client_payload.slash_command_args.named.region) || null }}
