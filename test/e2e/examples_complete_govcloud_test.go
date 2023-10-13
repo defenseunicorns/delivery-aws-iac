@@ -14,7 +14,7 @@ import (
 	"github.com/defenseunicorns/delivery-aws-iac/test/e2e/utils"
 )
 
-// This test deploys the complete example in "secure mode". Secure mode is:
+// This test deploys the complete example in govcloud, "secure mode". Secure mode is:
 // - Self-managed nodegroups only
 // - Dedicated instance tenancy
 // - EKS public endpoint disabled
@@ -23,7 +23,7 @@ import (
 // 2. With Sshuttle tunneling to the bastion, deploy the rest of the example.
 // 3. With Sshuttle tunneling to the bastion, destroy EKS cluster.
 // 4. Destroy the rest of the example.
-func TestExamplesCompleteSecure(t *testing.T) {
+func TestExamplesCompleteGovcloud(t *testing.T) {
 	t.Parallel()
 	// Setup options
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")

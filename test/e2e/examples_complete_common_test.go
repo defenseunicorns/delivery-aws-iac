@@ -10,7 +10,7 @@ import (
 	"github.com/defenseunicorns/delivery-aws-iac/test/e2e/utils"
 )
 
-func TestExamplesCompleteInsecure(t *testing.T) {
+func TestExamplesCompleteCommon(t *testing.T) {
 	t.Parallel()
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
 	terraformOptions := &terraform.Options{
