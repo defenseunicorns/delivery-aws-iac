@@ -105,15 +105,15 @@ test: ## Run all automated tests. Requires access to an AWS account. Costs real 
 
 .PHONY: ci-test-complete-common
 ci-test-complete-common: ## Run one test (TestExamplesCompleteCommon). Requires access to an AWS account. Costs real money.
-	$(MAKE) _test-all TF_VAR_region='us-east-2' EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteCommon"
+	$(MAKE) _test-all TF_VAR_region=$(or $(REGION),us-east-2) EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteCommon"
 
 .PHONY: ci-test-complete-govcloud
 ci-test-complete-govcloud: ## Run one test (TestExamplesCompleteGovcloud). Requires access to an AWS account. Costs real money.
-	$(MAKE) _test-all TF_VAR_region='us-gov-west-1' EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteGovcloud"
+	$(MAKE) _test-all TF_VAR_region=$(or $(REGION),us-gov-west-1) EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteGovcloud"
 
 .PHONY: test-complete-plan-only
 test-complete-plan-only: ## Run one test (TestExamplesCompletePlanOnly). Requires access to an AWS account. It will not cost money or create any resources since it is just running `terraform plan`.
-	$(MAKE) _test-all TF_VAR_region='us-east-2 EXTRA_TEST_ARGS="-timeout 2h -run  TestExamplesCompletePlanOnly"
+	$(MAKE) _test-all TF_VAR_region=$(or $(REGION),us-east-2) EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompletePlanOnly"
 
 .PHONY: docker-save-build-harness
 docker-save-build-harness: _create-folders ## Pulls the build harness docker image and saves it to a tarball
