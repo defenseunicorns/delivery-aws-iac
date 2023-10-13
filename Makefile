@@ -103,7 +103,7 @@ bastion-connect: _create-folders ## To be used after deploying "secure mode" of 
 test: ## Run all automated tests. Requires access to an AWS account. Costs real money.
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h"
 
-.PHONY: ci-test-complete-common
+.PHONY: ci-test-common
 ci-test-complete-common: ## Run one test (TestExamplesCompleteCommon). Requires access to an AWS account. Costs real money.
 	$(MAKE) _test-all TF_VAR_region=$(or $(REGION),us-east-2) EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteCommon"
 
