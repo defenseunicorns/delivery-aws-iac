@@ -104,7 +104,7 @@ test: ## Run all automated tests. Requires access to an AWS account. Costs real 
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h"
 
 .PHONY: ci-test-common
-ci-test-complete-common: ## Run one test (TestExamplesCompleteCommon). Requires access to an AWS account. Costs real money.
+ci-test-common: ## Run one test (TestExamplesCompleteCommon). Requires access to an AWS account. Costs real money.
 	$(MAKE) _test-all TF_VAR_region=$(or $(REGION),us-east-2) EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteCommon"
 
 .PHONY: ci-test-complete-govcloud
