@@ -22,7 +22,7 @@ This example deploys:
 
 ## Deploy/Destroy
 
-See the [examples README](../README.md) for instructions on how to deploy/destroy this example. The make targets for this example are either `ci-test-common` or `ci-test-complete-govcloud`.
+See the [examples README](../README.md) for instructions on how to deploy/destroy this example. The make targets for this example are either `test-ci-complete-insecure` or `test-release-complete-secure`.
 
 ## Connect
 

@@ -17,7 +17,7 @@ This directory contains examples of how to use the various modules in this repos
 
 ### Deploy
 
-We'll be using our automated tests to stand up environments. They use [Terratest](https://github.com/gruntwork-io/terratest). Each test is based on one of examples in the `examples` directory. For example, if you want to stand up the "complete" example in "insecure" mode, you'll run the `ci-test-common` target.
+We'll be using our automated tests to stand up environments. They use [Terratest](https://github.com/gruntwork-io/terratest). Each test is based on one of examples in the `examples` directory. For example, if you want to stand up the "complete" example in "insecure" mode, you'll run the `test-ci-complete-insecure` target.
 
 ```shell
 export SKIP_TEARDOWN=1
