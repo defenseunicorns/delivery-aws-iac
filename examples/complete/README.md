@@ -18,7 +18,7 @@ This example deploys:
   - You also have the option of enabling slack notifications for the password rotation status by setting the variables slack_notification_enabled and slack_webhook_url
   - Note that this function deploys resources outside of terraform. Secrets and Parameter store resources are created by the function and need to be deleted manually. If slack notifications are enabled you will need to create a slack webhook url to put into the variable.
 
-> This example has 2 modes: "insecure" and "secure". Insecure mode uses managed nodegroups, default instance tenancy, and enables the public endpoint on the EKS cluster. Secure mode uses self-managed nodegroups, dedicated instance tenancy, and disables the public endpoint on the EKS cluster. The method of choosing which mode to use is by using either `fixtures.insecure.tfvars` or `fixtures.secure.tfvars` as an overlay on top of `fixtures.common.tfvars`.
+> This example has 2 modes: "insecure"(commercial) and "secure"(govcloud). Insecure mode uses managed nodegroups, default instance tenancy, and enables the public endpoint on the EKS cluster. Secure mode uses self-managed nodegroups, dedicated instance tenancy, and disables the public endpoint on the EKS cluster. The method of choosing which mode to use is by using either `fixtures.commercial.tfvars` or `fixtures.govcloud.tfvars` as an overlay on top of `fixtures.common.tfvars`.
 
 ## Deploy/Destroy
 

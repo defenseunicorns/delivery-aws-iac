@@ -25,9 +25,8 @@ crash.*.log
 
 # Except ones that we do want to commit because they are used for automated tests
 !examples/complete/fixtures.common.tfvars
-!examples/complete/fixtures.insecure.tfvars
-!examples/complete/fixtures.secure.tfvars
-!modules/cloudtrail/examples/complete/fixtures.create-bucket.tfvars
+!examples/complete/fixtures.commercial.tfvars
+!examples/complete/fixtures.govcloud.tfvars
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in

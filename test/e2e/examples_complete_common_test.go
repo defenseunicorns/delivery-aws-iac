@@ -18,7 +18,7 @@ func TestExamplesCompleteCommon(t *testing.T) {
 		Upgrade:      false,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
-			"fixtures.insecure.tfvars",
+			"fixtures.commercial.tfvars",
 		},
 		RetryableTerraformErrors: map[string]string{
 			".*": "Failed to apply Terraform configuration due to an error.",

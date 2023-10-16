@@ -35,7 +35,7 @@ func TestExamplesCompleteGovcloud(t *testing.T) {
 		TerraformDir: tempFolder,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
-			"fixtures.secure.tfvars",
+			"fixtures.govcloud.tfvars",
 		},
 		RetryableTerraformErrors: map[string]string{
 			".*": "Failed to apply Terraform configuration due to an error.",
@@ -47,7 +47,7 @@ func TestExamplesCompleteGovcloud(t *testing.T) {
 		TerraformDir: tempFolder,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
-			"fixtures.secure.tfvars",
+			"fixtures.govcloud.tfvars",
 		},
 		Targets: []string{
 			"module.vpc",
@@ -63,7 +63,7 @@ func TestExamplesCompleteGovcloud(t *testing.T) {
 		TerraformDir: tempFolder,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
-			"fixtures.secure.tfvars",
+			"fixtures.govcloud.tfvars",
 		},
 		Targets: []string{
 			"module.eks",
