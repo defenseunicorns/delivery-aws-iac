@@ -23,8 +23,9 @@ Have only 2 required status checks:
 - e2e-tests
 
 For e2e testing and pre-commit checks:
-- Have pipeline read the caller repo's makefile
+- Have pipeline read the caller repo's makefile to determine what tests to run
 - Find make targets starting with `ci-test-` for e2e testing jobs
+  - We will need to add a 'default' AWS region to each `ci-test-` make target. This will be used to determine which role github actions will assume to run the tests.
 - For each target, add to an array building a matrix of e2e-tests passed into the e2e test workflow to run in parallel
 - Find make targets starting with `pre-commit-` for pre-commit jobs
 - For each target, add to an array building a matrix of pre-commit jobs that will be passed into the pre-commit workflow to run in parallel
