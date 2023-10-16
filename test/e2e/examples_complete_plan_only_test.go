@@ -15,7 +15,7 @@ func TestExamplesCompletePlanOnly(t *testing.T) {
 		Upgrade:      false,
 		VarFiles: []string{
 			"fixtures.common.tfvars",
-			"fixtures.commercial.tfvars",
+			"fixtures.insecure.tfvars",
 		},
 		// Set any overrides for variables you would like to validate
 		Vars: map[string]interface{}{

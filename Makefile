@@ -105,15 +105,15 @@ bastion-connect: _create-folders ## To be used after deploying "secure mode" of 
 test: ## Run all automated tests. Requires access to an AWS account. Costs real money.
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h"
 
-.PHONY: ci-test-common
-ci-test-common: ## Run one test (TestExamplesCompleteCommon). Requires access to an AWS account. Costs real money.
+.PHONY: test-ci-complete-insecure
+test-ci-complete-insecure: ## Run one test (TestExamplesCompleteInsecure). Requires access to an AWS account. Costs real money.
 	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-east-2))
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteCommon"
+	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteInsecure"
 
-.PHONY: ci-test-complete-govcloud
-ci-test-complete-govcloud: ## Run one test (TestExamplesCompleteGovcloud). Requires access to an AWS account. Costs real money.
+.PHONY: test-release-complete-secure
+test-release-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires access to an AWS account. Costs real money.
 	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-gov-west-1))
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteGovcloud"
+	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteSecure"
 
 .PHONY: test-complete-plan-only
 test-complete-plan-only: ## Run one test (TestExamplesCompletePlanOnly). Requires access to an AWS account. It will not cost money or create any resources since it is just running `terraform plan`.
