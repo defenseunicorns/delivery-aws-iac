@@ -2,7 +2,7 @@
   # A user with write status to the repo can from a PR comment:
 
   # run a single test
-  # /test make <make-target> region <region>
+  # /test make=<make-target> region=<region>
 
   # run ping test
   # /test ping
