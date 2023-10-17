@@ -35,8 +35,8 @@ _create-folders:
 .PHONY: _test-all
 _test-all: _create-folders
 	# import any TF_VAR_ environment variables into the docker container.
-	TF_VARS := $(shell env | grep '^TF_VAR_' | awk -F= '{printf "-e %s ", $$1}')
-	echo "Running automated tests. This will take several minutes. At times it does not log anything to the console. If you interrupt the test run you will need to log into AWS console and manually delete any orphaned infrastructure."
+	echo "Running automated tests. This will take several minutes. At times it does not log anything to the console. If you interrupt the test run you will need to log into AWS console and manually delete any orphaned infrastructure.";\
+	TF_VARS=$$(env | grep '^TF_VAR_' | awk -F= '{printf "-e %s ", $$1}'); \
 	docker run $(TTY_ARG) --rm \
 		--cap-add=NET_ADMIN \
 		--cap-add=NET_RAW \
@@ -63,7 +63,7 @@ _test-all: _create-folders
 		-e SKIP_SETUP \
 		-e SKIP_TEST \
 		-e SKIP_TEARDOWN \
-		${TF_VARS} \
+		$${TF_VARS} \
 		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
 		bash -c 'git config --global --add safe.directory /app && cd examples/complete && terraform init -upgrade=true && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
 
