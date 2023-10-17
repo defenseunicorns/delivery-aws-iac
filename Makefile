@@ -34,7 +34,9 @@ _create-folders:
 
 .PHONY: _test-all
 _test-all: _create-folders
-	echo "Running automated tests. This will take several minutes. At times it does not log anything to the console. If you interrupt the test run you will need to log into AWS console and manually delete any orphaned infrastructure."
+	# import any TF_VAR_ environment variables into the docker container.
+	echo "Running automated tests. This will take several minutes. At times it does not log anything to the console. If you interrupt the test run you will need to log into AWS console and manually delete any orphaned infrastructure.";\
+	TF_VARS=$$(env | grep '^TF_VAR_' | awk -F= '{printf "-e %s ", $$1}'); \
 	docker run $(TTY_ARG) --rm \
 		--cap-add=NET_ADMIN \
 		--cap-add=NET_RAW \
@@ -61,7 +63,7 @@ _test-all: _create-folders
 		-e SKIP_SETUP \
 		-e SKIP_TEST \
 		-e SKIP_TEARDOWN \
-		-e TF_VAR_region \
+		$${TF_VARS} \
 		${BUILD_HARNESS_REPO}:${BUILD_HARNESS_VERSION} \
 		bash -c 'git config --global --add safe.directory /app && cd examples/complete && terraform init -upgrade=true && cd ../../test/e2e && go test -count 1 -v $(EXTRA_TEST_ARGS) .'
 
@@ -103,17 +105,20 @@ bastion-connect: _create-folders ## To be used after deploying "secure mode" of 
 test: ## Run all automated tests. Requires access to an AWS account. Costs real money.
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h"
 
-.PHONY: test-complete-insecure
-test-complete-insecure: ## Run one test (TestExamplesCompleteInsecure). Requires access to an AWS account. Costs real money.
+.PHONY: test-ci-complete-insecure
+test-ci-complete-insecure: ## Run one test (TestExamplesCompleteInsecure). Requires access to an AWS account. Costs real money.
+	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-east-2))
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteInsecure"
 
-.PHONY: test-complete-secure
-test-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires access to an AWS account. Costs real money.
+.PHONY: test-release-complete-secure
+test-release-complete-secure: ## Run one test (TestExamplesCompleteSecure). Requires access to an AWS account. Costs real money.
+	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-gov-west-1))
 	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 3h -run TestExamplesCompleteSecure"
 
 .PHONY: test-complete-plan-only
 test-complete-plan-only: ## Run one test (TestExamplesCompletePlanOnly). Requires access to an AWS account. It will not cost money or create any resources since it is just running `terraform plan`.
-	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run  TestExamplesCompletePlanOnly"
+	$(eval export TF_VAR_region := $(or $(REGION),$(TF_VAR_region),us-east-2))
+	$(MAKE) _test-all EXTRA_TEST_ARGS="-timeout 2h -run TestExamplesCompletePlanOnly"
 
 .PHONY: docker-save-build-harness
 docker-save-build-harness: _create-folders ## Pulls the build harness docker image and saves it to a tarball

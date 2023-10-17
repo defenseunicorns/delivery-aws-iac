@@ -4,6 +4,7 @@ name: pre-commit
 on:
   pull_request:
   merge_group:
+  workflow_dispatch:
 
 
 permissions:
@@ -12,7 +13,6 @@ permissions:
   contents: read
 
 jobs:
-
   pre-commit:
     uses: defenseunicorns/delivery-github-actions-workflows/.github/workflows/pre-commit.yml@main
     secrets:

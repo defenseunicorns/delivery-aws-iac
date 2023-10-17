@@ -1,4 +1,5 @@
 # triggers on merge_group and pull_request events
+# only use this if merge queue is enabled, otherwise stick to test-command for e2e testing
 
 name: pr-merge-group
 on:
