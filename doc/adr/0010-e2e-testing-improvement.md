@@ -4,9 +4,9 @@ Date: 2023-09-14
 
 ## Status
 
-Accepted
-
 Supersedes [08. how to trigger automated tests](0008-how-to-trigger-automated-tests.md)
+
+Superceded by [11. e2e ci test scaling](0011-e2e-ci-test-scaling.md)
 
 ## Context
 
