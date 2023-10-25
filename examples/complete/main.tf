@@ -439,7 +439,7 @@ module "password_lambda" {
 
   count = var.enable_bastion ? 1 : 0
 
-  source                          = "git::https://github.com/defenseunicorns/terraform-aws-uds-lambda.git?ref=v0.0.1-alpha"
+  source                          = "git::https://github.com/defenseunicorns/terraform-aws-uds-lambda.git?ref=v0.0.2"
   enable_password_rotation_lambda = var.enable_password_rotation_lambda
   region                          = var.region
   random_id                       = lower(random_id.default.hex)
