@@ -18,6 +18,7 @@ Details of the UDS-IaC modules tested by this repository can be found in each of
 - [RDS Module](https://github.com/defenseunicorns/terraform-aws-uds-rds)
 - [EKS Module](https://github.com/defenseunicorns/terraform-aws-uds-eks)
 - [Bastion Module](https://github.com/defenseunicorns/terraform-aws-uds-bastion)
+- [Lambda Module](https://github.com/defenseunicorns/terraform-aws-uds-lambda)
 
 ## Supported Integrations
 
