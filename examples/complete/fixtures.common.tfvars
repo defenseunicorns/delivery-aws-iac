@@ -83,7 +83,7 @@ storageclass_reclaim_policy          = "Delete" # set to `Retain` for non-dev us
 #wait false for all addons, as it times out on teardown in the test pipeline
 
 enable_amazon_eks_aws_efs_csi_driver = true
-#todo - move from blueprints to marketplace addons in terraform-aws-uds-eks
+#todo - move from blueprints to marketplace addons in terraform-aws-eks
 aws_efs_csi_driver = {
   wait          = false
   chart_version = "2.4.8"
