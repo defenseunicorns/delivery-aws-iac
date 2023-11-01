@@ -117,7 +117,7 @@ metrics_server = {
 ################## Lambda Config #####################
 
 ################# Password Rotation ##################
-enable_password_rotation_lambda = true
+enable_password_rotation_lambda = false
 # Add users that will be on your ec2 instances.
 users = ["ec2-user", "Administrator"]
 
