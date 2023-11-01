@@ -3,9 +3,9 @@
 
 tags = {
   Environment = "dev"
-  Project     = "du-iac-cicd"
+  Project     = "gabe-crossplane"
 }
-name_prefix               = "ex-complete"
+name_prefix               = "ex-cm-cp"
 manage_aws_auth_configmap = true
 
 ###########################################################
