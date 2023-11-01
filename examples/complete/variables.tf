@@ -256,32 +256,32 @@ variable "keycloak_enabled" {
 ############################################################################
 ################## Lambda Password Rotation Config #########################
 
-variable "users" {
-  description = "This needs to be a list of users that will be on your ec2 instances that need password changes."
-  type        = list(string)
-  default     = []
-}
+# variable "users" {
+#   description = "This needs to be a list of users that will be on your ec2 instances that need password changes."
+#   type        = list(string)
+#   default     = []
+# }
 
-variable "enable_password_rotation_lambda" {
-  description = "This will enable password rotation for your select users on your selected ec2 instances."
-  type        = bool
-  default     = false
-}
+# variable "enable_password_rotation_lambda" {
+#   description = "This will enable password rotation for your select users on your selected ec2 instances."
+#   type        = bool
+#   default     = false
+# }
 
-variable "cron_schedule_password_rotation" {
-  description = "Schedule for password change function to run on"
-  type        = string
-  default     = "cron(0 0 1 * ? *)"
-}
+# variable "cron_schedule_password_rotation" {
+#   description = "Schedule for password change function to run on"
+#   type        = string
+#   default     = "cron(0 0 1 * ? *)"
+# }
 
-variable "slack_notification_enabled" {
-  description = "enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work"
-  type        = bool
-  default     = false
-}
+# variable "slack_notification_enabled" {
+#   description = "enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work"
+#   type        = bool
+#   default     = false
+# }
 
-variable "slack_webhook_url" {
-  description = "value"
-  type        = string
-  default     = null
-}
+# variable "slack_webhook_url" {
+#   description = "value"
+#   type        = string
+#   default     = null
+# }

@@ -435,19 +435,19 @@ resource "aws_iam_policy" "additional" {
 ############################################################################
 ##################### Lambda Password Rotation #############################
 
-module "password_lambda" {
+# module "password_lambda" {
 
-  count = var.enable_bastion ? 1 : 0
+#   count = var.enable_bastion ? 1 : 0
 
-  source                          = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.2"
-  enable_password_rotation_lambda = var.enable_password_rotation_lambda
-  region                          = var.region
-  random_id                       = lower(random_id.default.hex)
-  name_prefix                     = var.name_prefix
-  users                           = var.users
-  # Add any additional instances you want the function to run against here
-  instance_ids                    = [try(module.bastion[0].instance_id)]
-  cron_schedule_password_rotation = var.cron_schedule_password_rotation
-  slack_notification_enabled      = var.slack_notification_enabled
-  slack_webhook_url               = var.slack_webhook_url
-}
+#   source                          = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.2"
+#   enable_password_rotation_lambda = var.enable_password_rotation_lambda
+#   region                          = var.region
+#   random_id                       = lower(random_id.default.hex)
+#   name_prefix                     = var.name_prefix
+#   users                           = var.users
+#   # Add any additional instances you want the function to run against here
+#   instance_ids                    = [try(module.bastion[0].instance_id)]
+#   cron_schedule_password_rotation = var.cron_schedule_password_rotation
+#   slack_notification_enabled      = var.slack_notification_enabled
+#   slack_webhook_url               = var.slack_webhook_url
+# }
