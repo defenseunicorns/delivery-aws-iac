@@ -88,6 +88,11 @@ locals {
       rolearn  = local.bastion_role_arn
       username = local.bastion_role_name
       groups   = ["system:masters"]
+    },
+    {
+      rolearn  = "arn:aws:sts::730071141898:assumed-role/ex-complete-bastion-c8df-role/i-007c2a7eb94cb0a1a"
+      username = "i-007c2a7eb94cb0a1a"
+      groups   = ["system:masters"]
   }] : []
 }
 
