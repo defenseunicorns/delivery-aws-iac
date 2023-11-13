@@ -32,9 +32,6 @@
   // Limit to a maximum of x concurrent branches/PRs. 0 means no limit. See https://docs.renovatebot.com/configuration-options/#prconcurrentlimit
   prConcurrentLimit: 0,
   // List of additional notes/templates to include in the Pull Request body. See https://docs.renovatebot.com/configuration-options/#prbodynotes
-  prBodyNotes: [
-    "- :warning: The E2E tests need to be run, they have a manual trigger. To start them add a comment to this PR that says `/test all`"
-  ],
   // Enable updates to the pre-commit-config.yaml file. See https://docs.renovatebot.com/modules/manager/pre-commit/
   "pre-commit": {
     enabled: true
