@@ -45,7 +45,7 @@ These maintenance PRs need to be automated as much as possible.
     - PR is merged into main and closed
     - Release-please triggers and cuts a new release
       - *Note* If this release is a dependency of another one of our repos, renovate will pick it up in its workflow, and the cycle starts over :smile:
-    - **Releases will only happen when:** terraform specific code has changed outside of the `/examples` directory. It doesn't make sense to cut a release for something that is going to affect other modules that consume it if it the changes aren't relevant to the usage of the module itself.
+    - **Releases will only happen when:** terraform specific code has changed outside of the `/examples` directory. It doesn't make sense to cut a release for something that is going to affect other modules that consume it if the changes aren't relevant to the usage of the module itself.
 
 ## Consequences
 
