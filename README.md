@@ -14,10 +14,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more information on how to contribute
 
 Details of the UDS-IaC modules tested by this repository can be found in each of the upstream repositories:
 
-- [VPC Module](https://github.com/defenseunicorns/terraform-aws-uds-vpc)
-- [RDS Module](https://github.com/defenseunicorns/terraform-aws-uds-rds)
-- [EKS Module](https://github.com/defenseunicorns/terraform-aws-uds-eks)
-- [Bastion Module](https://github.com/defenseunicorns/terraform-aws-uds-bastion)
+- [VPC Module](https://github.com/defenseunicorns/terraform-aws-vpc)
+- [RDS Module](https://github.com/defenseunicorns/terraform-aws-rds)
+- [EKS Module](https://github.com/defenseunicorns/terraform-aws-eks)
+- [Bastion Module](https://github.com/defenseunicorns/terraform-aws-bastion)
+- [Lambda Module](https://github.com/defenseunicorns/terraform-aws-lambda)
 
 ## Supported Integrations
 
