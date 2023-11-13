@@ -2,8 +2,8 @@ name: scheduled-e2e-secure-test
 
 on:
   schedule:
-    # daily at 12:00 UTC
-    - cron: '0 12 * * *'
+    # weekly on Mondays at 12:00 UTC
+    - cron: '0 12 * * 1'
 
 defaults:
   run:
