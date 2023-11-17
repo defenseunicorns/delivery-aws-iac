@@ -13,7 +13,6 @@ jobs:
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/test')
     runs-on:  ubuntu-latest
     steps:
-
       - name: Get token
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@v2
@@ -34,7 +33,6 @@ jobs:
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/update')
     runs-on:  ubuntu-latest
     steps:
-
     - name: Get token
       id: get_workflow_token
       uses: peter-murray/workflow-application-token-action@v2
