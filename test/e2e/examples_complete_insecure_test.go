@@ -7,7 +7,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	teststructure "github.com/gruntwork-io/terratest/modules/test-structure"
 
-	"github.com/defenseunicorns/delivery-aws-iac/test/e2e/utils"
+	"github.com/defenseunicorns/delivery_aws_iac_utils/pkg/utils"
 )
 
 func TestExamplesCompleteInsecure(t *testing.T) {

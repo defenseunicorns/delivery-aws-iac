@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/defenseunicorns/delivery-aws-iac/test/e2e/utils"
+	"github.com/defenseunicorns/delivery_aws_iac_utils/pkg/utils"
 )
 
 // This test deploys the complete example in govcloud, "secure mode". Secure mode is:
