@@ -17,7 +17,7 @@ repos:
         args:
           - "--allow-multiple-documents"
   - repo: https://github.com/sirosen/texthooks
-    rev: 0.6.2
+    rev: 0.6.3
     hooks:
       - id: fix-smartquotes
   - repo: https://github.com/tekwizely/pre-commit-golang
@@ -30,7 +30,7 @@ repos:
           - "--verbose"
           - "--allow-parallel-runners"
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.83.5
+    rev: v1.83.6
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
@@ -47,6 +47,6 @@ repos:
         args:
           - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 37.59.7
+    rev: 37.71.1
     hooks:
       - id: renovate-config-validator
