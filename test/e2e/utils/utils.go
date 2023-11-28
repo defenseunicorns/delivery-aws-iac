@@ -220,7 +220,13 @@ func ValidateEFSFunctionality(t *testing.T, tempFolder string) {
 	namespace := "default"
 	jobName := "test-write"
 	timeout := 2 * time.Minute
-	err = wait.PollUntilContextTimeout(context.Background(), time.Second, timeout, true, func(ctx context.Context) (bool, error) {
+
+	// Create a context with a timeout
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Use PollUntilContextCancel
+	err = wait.PollUntilContextCancel(ctx, time.Second, true, func(ctx context.Context) (bool, error) {
 		job, err := clientset.BatchV1().Jobs(namespace).Get(ctx, jobName, metav1.GetOptions{})
 		if err != nil {
 			return false, fmt.Errorf("failed to get kubernetes jobs: %w", err)
@@ -234,6 +240,7 @@ func ValidateEFSFunctionality(t *testing.T, tempFolder string) {
 		}
 		return false, nil
 	})
+
 	if err != nil {
 		DoLog("Job did not complete in time: %v\n", err)
 	} else {
