@@ -2,6 +2,13 @@ data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
+data "aws_availability_zones" "available" {
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
+
 data "aws_ami" "eks_default_bottlerocket" {
   most_recent = true
   owners      = ["amazon"]
@@ -36,13 +43,17 @@ locals {
 # VPC
 ################################################################################
 
+locals {
+  azs = [for az_name in slice(data.aws_availability_zones.available.names, 0, min(length(data.aws_availability_zones.available.names), var.num_azs)) : az_name]
+}
+
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-vpc.git?ref=v0.0.5"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-vpc.git?ref=v0.1.4"
 
   name                  = local.vpc_name
   vpc_cidr              = var.vpc_cidr
   secondary_cidr_blocks = var.secondary_cidr_blocks
-  azs                   = ["${var.region}a", "${var.region}b", "${var.region}c"]
+  azs                   = local.azs
   public_subnets        = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k)]
   private_subnets       = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 4)]
   database_subnets      = [for k, v in module.vpc.azs : cidrsubnet(module.vpc.vpc_cidr_block, 5, k + 8)]
@@ -298,10 +309,11 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.9"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.12"
 
   name                                    = local.cluster_name
   aws_region                              = var.region
+  azs                                     = module.vpc.azs
   vpc_id                                  = module.vpc.vpc_id
   private_subnet_ids                      = module.vpc.private_subnets
   control_plane_subnet_ids                = module.vpc.private_subnets

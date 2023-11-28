@@ -1,11 +1,12 @@
 .cache/
 .idea/
 .DS_Store
+.vscode
+
 
 # Local .terraform directories
 .terraform/
 *.terraform.*
-
 # .tfstate files
 *.tfstate
 *.tfstate.*
@@ -27,6 +28,7 @@ crash.*.log
 !examples/complete/fixtures.common.tfvars
 !examples/complete/fixtures.insecure.tfvars
 !examples/complete/fixtures.secure.tfvars
+!modules/cloudtrail/examples/complete/fixtures.create-bucket.tfvars
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in
@@ -58,4 +60,4 @@ examples/zarf-complete-example/build
 
 #ignore lamba builds json file created from deploying lambda resource
 
-examples/complete/builds
+**/ignore

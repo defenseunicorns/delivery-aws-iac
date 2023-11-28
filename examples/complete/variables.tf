@@ -82,6 +82,12 @@ variable "secondary_cidr_blocks" {
   default     = []
 }
 
+variable "num_azs" {
+  description = "The number of AZs to use"
+  type        = number
+  default     = 3
+}
+
 ###########################################################
 #################### EKS Config ###########################
 variable "eks_worker_tenancy" {

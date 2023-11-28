@@ -2,7 +2,15 @@
 # If Renovate is the author of the PR that triggers this workflow, but the workflow event is anything but "opened", it will do nothing.
 # If Renovate is the author of the PR that triggers this workflow, and the workflow event is "opened", it will:
 #   1. Autoformat using pre-commit and, if necessary, push an additional commit to the PR with the autoformat fixes.
-#   2. Add the "/test all" comment to the PR, so that the Slash Command Dispatch workflow is triggered automatically.
+#   2. Change the branch protection rules to turn off require codeowner approval due to github apps not being able to be codeowners or added to teams.
+#   3. narwhal-bot approves the PR.
+#   4. narwhal-bot merges the PR.
+#   5. PR is added to merge queue.
+#   6. tests are ran.
+#     a. If tests pass, PR is merged.
+#       i. If PR is merged, it is closed and branch is deleted.
+#     b. If tests fail, PR stays open and it is removed from merge queue.
+#   7. Branch protection is always set back to the original state.
 #
 # See ADR #0008.
 name: auto-test
