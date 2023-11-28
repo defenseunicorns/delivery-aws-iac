@@ -268,12 +268,6 @@ variable "users" {
   default     = []
 }
 
-variable "enable_password_rotation_lambda" {
-  description = "This will enable password rotation for your select users on your selected ec2 instances."
-  type        = bool
-  default     = false
-}
-
 variable "cron_schedule_password_rotation" {
   description = "Schedule for password change function to run on"
   type        = string

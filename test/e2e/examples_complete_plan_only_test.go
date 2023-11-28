@@ -19,8 +19,7 @@ func TestExamplesCompletePlanOnly(t *testing.T) {
 		},
 		// Set any overrides for variables you would like to validate
 		Vars: map[string]interface{}{
-			"keycloak_enabled":                false,
-			"enable_password_rotation_lambda": false,
+			"keycloak_enabled": false,
 		},
 		SetVarsAfterVarFiles: true,
 	}
