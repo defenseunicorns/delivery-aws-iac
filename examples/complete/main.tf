@@ -116,7 +116,7 @@ data "aws_ami" "amazonlinux2" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.5"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.11"
 
   count = var.enable_bastion ? 1 : 0
 
@@ -451,7 +451,7 @@ module "password_lambda" {
 
   count = var.enable_bastion ? 1 : 0
 
-  source                          = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.2"
+  source                          = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.3"
   enable_password_rotation_lambda = var.enable_password_rotation_lambda
   region                          = var.region
   random_id                       = lower(random_id.default.hex)
