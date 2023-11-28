@@ -451,12 +451,11 @@ module "password_lambda" {
 
   count = var.enable_bastion ? 1 : 0
 
-  source                          = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.3"
-  enable_password_rotation_lambda = var.enable_password_rotation_lambda
-  region                          = var.region
-  random_id                       = lower(random_id.default.hex)
-  name_prefix                     = var.name_prefix
-  users                           = var.users
+  source      = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.3"
+  region      = var.region
+  random_id   = lower(random_id.default.hex)
+  name_prefix = var.name_prefix
+  users       = var.users
   # Add any additional instances you want the function to run against here
   instance_ids                    = [try(module.bastion[0].instance_id)]
   cron_schedule_password_rotation = var.cron_schedule_password_rotation
