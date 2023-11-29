@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 			default:
 				utils.DoLog("The test is still running! Don't kill me!")
 			}
-			time.Sleep(10 * time.Second)
+			time.Sleep(180 * time.Second)
 		}
 	}()
 	exitVal := m.Run()
