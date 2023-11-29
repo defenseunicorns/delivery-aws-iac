@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.0.11](https://github.com/defenseunicorns/delivery-aws-iac/compare/v0.0.10...v0.0.11) (2023-11-28)
+
+
+### Features
+
+* migrate lambda module to its own repo ([#375](https://github.com/defenseunicorns/delivery-aws-iac/issues/375)) ([1447362](https://github.com/defenseunicorns/delivery-aws-iac/commit/14473623f34561aaa14940855243f0ee79c88e1c))
+
+
+### Bug Fixes
+
+* **deps:** update all dependencies ([#382](https://github.com/defenseunicorns/delivery-aws-iac/issues/382)) ([58483e5](https://github.com/defenseunicorns/delivery-aws-iac/commit/58483e5ba53be677329a79314b2af1b91fd4602f))
+
+
+### Documentation
+
+* ADR 11 for ci testing refactor ([#374](https://github.com/defenseunicorns/delivery-aws-iac/issues/374)) ([f35c424](https://github.com/defenseunicorns/delivery-aws-iac/commit/f35c4244a84b38aedad855f46a36289728495c6c))
+* spike/adr for e2e testing ([#354](https://github.com/defenseunicorns/delivery-aws-iac/issues/354)) ([360cc0b](https://github.com/defenseunicorns/delivery-aws-iac/commit/360cc0be575dc002478e881b4cd376516f9314ea))
+* update ADR ([#378](https://github.com/defenseunicorns/delivery-aws-iac/issues/378)) ([df4a7ec](https://github.com/defenseunicorns/delivery-aws-iac/commit/df4a7ec2eefd089d4ff267c93c0cbb33c787f50d))
+
+
+### Miscellaneous Chores
+
+* **deps:** update all dependencies ([#352](https://github.com/defenseunicorns/delivery-aws-iac/issues/352)) ([122308a](https://github.com/defenseunicorns/delivery-aws-iac/commit/122308a1f73f808fe158a255d98d3de4bd5030dd))
+* remove uds references ([#376](https://github.com/defenseunicorns/delivery-aws-iac/issues/376)) ([ba9f8b2](https://github.com/defenseunicorns/delivery-aws-iac/commit/ba9f8b2bdc7d88d68e967194f9b94119ebaca855))
+
+
+### Continuous Integration
+
+* e2e secure test once a week ([#379](https://github.com/defenseunicorns/delivery-aws-iac/issues/379)) ([0a56de6](https://github.com/defenseunicorns/delivery-aws-iac/commit/0a56de6e69bc64b20e41a053393be6b3fab90737))
+* fix permissions issues and move release-please to reusable workflow ([#365](https://github.com/defenseunicorns/delivery-aws-iac/issues/365)) ([f847649](https://github.com/defenseunicorns/delivery-aws-iac/commit/f84764990254ceea749651a77f5ee2d7578cdf35))
+* make ci flexible ([#372](https://github.com/defenseunicorns/delivery-aws-iac/issues/372)) ([c1aa0e0](https://github.com/defenseunicorns/delivery-aws-iac/commit/c1aa0e06e37190702fc9c1c61809facd18b1af21))
+* merge queue testing implementation ([#364](https://github.com/defenseunicorns/delivery-aws-iac/issues/364)) ([9ef9fcf](https://github.com/defenseunicorns/delivery-aws-iac/commit/9ef9fcff49e5bc87397cc2747649df8895562ae8))
+* remove asdf install ([#367](https://github.com/defenseunicorns/delivery-aws-iac/issues/367)) ([6b57a1d](https://github.com/defenseunicorns/delivery-aws-iac/commit/6b57a1de742d4713e8729c7befc399ee5e0b8153))
+* update renovate window ([#381](https://github.com/defenseunicorns/delivery-aws-iac/issues/381)) ([7c495ac](https://github.com/defenseunicorns/delivery-aws-iac/commit/7c495ac62e3a4710f84bd8ee58a1303fb0b8bab6))
+
 ## [0.0.10](https://github.com/defenseunicorns/delivery-aws-iac/compare/v0.0.9...v0.0.10) (2023-09-13)
 
 
