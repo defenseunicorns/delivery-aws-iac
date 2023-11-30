@@ -274,6 +274,12 @@ variable "cron_schedule_password_rotation" {
   default     = "cron(0 0 1 * ? *)"
 }
 
+variable "cron_schedule_logs_transfer" {
+  description = "Schedule for transfer logs function to run on"
+  type        = string
+  default     = "cron(0 */4 * * ? *)"
+}
+
 variable "slack_notification_enabled" {
   description = "enable slack notifications for password rotation function. If enabled a slack webhook url will also need to be provided for this to work"
   type        = bool
