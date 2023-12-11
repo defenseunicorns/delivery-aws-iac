@@ -200,6 +200,8 @@ github.com/aws/aws-sdk-go v1.48.6 h1:hnL/TE3eRigirDLrdRE9AWE1ALZSVLAsC4wK8TGsMqk
 github.com/aws/aws-sdk-go v1.48.6/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
 github.com/aws/aws-sdk-go v1.48.11 h1:9YbiSbaF/jWi+qLRl+J5dEhr2mcbDYHmKg2V7RBcD5M=
 github.com/aws/aws-sdk-go v1.48.11/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
+github.com/aws/aws-sdk-go v1.48.16 h1:mcj2/9J/MJ55Dov+ocMevhR8Jv6jW/fAxbrn4a1JFc8=
+github.com/aws/aws-sdk-go v1.48.16/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d h1:xDfNPAt8lFiC1UJrqV3uuy861HCTo708pDMbjHHdCas=
@@ -388,6 +390,8 @@ github.com/gruntwork-io/go-commons v0.8.0 h1:k/yypwrPqSeYHevLlEDmvmgQzcyTwrlZGRa
 github.com/gruntwork-io/go-commons v0.8.0/go.mod h1:gtp0yTtIBExIZp7vyIV9I0XQkVwiQZze678hvDXof78=
 github.com/gruntwork-io/terratest v0.46.7 h1:oqGPBBO87SEsvBYaA0R5xOq+Lm2Xc5dmFVfxEolfZeU=
 github.com/gruntwork-io/terratest v0.46.7/go.mod h1:6gI5MlLeyF+SLwqocA5GBzcTix+XiuxCy1BPwKuT+WM=
+github.com/gruntwork-io/terratest v0.46.8 h1:rgK7z6Dy/eMGFaclKR0WVG9Z54tR+Ehl7S09+8Y25j0=
+github.com/gruntwork-io/terratest v0.46.8/go.mod h1:6MxfmOFQQEpQZjpuWRwuAK8qm836hYgAOCzSIZIWTmg=
 github.com/hashicorp/errwrap v1.0.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
 github.com/hashicorp/errwrap v1.1.0 h1:OxrOeh75EUXMY8TBjag2fzXGZ40LB6IKw45YeGUDY2I=
 github.com/hashicorp/errwrap v1.1.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
@@ -1097,6 +1101,8 @@ sigs.k8s.io/aws-iam-authenticator v0.6.12 h1:XlW7djx+FqvyIysdBN60AIKBvHMr+MWVT87
 sigs.k8s.io/aws-iam-authenticator v0.6.12/go.mod h1:uh/d/yhtzJXBdevntKgTKRaabgD2T/JI/YdV+9IaycE=
 sigs.k8s.io/aws-iam-authenticator v0.6.13 h1:QSQcAkpt/hF97Ogyoz6sj3WD2twTd2cmxFb4e6Rs9gA=
 sigs.k8s.io/aws-iam-authenticator v0.6.13/go.mod h1:CnvFyzR/xeLHmUY/BD0qW6q0wp6KIwXmFp4eTfrHdP8=
+sigs.k8s.io/aws-iam-authenticator v0.6.16 h1:lC9G5R6+Ls8PwvbONHLEEdbBzB6a648V+dr+cBKNklg=
+sigs.k8s.io/aws-iam-authenticator v0.6.16/go.mod h1:CnvFyzR/xeLHmUY/BD0qW6q0wp6KIwXmFp4eTfrHdP8=
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd h1:EDPBXCAspyGV4jQlpZSudPeMmr1bNJefnuqLsRAsHZo=
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd/go.mod h1:B8JuhiUyNFVKdsE8h686QcCxMaH6HrOAZj4vswFpcB0=
 sigs.k8s.io/structured-merge-diff/v4 v4.3.0 h1:UZbZAZfX0wV2zr7YZorDz6GXROfDFj6LvqCRm4VUVKk=
