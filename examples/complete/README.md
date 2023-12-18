@@ -127,7 +127,7 @@ kubectl get nodes
 | <a name="module_eks"></a> [eks](#module\_eks) | git::https://github.com/defenseunicorns/terraform-aws-eks.git | v0.0.12 |
 | <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
 | <a name="module_password_lambda"></a> [password\_lambda](#module\_password\_lambda) | git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation | v0.0.3 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | git::https://github.com/defenseunicorns/terraform-aws-vpc.git | v0.1.4 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | git::https://github.com/defenseunicorns/terraform-aws-vpc.git | v0.1.5 |
 
 ## Resources
 
