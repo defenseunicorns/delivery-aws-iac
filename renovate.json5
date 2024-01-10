@@ -17,11 +17,10 @@
   "timezone": "America/New_York",
   // fires between 4 am and 5 am EST on mondays
   "schedule": [
-    "after 4am and before 8am on Monday"
+    "after 4am and before 10am on Monday"
   ],
-  // This will prevent Renovate from automatically rebasing PRs. Without this, Renovate will rebase PRs whenever it wants to. The 'schedule' param is only for creating PRs. Because we are grouping all changes into one PR without this Renovate will be constantly rebasing that PR which we don't want since every time that happens another set of GHA status checks are kicked off.
   // Using a value of "conflicted" means that Renovate will only rebase PRs if they are in a conflicted state. See https://docs.renovatebot.com/configuration-options/#rebasewhen
-  "rebaseWhen": "never",
+  "rebaseWhen": "auto",
   // Labels to set in Pull Request. See https://docs.renovatebot.com/configuration-options/#labels
   "labels": [
     "renovate"
@@ -29,7 +28,7 @@
   // Rate limit PRs to maximum x created per hour. 0 means no limit. See https://docs.renovatebot.com/configuration-options/#prhourlylimit
   "prHourlyLimit": 1,
   // Limit to a maximum of x concurrent branches/PRs. 0 means no limit. See https://docs.renovatebot.com/configuration-options/#prconcurrentlimit
-  "prConcurrentLimit": 0,
+  "prConcurrentLimit": 1,
   // Enable updates to the pre-commit-config.yaml file. See https://docs.renovatebot.com/modules/manager/pre-commit/
   "pre-commit": {
     "enabled": true
@@ -65,5 +64,20 @@
       "matchDatasources": ["github-tags", "git-tags"],
       "versioning": "loose"
     }
-  ]
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "groupName": "Security Updates",
+    "schedule": [],
+    "dependencyDashboardApproval": false,
+    "minimumReleaseAge": null,
+    "rangeStrategy": "update-lockfile",
+    "commitMessageSuffix": "[SECURITY]",
+    "branchTopic": "{{{datasource}}}-{{{depName}}}-vulnerability",
+    "prCreation": "immediate",
+    "labels": ["security"],
+    "automerge": true,
+    "assignees": ["@defenseunicorns/delivery-aws-iac"]
+  },
+  "osvVulnerabilityAlerts": true
 }
