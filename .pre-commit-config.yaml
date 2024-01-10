@@ -30,14 +30,14 @@ repos:
           - "--verbose"
           - "--allow-parallel-runners"
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.84.0
+    rev: v1.86.0
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
         args:
           - --args=--lockfile=false
-          - --hook-config=--path-to-file=README.md        # Valid UNIX path. I.e. ../TFDOC.md or docs/README.md etc.
-          - --hook-config=--add-to-existing-file=true     # Boolean. true or false
+          - --hook-config=--path-to-file=README.md # Valid UNIX path. I.e. ../TFDOC.md or docs/README.md etc.
+          - --hook-config=--add-to-existing-file=true # Boolean. true or false
           - --hook-config=--create-file-if-not-exist=true # Boolean. true or false
       - id: terraform_checkov
         verbose: true
@@ -47,6 +47,6 @@ repos:
         args:
           - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 37.91.4
+    rev: 37.128.0
     hooks:
       - id: renovate-config-validator
