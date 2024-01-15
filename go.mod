@@ -3,7 +3,7 @@ module github.com/defenseunicorns/delivery-aws-iac
 go 1.21.6
 
 require (
-	github.com/aws/aws-sdk-go v1.49.17
+	github.com/aws/aws-sdk-go v1.49.21
 	github.com/defenseunicorns/delivery_aws_iac_utils v0.0.5
 	github.com/gruntwork-io/terratest v0.46.9
 	github.com/stretchr/testify v1.8.4
