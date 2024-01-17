@@ -307,6 +307,51 @@ locals {
     var.enable_self_managed_nodegroups && var.keycloak_enabled ? local.keycloak_self_mg_node_group : {}
   )
 
+}
+
+module "ssm_kms_key" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 2.0"
+
+  create = var.create_ssm_parameters
+
+  description = "KMS key for SecureString SSM parameters"
+
+  key_administrators = [
+    data.aws_caller_identity.current.arn
+  ]
+
+  computed_aliases = {
+    ssm = {
+      name = "${local.kms_key_alias_name_prefix}-ssm"
+    }
+  }
+
+  key_statements = [
+    {
+      sid    = "SSM service access"
+      effect = "Allow"
+      principals = [
+        {
+          type        = "Service"
+          identifiers = ["ssm.amazonaws.com"]
+        }
+      ]
+      actions = [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey",
+      ]
+      resources = ["*"]
+    }
+  ]
+
+  tags = local.tags
+}
+
+locals {
   ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
 }
 
