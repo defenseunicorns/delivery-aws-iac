@@ -185,7 +185,7 @@ locals {
     # var.enable_eks_managed_nodegroups && var.keycloak_enabled ? local.keycloak_mg_node_group : {}
   )
 
-# self managed node groups settings
+  # self managed node groups settings
   self_managed_node_group_defaults = {
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
     instance_type                          = null # conflicts with instance_requirements settings
@@ -207,7 +207,7 @@ locals {
       tenancy = var.eks_worker_tenancy
     }
 
-pre_bootstrap_userdata = <<-EOT
+    pre_bootstrap_userdata = <<-EOT
         yum install -y amazon-ssm-agent
         systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
       EOT
@@ -248,7 +248,7 @@ pre_bootstrap_userdata = <<-EOT
 
   mission_app_self_mg_node_group = {
     bigbang_ng = {
-subnet_ids   = module.vpc.private_subnets
+      subnet_ids   = module.vpc.private_subnets
       min_size     = 2
       max_size     = 2
       desired_size = 2
@@ -315,7 +315,7 @@ module "eks" {
 
   name                                    = local.cluster_name
   aws_region                              = var.region
-azs                                     = module.vpc.azs
+  azs                                     = module.vpc.azs
   vpc_id                                  = module.vpc.vpc_id
   private_subnet_ids                      = module.vpc.private_subnets
   control_plane_subnet_ids                = module.vpc.private_subnets
@@ -324,7 +324,7 @@ azs                                     = module.vpc.azs
   cluster_endpoint_public_access          = var.cluster_endpoint_public_access
   cluster_endpoint_private_access         = true
   vpc_cni_custom_subnet                   = module.vpc.intra_subnets
-    aws_admin_usernames                     = var.aws_admin_usernames
+  aws_admin_usernames                     = var.aws_admin_usernames
   cluster_version                         = var.cluster_version
   cidr_blocks                             = module.vpc.private_subnets_cidr_blocks
   eks_use_mfa                             = var.eks_use_mfa
