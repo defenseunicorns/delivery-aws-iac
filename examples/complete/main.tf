@@ -306,6 +306,53 @@ locals {
     var.enable_self_managed_nodegroups ? local.mission_app_self_mg_node_group : {},
     var.enable_self_managed_nodegroups && var.keycloak_enabled ? local.keycloak_self_mg_node_group : {}
   )
+
+}
+
+module "ssm_kms_key" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 2.0"
+
+  create = var.create_ssm_parameters
+
+  description = "KMS key for SecureString SSM parameters"
+
+  key_administrators = [
+    data.aws_caller_identity.current.arn
+  ]
+
+  computed_aliases = {
+    ssm = {
+      name = "${local.kms_key_alias_name_prefix}-ssm"
+    }
+  }
+
+  key_statements = [
+    {
+      sid    = "SSM service access"
+      effect = "Allow"
+      principals = [
+        {
+          type        = "Service"
+          identifiers = ["ssm.amazonaws.com"]
+        }
+      ]
+      actions = [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey",
+      ]
+      resources = ["*"]
+    }
+  ]
+
+  tags = local.tags
+}
+
+locals {
+  ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
 }
 
 module "eks" {
@@ -327,6 +374,7 @@ module "eks" {
   cidr_blocks                             = module.vpc.private_subnets_cidr_blocks
   eks_use_mfa                             = var.eks_use_mfa
   aws_auth_roles                          = local.bastion_aws_auth_entry
+  dataplane_wait_duration                 = var.dataplane_wait_duration
 
   # If using EKS Managed Node Groups, the aws-auth ConfigMap is created by eks itself and terraform can not create it
   create_aws_auth_configmap = var.create_aws_auth_configmap
@@ -353,6 +401,9 @@ module "eks" {
   #---------------------------------------------------------------
   # EKS Blueprints - blueprints curated helm charts
   #---------------------------------------------------------------
+  create_kubernetes_resources = var.create_kubernetes_resources
+  create_ssm_parameters       = var.create_ssm_parameters
+  ssm_parameter_key_arn       = local.ssm_parameter_key_arn
 
   # AWS EKS EBS CSI Driver
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
@@ -376,6 +427,14 @@ module "eks" {
   # k8s Cluster Autoscaler
   enable_cluster_autoscaler = var.enable_cluster_autoscaler
   cluster_autoscaler        = var.cluster_autoscaler
+
+  # AWS Load Balancer Controller
+  enable_aws_load_balancer_controller = var.enable_aws_load_balancer_controller
+  aws_load_balancer_controller        = var.aws_load_balancer_controller
+
+  # k8s Secrets Store CSI Driver
+  enable_secrets_store_csi_driver = var.enable_secrets_store_csi_driver
+  secrets_store_csi_driver        = var.secrets_store_csi_driver
 }
 
 #---------------------------------------------------------------
