@@ -185,7 +185,7 @@ locals {
     # var.enable_eks_managed_nodegroups && var.keycloak_enabled ? local.keycloak_mg_node_group : {}
   )
 
-  # self managed node groups settings
+# self managed node groups settings
   self_managed_node_group_defaults = {
     iam_role_permissions_boundary          = var.iam_role_permissions_boundary
     instance_type                          = null # conflicts with instance_requirements settings
@@ -207,7 +207,7 @@ locals {
       tenancy = var.eks_worker_tenancy
     }
 
-    pre_bootstrap_userdata = <<-EOT
+pre_bootstrap_userdata = <<-EOT
         yum install -y amazon-ssm-agent
         systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
       EOT
@@ -248,7 +248,7 @@ locals {
 
   mission_app_self_mg_node_group = {
     bigbang_ng = {
-      subnet_ids   = module.vpc.private_subnets
+subnet_ids   = module.vpc.private_subnets
       min_size     = 2
       max_size     = 2
       desired_size = 2
@@ -306,6 +306,8 @@ locals {
     var.enable_self_managed_nodegroups ? local.mission_app_self_mg_node_group : {},
     var.enable_self_managed_nodegroups && var.keycloak_enabled ? local.keycloak_self_mg_node_group : {}
   )
+
+  ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
 }
 
 module "eks" {
@@ -313,7 +315,7 @@ module "eks" {
 
   name                                    = local.cluster_name
   aws_region                              = var.region
-  azs                                     = module.vpc.azs
+azs                                     = module.vpc.azs
   vpc_id                                  = module.vpc.vpc_id
   private_subnet_ids                      = module.vpc.private_subnets
   control_plane_subnet_ids                = module.vpc.private_subnets
@@ -322,11 +324,12 @@ module "eks" {
   cluster_endpoint_public_access          = var.cluster_endpoint_public_access
   cluster_endpoint_private_access         = true
   vpc_cni_custom_subnet                   = module.vpc.intra_subnets
-  aws_admin_usernames                     = var.aws_admin_usernames
+    aws_admin_usernames                     = var.aws_admin_usernames
   cluster_version                         = var.cluster_version
   cidr_blocks                             = module.vpc.private_subnets_cidr_blocks
   eks_use_mfa                             = var.eks_use_mfa
   aws_auth_roles                          = local.bastion_aws_auth_entry
+  dataplane_wait_duration                 = var.dataplane_wait_duration
 
   # If using EKS Managed Node Groups, the aws-auth ConfigMap is created by eks itself and terraform can not create it
   create_aws_auth_configmap = var.create_aws_auth_configmap
@@ -353,6 +356,9 @@ module "eks" {
   #---------------------------------------------------------------
   # EKS Blueprints - blueprints curated helm charts
   #---------------------------------------------------------------
+  create_kubernetes_resources = var.create_kubernetes_resources
+  create_ssm_parameters       = var.create_ssm_parameters
+  ssm_parameter_key_arn       = local.ssm_parameter_key_arn
 
   # AWS EKS EBS CSI Driver
   enable_amazon_eks_aws_ebs_csi_driver = var.enable_amazon_eks_aws_ebs_csi_driver
@@ -376,6 +382,14 @@ module "eks" {
   # k8s Cluster Autoscaler
   enable_cluster_autoscaler = var.enable_cluster_autoscaler
   cluster_autoscaler        = var.cluster_autoscaler
+
+  # AWS Load Balancer Controller
+  enable_aws_load_balancer_controller = var.enable_aws_load_balancer_controller
+  aws_load_balancer_controller        = var.aws_load_balancer_controller
+
+  # k8s Secrets Store CSI Driver
+  enable_secrets_store_csi_driver = var.enable_secrets_store_csi_driver
+  secrets_store_csi_driver        = var.secrets_store_csi_driver
 }
 
 #---------------------------------------------------------------
