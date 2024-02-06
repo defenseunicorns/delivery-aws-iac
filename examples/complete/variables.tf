@@ -125,6 +125,19 @@ variable "dataplane_wait_duration" {
   default     = "30s"
 }
 
+#----------------Access Entry-------------------------
+variable "access_entries" {
+  description = "Map of access entries to add to the cluster"
+  type        = any
+  default     = {}
+}
+
+variable "authentication_mode" {
+  description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
+  type        = string
+  default     = "API"
+}
+
 ###########################################################
 ################## EKS Addons Config ######################
 

@@ -6,7 +6,6 @@ tags = {
   Project     = "du-iac-cicd"
 }
 name_prefix               = "ex-complete"
-manage_aws_auth_configmap = true
 
 ###########################################################
 #################### VPC Config ###########################
@@ -54,7 +53,6 @@ cluster_addons = {
     JSON
   }
   coredns = {
-    preserve    = true
     most_recent = true
 
     timeouts = {

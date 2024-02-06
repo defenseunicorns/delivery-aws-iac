@@ -352,11 +352,28 @@ module "ssm_kms_key" {
 }
 
 locals {
+  access_entries = merge(
+    var.access_entries,
+    var.enable_bastion ? {
+      bastion = {
+        principal_arn = module.bastion[0].bastion_role_arn
+        type          = "STANDARD"
+        policy_associations = {
+          admin = {
+            policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+            access_scope = {
+              type = "cluster"
+            }
+          }
+        }
+      }
+    } : {}
+  )
   ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.13"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=chore/update-eks"
 
   name                                    = local.cluster_name
   aws_region                              = var.region
@@ -388,9 +405,10 @@ module "eks" {
   self_managed_node_group_defaults = local.self_managed_node_group_defaults
   self_managed_node_groups         = local.self_managed_node_groups
 
+  access_entries      = local.access_entries
+  authentication_mode = var.authentication_mode
+
   tags = local.tags
-
-
 
   #---------------------------------------------------------------
   #"native" EKS Add-Ons
