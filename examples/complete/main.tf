@@ -1,6 +1,13 @@
 data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
+data "aws_iam_session_context" "current" {
+  # This data source provides information on the IAM source role of an STS assumed role
+  # For non-role ARNs, this data source simply passes the ARN through issuer ARN
+  # Ref https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2327#issuecomment-1355581682
+  # Ref https://github.com/hashicorp/terraform-provider-aws/issues/28381
+  arn = data.aws_caller_identity.current.arn
+}
 
 data "aws_availability_zones" "available" {
   filter {
@@ -78,11 +85,6 @@ module "vpc" {
 ################################################################################
 
 locals {
-  bastion_role_arn  = try(module.bastion[0].bastion_role_arn, "")
-  bastion_role_name = try(module.bastion[0].bastion_role_name, "")
-
-  enable_bastion_access = length(local.bastion_role_arn) > 0 && length(local.bastion_role_name) > 0
-
   ingress_bastion_to_cluster = {
     description              = "Bastion SG to Cluster"
     security_group_id        = module.eks.cluster_security_group_id
@@ -93,13 +95,6 @@ locals {
     source_security_group_id = try(module.bastion[0].security_group_ids[0], null)
   }
 
-  # if bastion role vars are defined, add bastion role to aws_auth_roles list
-  bastion_aws_auth_entry = local.enable_bastion_access ? [
-    {
-      rolearn  = local.bastion_role_arn
-      username = local.bastion_role_name
-      groups   = ["system:masters"]
-  }] : []
 }
 
 data "aws_ami" "amazonlinux2" {
@@ -318,7 +313,7 @@ module "ssm_kms_key" {
   description = "KMS key for SecureString SSM parameters"
 
   key_administrators = [
-    data.aws_caller_identity.current.arn
+    data.aws_iam_session_context.current.issuer_arn
   ]
 
   computed_aliases = {
@@ -353,10 +348,46 @@ module "ssm_kms_key" {
 
 locals {
   ssm_parameter_key_arn = var.create_ssm_parameters ? module.ssm_kms_key.key_arn : ""
+
+  unicorn_admin_role = data.aws_iam_session_context.current.issuer_arn != "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/unicorn-admin" ? {
+    unicorn_admin = {
+      principal_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/unicorn-admin"
+      type          = "STANDARD"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  } : {}
+
+  bastion_role = var.enable_bastion ? {
+    bastion = {
+      principal_arn = module.bastion[0].bastion_role_arn
+      type          = "STANDARD"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  } : {}
+
+  access_entries = merge(
+    var.access_entries,
+    local.unicorn_admin_role,
+    local.bastion_role
+  )
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.13"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.16"
 
   name                                    = local.cluster_name
   aws_region                              = var.region
@@ -373,12 +404,11 @@ module "eks" {
   cluster_version                         = var.cluster_version
   cidr_blocks                             = module.vpc.private_subnets_cidr_blocks
   eks_use_mfa                             = var.eks_use_mfa
-  aws_auth_roles                          = local.bastion_aws_auth_entry
   dataplane_wait_duration                 = var.dataplane_wait_duration
-
-  # If using EKS Managed Node Groups, the aws-auth ConfigMap is created by eks itself and terraform can not create it
-  create_aws_auth_configmap = var.create_aws_auth_configmap
-  manage_aws_auth_configmap = var.manage_aws_auth_configmap
+  # authentication
+  access_entries                           = local.access_entries
+  authentication_mode                      = var.authentication_mode
+  enable_cluster_creator_admin_permissions = var.enable_cluster_creator_admin_permissions
 
   ######################## EKS Managed Node Group ###################################
   eks_managed_node_group_defaults = local.eks_managed_node_group_defaults
@@ -463,7 +493,7 @@ module "ebs_kms_key" {
 
   # Policy
   key_administrators = [
-    data.aws_caller_identity.current.arn
+    data.aws_iam_session_context.current.issuer_arn
   ]
 
   key_service_roles_for_autoscaling = [

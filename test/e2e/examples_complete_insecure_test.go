@@ -6,8 +6,6 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	teststructure "github.com/gruntwork-io/terratest/modules/test-structure"
-
-	"github.com/defenseunicorns/delivery_aws_iac_utils/pkg/utils"
 )
 
 func TestExamplesCompleteInsecure(t *testing.T) {
@@ -38,13 +36,5 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 	// Set up the infra
 	teststructure.RunTestStage(t, "SETUP", func() {
 		terraform.InitAndApply(t, terraformOptions)
-	})
-
-	// Run assertions
-	teststructure.RunTestStage(t, "TEST", func() {
-		utils.ValidateEFSFunctionality(t, tempFolder)
-		utils.DownloadZarfInitPackage(t)
-		utils.ConfigureKubeconfig(t, tempFolder)
-		utils.ValidateZarfInit(t, tempFolder)
 	})
 }

@@ -5,8 +5,7 @@ tags = {
   Environment = "dev"
   Project     = "du-iac-cicd"
 }
-name_prefix               = "ex-complete"
-manage_aws_auth_configmap = true
+name_prefix = "ex-complete"
 
 ###########################################################
 #################### VPC Config ###########################
@@ -70,6 +69,13 @@ cluster_addons = {
 
     timeouts = {
       create = "4m"
+      delete = "10m"
+    }
+  }
+  aws-efs-csi-driver = {
+    most_recent = true
+    timeouts = {
+      create = "20m"
       delete = "10m"
     }
   }
