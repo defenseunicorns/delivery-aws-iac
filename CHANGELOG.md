@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.0.12](https://github.com/defenseunicorns/delivery-aws-iac/compare/v0.0.11...v0.0.12) (2024-02-26)
+
+
+### Bug Fixes
+
+* cleanup for new patterns ([#398](https://github.com/defenseunicorns/delivery-aws-iac/issues/398)) ([2f2ca52](https://github.com/defenseunicorns/delivery-aws-iac/commit/2f2ca52105526b2a93f61a40360e9f5936fc009a))
+* **deps:** update all dependencies ([#393](https://github.com/defenseunicorns/delivery-aws-iac/issues/393)) ([9365089](https://github.com/defenseunicorns/delivery-aws-iac/commit/93650891ea0b0109f10557d477dd3f5cd59e54b0))
+
+
+### Miscellaneous Chores
+
+* **deps:** update all dependencies ([#385](https://github.com/defenseunicorns/delivery-aws-iac/issues/385)) ([bbfcd7b](https://github.com/defenseunicorns/delivery-aws-iac/commit/bbfcd7bc0c349e3d5b9f1d315a951e0b21bb713f))
+* **deps:** update all dependencies ([#386](https://github.com/defenseunicorns/delivery-aws-iac/issues/386)) ([6c6876c](https://github.com/defenseunicorns/delivery-aws-iac/commit/6c6876cbd665bdc862d0433455c0801971d9ffa4))
+* **deps:** update all dependencies ([#387](https://github.com/defenseunicorns/delivery-aws-iac/issues/387)) ([15f5614](https://github.com/defenseunicorns/delivery-aws-iac/commit/15f5614397224878ce15ac6200f3cf1987f92eb1))
+* **deps:** update all dependencies ([#390](https://github.com/defenseunicorns/delivery-aws-iac/issues/390)) ([d5741eb](https://github.com/defenseunicorns/delivery-aws-iac/commit/d5741eb8cbfd5f6db78711d26c66d4184c632e2b))
+* **deps:** update all dependencies ([#391](https://github.com/defenseunicorns/delivery-aws-iac/issues/391)) ([643b90f](https://github.com/defenseunicorns/delivery-aws-iac/commit/643b90f2e88d74e775d57ffcf6e39f08b082cdba))
+* **deps:** update all dependencies ([#395](https://github.com/defenseunicorns/delivery-aws-iac/issues/395)) ([ef9e4f5](https://github.com/defenseunicorns/delivery-aws-iac/commit/ef9e4f54ed579ef048d4d81f4a5d01f01255466a))
+* **deps:** update pre-commit hook renovatebot/pre-commit-hooks to v37.142.1 ([#394](https://github.com/defenseunicorns/delivery-aws-iac/issues/394)) ([ac42947](https://github.com/defenseunicorns/delivery-aws-iac/commit/ac42947225995d88585eb9442ef2b2ad92f23607))
+* update examples from EKS module ([#392](https://github.com/defenseunicorns/delivery-aws-iac/issues/392)) ([f6cb1ed](https://github.com/defenseunicorns/delivery-aws-iac/commit/f6cb1edd262479a009cc8fc034f50c95b2a61cc6))
+
+
+### Tests
+
+* tweak test spam ([#383](https://github.com/defenseunicorns/delivery-aws-iac/issues/383)) ([9ef7714](https://github.com/defenseunicorns/delivery-aws-iac/commit/9ef7714778c15330609343cc5f202695df014bf6))
+
+
+### Continuous Integration
+
+* renovate window update and vuln handling ([#389](https://github.com/defenseunicorns/delivery-aws-iac/issues/389)) ([6e14b13](https://github.com/defenseunicorns/delivery-aws-iac/commit/6e14b132c1934973a1b0c3874d3ce5851a19b10b))
+
 ## [0.0.11](https://github.com/defenseunicorns/delivery-aws-iac/compare/v0.0.10...v0.0.11) (2023-11-28)
 
 
