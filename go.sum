@@ -206,6 +206,8 @@ github.com/aws/aws-sdk-go v1.50.5 h1:H2Aadcgwr7a2aqS6ZwcE+l1mA6ZrTseYCvjw2QLmxIA
 github.com/aws/aws-sdk-go v1.50.5/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
 github.com/aws/aws-sdk-go v1.50.26 h1:tuv8+dje59DBK1Pj65tSCdD36oamBxKYJgbng4bFylc=
 github.com/aws/aws-sdk-go v1.50.26/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
+github.com/aws/aws-sdk-go v1.50.30 h1:2OelKH1eayeaH7OuL1Y9Ombfw4HK+/k0fEnJNWjyLts=
+github.com/aws/aws-sdk-go v1.50.30/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d h1:xDfNPAt8lFiC1UJrqV3uuy861HCTo708pDMbjHHdCas=
@@ -529,6 +531,8 @@ github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
+github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
+github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/tmccombs/hcl2json v0.6.0 h1:Qc5NL4NQbpNnw8w8HQcA3GsVHvQDJXJwVTUxf2AEhOs=
 github.com/tmccombs/hcl2json v0.6.0/go.mod h1:QNirG4H64ZvlFsy9werRxXlWNTDR1GhWzXkjqPILHwo=
 github.com/ulikunitz/xz v0.5.10/go.mod h1:nbz6k7qbPmH4IRqmfOplQw/tblSgqTqBwxkY0oWt/14=
@@ -1134,6 +1138,8 @@ rsc.io/quote/v3 v3.1.0/go.mod h1:yEA65RcK8LyAZtP9Kv3t0HmxON59tX3rD+tICJqUlj0=
 rsc.io/sampler v1.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9JXDnKaTXpA=
 sigs.k8s.io/aws-iam-authenticator v0.6.17 h1:YV/4D1XRzstuKTK2f3XD2nPA9rIKyi3YVdHwM9Iwd/I=
 sigs.k8s.io/aws-iam-authenticator v0.6.17/go.mod h1:CnvFyzR/xeLHmUY/BD0qW6q0wp6KIwXmFp4eTfrHdP8=
+sigs.k8s.io/aws-iam-authenticator v0.6.18 h1:YyKSgeB4o2hf8Bx9vSkMm4YcWxMsO0xOm2xe001mSmA=
+sigs.k8s.io/aws-iam-authenticator v0.6.18/go.mod h1:CnvFyzR/xeLHmUY/BD0qW6q0wp6KIwXmFp4eTfrHdP8=
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd h1:EDPBXCAspyGV4jQlpZSudPeMmr1bNJefnuqLsRAsHZo=
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd/go.mod h1:B8JuhiUyNFVKdsE8h686QcCxMaH6HrOAZj4vswFpcB0=
 sigs.k8s.io/structured-merge-diff/v4 v4.4.1 h1:150L+0vs/8DA78h1u02ooW1/fFq/Lwr+sGiqlzvrtq4=
