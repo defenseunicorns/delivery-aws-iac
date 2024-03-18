@@ -30,7 +30,7 @@ repos:
           - "--verbose"
           - "--allow-parallel-runners"
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.88.0
+    rev: v1.88.2
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
@@ -47,6 +47,6 @@ repos:
         args:
           - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 37.235.4
+    rev: 37.252.0
     hooks:
       - id: renovate-config-validator
