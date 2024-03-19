@@ -111,7 +111,7 @@ data "aws_ami" "amazonlinux2" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.12"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.13"
 
   count = var.enable_bastion ? 1 : 0
 
