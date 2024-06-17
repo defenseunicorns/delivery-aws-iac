@@ -17,6 +17,7 @@ func TestExamplesCompleteSecure(t *testing.T) {
 	// Setup options
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
 	terraformOptions := &terraform.Options{
+		TerraformBinary: "tofu",
 		TerraformDir: tempFolder,
 		VarFiles: []string{
 			"fixtures.common.tfvars",

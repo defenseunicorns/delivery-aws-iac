@@ -12,6 +12,7 @@ func TestExamplesCompleteInsecure(t *testing.T) {
 	t.Parallel()
 	tempFolder := teststructure.CopyTerraformFolderToTemp(t, "../..", "examples/complete")
 	terraformOptions := &terraform.Options{
+		TerraformBinary: "tofu",
 		TerraformDir: tempFolder,
 		Upgrade:      false,
 		VarFiles: []string{
