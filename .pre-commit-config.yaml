@@ -24,6 +24,7 @@ repos:
     rev: v1.0.0-rc.1
     hooks:
       - id: go-fmt
+        args: [-s, -w, ./test]
       - id: golangci-lint
         args:
           - "--timeout=10m"
