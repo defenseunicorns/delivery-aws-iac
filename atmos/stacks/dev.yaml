@@ -1,0 +1,190 @@
+vars:
+  stage: "dev"
+  region: "us-gov-west-1"
+  ami_id: "ami-08b9131e91f9f6c69"
+  test_var: "{{ \"Hello, Atmos!\" }}"
+
+components:
+  terraform:
+    vpc:
+      vars:
+        name: "dev-vpc"
+        vpc_cidr: "10.200.0.0/16"
+        secondary_cidr_blocks: ["100.64.0.0/16"]
+        private_subnets:
+          - "10.200.12.0/22"
+          - "10.200.16.0/22"
+          - "10.200.20.0/22"
+        database_subnets:
+          - "10.200.24.0/27"
+          - "10.200.24.32/27"
+          - "10.200.24.64/27"
+        azs:
+          - "us-gov-west-1a"
+          - "us-gov-west-1b"
+          - "us-gov-west-1c"
+        single_nat_gateway: false
+        enable_nat_gateway: false
+        tags:
+          Environment: "dev"
+          Project: "example"
+          Owner: "team"
+          ManagedBy: "Terraform"
+          Repo: "https://github.com/defenseunicorns/terraform-aws-vpc"
+    bastion:
+      dependencies:
+        terraform:
+          - vpc  # Ensure vpc runs before bastion
+      vars:
+        name: "dev-bastion"
+        vpc_id: '{{ (atmos.Component "vpc" "dev").outputs.vpc_id }}'
+        instance_type: "t3.micro"
+        subnet_id: '{{ index (atmos.Component "vpc" .stack).outputs.private_subnets 0 }}'
+        tags:
+          Environment: "dev"
+          Owner: "team"
+    eks:
+      vars:
+        name: "dev-eks-cluster"
+        private_subnet_ids: '{{ (atmos.Component "vpc" .stack).outputs.private_subnets }}'
+        control_plane_subnet_ids: '{{ (atmos.Component "vpc" .stack).outputs.private_subnets }}'
+        cluster_endpoint_public_access: true #dev mode
+        cluster_endpoint_private_access: true
+        vpc_cni_custom_subnet: '{{ (atmos.Component "vpc" .stack).outputs.intra_subnets }}'
+        azs: '{{ (atmos.Component "vpc" .stack).outputs.azs }}'
+        cluster_version: "1.30"
+        dataplane_wait_duration: 300
+        # Self-Managed Node Group Defaults
+        self_managed_node_group_defaults:
+          iam_role_permissions_boundary: "${var.iam_role_permissions_boundary}"
+          update_launch_template_default_version: true
+          use_mixed_instances_policy: true
+          instance_requirements:
+            allowed_instance_types:
+              - "m6i.4xlarge"
+              - "m5a.4xlarge"
+            memory_mib:
+              min: 64000
+            vcpu_count:
+              min: 16
+          placement:
+            tenancy: "dedicated"
+          bootstrap_extra_args: "--use-max-pods false"
+          iam_role_additional_policies:
+            AmazonSSMManagedInstanceCore: "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+            AmazonElasticFileSystemFullAccess: "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonElasticFileSystemFullAccess"
+          autoscaling_group_tags:
+            "k8s.io/cluster-autoscaler/enabled": true
+            "k8s.io/cluster-autoscaler/${local.cluster_name}": "owned"
+          metadata_options:
+            http_endpoint: "enabled"
+            http_put_response_hop_limit: 2
+            http_tokens: "optional"
+          tags:
+            subnet_type: "private"
+            cluster: "${local.cluster_name}"
+            aws-node-termination-handler/managed: true
+        # Self-Managed Node Groups
+        self_managed_node_groups:
+          uds_core_ng:
+            ami_type: "BOTTLEROCKET_x86_64"
+            ami_id: "${data.aws_ami.eks_default_bottlerocket.id}"
+            min_size: 3
+            max_size: 5
+            desired_size: 3
+            key_name: "${component.self_managed_node_group_keypair.outputs.key_pair_name}"
+            block_device_mappings:
+              xvda:
+                device_name: "/dev/xvda"
+                ebs:
+                  volume_size: 100
+                  volume_type: "gp3"
+              xvdb:
+                device_name: "/dev/xvdb"
+                ebs:
+                  volume_size: 100
+                  volume_type: "gp3"
+            bootstrap_extra_args: |
+              # The admin host container provides SSH access and runs with "superpowers".
+              # It is disabled by default, enabled here for easy SSH access into bottlerocket nodes with the keypair created by the module.
+              [settings.host-containers.admin]
+              enabled = true
+
+              # The control host container provides out-of-band access via SSM.
+              # It is enabled by default, and can be disabled if you do not expect to use SSM.
+              # This could leave you with no way to access the API and change settings on an existing node!
+              [settings.host-containers.control]
+              enabled = true
+
+              # Extra args added
+              [settings.kernel]
+              lockdown = "integrity"
+
+              [settings.kubernetes.node-labels]
+              # label1 = "sso"
+              # label2 = "uds-core"
+
+              [settings.kubernetes.node-taints]
+              # dedicated = "experimental:PreferNoSchedule"
+              # special = "true:NoSchedule"
+
+        tags:
+          RootTFModule: "terraform-aws-eks"
+          ManagedBy: "Terraform"
+          Repo: "https://github.com/defenseunicorns/terraform-aws-eks"
+
+        access_entries: []
+        authentication_mode: "aws"
+
+        # Cluster Add-ons
+        cluster_addons:
+          vpc-cni:
+            most_recent: true
+            before_compute: true
+            configuration_values: |
+              {
+                "env": {
+                  "AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG": "true",
+                  "ENABLE_PREFIX_DELEGATION": "true",
+                  "ENI_CONFIG_LABEL_DEF": "topology.kubernetes.io/zone",
+                  "WARM_PREFIX_TARGET": "1",
+                  "ANNOTATE_POD_IP": "true",
+                  "POD_SECURITY_GROUP_ENFORCING_MODE": "standard"
+                },
+                "enableNetworkPolicy": "true"
+              }
+          coredns:
+            most_recent: true
+            timeouts:
+              create: "10m"
+              delete: "10m"
+          kube-proxy:
+            most_recent: true
+          aws-ebs-csi-driver:
+            most_recent: true
+            configuration_values: |
+              {
+                "defaultStorageClass": {
+                  "enabled": true
+                }
+              }
+            timeouts:
+              create: "10m"
+              delete: "10m"
+          aws-efs-csi-driver:
+            most_recent: true
+            timeouts:
+              create: "10m"
+              delete: "10m"
+
+        # Enable EKS Add-ons
+        enable_amazon_eks_aws_efs_csi_driver: true
+        enable_amazon_eks_aws_ebs_csi_driver: true
+        efs_vpc_cidr_blocks: '{{ (atmos.Component "vpc" .stack).outputs.private_subnets_cidr_blocks }}'
+        # Kubernetes Resources
+        create_kubernetes_resources: false
+        create_ssm_parameters: false
+        # Blueprints Addons
+        enable_aws_load_balancer_controller: true
+        enable_karpenter: true
+        enable_bottlerocket_update_operator: true

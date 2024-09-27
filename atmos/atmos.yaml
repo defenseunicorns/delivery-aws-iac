@@ -1,0 +1,35 @@
+components:
+  terraform:
+    base_path: "components/terraform"  # Path to your Terraform components
+    command: "/opt/homebrew/bin/tofu"   # Explicitly setting OpenTofu binary
+
+stacks:
+  base_path: "stacks"
+  included_paths:
+    - "**/*.yaml"
+  name_pattern: "{stage}"
+  process:
+    enabled: true
+    sections:
+      vars: true
+      components: true  # Enable processing of the `components` section
+      imports: true
+
+templates:
+  settings:
+    enabled: true
+    evaluations: 1
+    # https://masterminds.github.io/sprig
+    sprig:
+      enabled: true
+    # https://docs.gomplate.ca
+    gomplate:
+      enabled: true
+      timeout: 5
+      # https://docs.gomplate.ca/datasources
+      datasources: {}
+
+logs:
+  verbose: true
+  colors: true
+  level: trace
