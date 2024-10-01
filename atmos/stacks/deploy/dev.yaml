@@ -1,0 +1,41 @@
+import:
+  - catalog/il5
+
+terraform:
+  providers:
+    context:
+      enabled: true
+      delimiter: "-"
+      #TODO: move properties standards into another catalog item or mixin
+      properties:
+        environment:
+          required: true
+          validation_regex: "^[a-z]*$"
+        stack:
+          required: true
+        stage:
+          required: true
+        impact_level:
+          validation_regex: "^(il[0-5]|dx)$" # Impact Level or "dx" for an optimized developer experience
+        component: {}
+        stack_file: {}
+        deploy_id: {}
+        PermissionsBoundry: {}
+      tags_key_case: title
+      property_order:
+        - environment
+        - stage
+        - component
+        - deploy_id
+      values:
+        stage: dev
+        environment: burningboats
+        stack: "{{.atmos_stack}}"
+        component: "{{.atmos_component}}"
+        stack_file: "{{.atmos_stack_file}}"
+        impact_level: il0
+
+components:
+  terraform:
+    il5:
+      vars: {}

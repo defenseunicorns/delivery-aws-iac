@@ -1,0 +1,29 @@
+base_path: "./"
+
+components:
+  terraform:
+    base_path: "components/terraform"
+    command: "/opt/homebrew/bin/tofu"
+    #apply_auto_approve: true
+    #deploy_run_init: true
+    #init_run_reconfigure: true
+
+stacks:
+  base_path: "stacks"
+  included_paths:
+    - "deploy/**/*"
+  name_template: "{{.providers.context.values.stage}}"
+
+templates:
+  settings:
+    enabled: true
+#  evaluations: 1
+#  gomplate:
+#    enabled: true
+#    timeout: 5
+#    datasources: {}
+#  sprig:
+#    enabled: true
+
+workflows:
+  base_path: "stacks/workflows"

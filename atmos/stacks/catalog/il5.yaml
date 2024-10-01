@@ -1,0 +1,52 @@
+components:
+  terraform:
+    init:
+      metatdata:
+        component: init
+      vars: {}
+    vpc:
+      metadata:
+        component: vpc
+      providers:
+        context:
+          values:
+            deploy_id: '{{ (atmos.Component "init" .stack).outputs.deploy_id }}'
+      vars:
+        vpc_required_var1: "vpc-one"
+        vpc_required_var2: "vpc-two"
+        vpc_sensitive_required_var1: "vpc-secret-one"
+        vpc_config_opts:
+          vpc_opt1: vpc-bar
+        vpc_sensitive_config_opts:
+          vpc_sensitive_opt1: vpc-baz
+
+    bastion:
+      metadata:
+        component: bastion
+      providers:
+        context:
+          values:
+            deploy_id: '{{ (atmos.Component "init" .stack).outputs.deploy_id }}'
+      vars:
+        bastion_required_var1: 'bastion-one - {{ (atmos.Component "vpc" .stack).outputs.vpc_required_out1 }}'
+        bastion_required_var2: 'bastion-two - {{ (atmos.Component "vpc" .stack).outputs.vpc_required_out2 }}'
+        bastion_sensitive_required_var1: "bastion-secret-one"
+        bastion_config_opts:
+          bastion_opt1: bar
+        bastion_sensitive_config_opts:
+          bastion_sensitive_opt1: baz
+    eks:
+      metadata:
+        component: eks
+      providers:
+        context:
+          values:
+            deploy_id: '{{ (atmos.Component "init" .stack).outputs.deploy_id }}'
+      vars:
+        eks_required_var1: "eks-one"
+        eks_required_var2: "eks-two"
+        eks_sensitive_required_var1: "eks-secret-one"
+        eks_config_opts:
+          eks_opt1: eks-bar
+        eks_sensitive_config_opts:
+          eks_sensitive_opt1: eks-baz
