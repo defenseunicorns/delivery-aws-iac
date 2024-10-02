@@ -32,19 +32,42 @@ Initial modules:
 We will...
 
 - [Prefer single objects over multiple simple inputs for related configuration](https://docs.cloudposse.com/best-practices/terraform/#prefer-a-single-object-over-multiple-simple-inputs-for-related-configuration)
-  - Organize wrapper module vars by what's required versus optional with secrets broken out.
+
+- Organize wrapper module vars by what's required versus optional with secrets broken out.
+- Set defaults based on Impact Level using overrides from a base.
+- Allow for config defaults to be selected from critira such as impact level from the global context.
+
+  - Example
+
   ```
-  variable "eks_required_var1" {}
-  variable "eks_required_var2" {}
-  variable "eks_sensitive_required_var1" {
-    sensitive = true
-  }
-  variable "eks_config_opts" {
+  // Context data sources that spans modules and deploys.
+  data "context_config" "this" {}
+  data "context_label" "this" {}
+  data "context_tags" "this" {}
+
+  // Standardize on config objects. Use `optional()` to set defaults as needed.
+  variable "vpc_config" {
+    description = "Existing VPC configuration for EKS"
     type = object({
-      eks_opt1 = optional(string)
-      eks_opt2 = optional(string)
+      vpc_id                     = string
+      subnet_ids                 = list(string)
+      azs                        = list(string)
+      private_subnets            = list(string)
+      intra_subnets              = list(string)
+      database_subnets           = optional(list(string))
+      database_subnet_group_name = optional(string)
     })
   }
+
+  // EKS configuration options. We can put in defaults, however defaults
+  // should not be provided for items that need to be a mission decision.
+  variable "eks_config_opts" {
+    description = "EKS Configuration options to be determined by mission needs."
+    type = object({
+      cluster_version = optional(string, "1.30")
+    })
+  }
+
   variable "eks_sensitive_config_opts" {
     sensitive = true
     type = object({
@@ -52,16 +75,56 @@ We will...
       eks_sensitive_opt2 = optional(string)
     })
   }
+
+  locals {
+    base_eks_config = {
+      vpc_id                               = var.vpc_attrs.vpc_id
+      subnet_ids                           = var.vpc_attrs.subnet_ids
+      tags                                 = data.context_tags.this.tags
+      cluster_name                         = data.context_label.this.rendered
+      cluster_version                      = var.eks_config_opts.cluster_version
+      control_plane_subnet_ids             = var.vpc_attrs.private_subnets
+      private_subnet_ids                   = var.vpc_attrs.private_subnets
+      iam_role_permissions_boundary        = data.context_config.this.values["PermissionsBoundry"]
+      cluster_endpoint_public_access       = true
+      cluster_endpoint_public_access_cidrs = []
+      cluster_endpoint_private_access      = false
+      self_managed_node_group_defaults     = {}
+      self_managed_node_groups             = []
+      cluster_addons                       = []
+    }
+    il4_eks_overrides = {
+      cluster_endpoint_public_access  = false //No public access for >= IL4
+      cluster_endpoint_private_access = true  //Private access required for >= IL4
+    }
+    il5_eks_overrides = merge(local.il4_eks_overrides, {}) // IL5 extends IL4
+    il4_eks_config    = merge(local.base_eks_config, local.il4_eks_overrides)
+    il5_eks_config    = merge(local.base_eks_config, local.il5_eks_overrides)
+    eks_config = {
+      base  = local.base_eks_config,
+      il4   = local.il4_eks_config,
+      il5   = local.il5_eks_config
+    }
+  }
+
+  //Use Impact Level from context to set the default config for EKS
+  // This object will be used to configure the official AWS EKS module.
+  // Outputting for illustration purposes.
+  output "eks_config" {
+    value = local.eks_config[data.context_config.this.values["impact_level"]]
+  }
+
   ```
+
   - Make it clear to the consumer what's required and intended for them to decide for the mission.
   - Don't mix secrets with non-secrets to aid in troubleshoot. Mixing will mask non-secret data in
     deployment output.
   - NOTE: Do we want to take on the scope to keep secrets in a store and out of module output? (require a store as input)
+
 - Use [Cloud Posse context provider](https://github.com/cloudposse/terraform-provider-context/)
   - for shared context between modules and applies
   - common attributes such as name prefix/suffix (labels), tags and other global configuration.
 - Avoid directly passing attributes to wrapped modules in favor of defaults organized by context.
-  - Used Impact Level based defaults
 
 An example of the data flow through modules connected via a stack is provided [here](../../atmos). You can see how in
 lieu of vars for name prefixes, tags and other global config the context is used.

@@ -43,9 +43,7 @@ components:
           values:
             deploy_id: '{{ (atmos.Component "init" .stack).outputs.deploy_id }}'
       vars:
-        vpc_attrs: '{{ toRawJson ((atmos.Component "vpc" .stack).outputs.vpc_attrs) }}'
-        eks_sensitive_required_var1: "eks-secret-one"
+        vpc_config: '{{ toRawJson ((atmos.Component "vpc" .stack).outputs.vpc_attrs) }}'
         eks_config_opts:
-          eks_opt1: eks-bar
-        eks_sensitive_config_opts:
-          eks_sensitive_opt1: eks-baz
+          cluster_version: "1.29"
+        eks_sensitive_config_opts: {}
