@@ -13,17 +13,29 @@ stacks:
   included_paths:
     - "deploy/**/*"
   name_template: "{{.providers.context.values.stage}}"
+  process:
+    enabled: true
+    sections:
+      vars: true
+      components: true
+      imports: true
 
 templates:
   settings:
     enabled: true
-#  evaluations: 1
-#  gomplate:
-#    enabled: true
-#    timeout: 5
-#    datasources: {}
-#  sprig:
-#    enabled: true
+    delimiters: ["'{{", "}}'"]
+    evaluations: 1
+    sprig:
+      enabled: true
+    gomplate:
+      enabled: true
+      timeout: 5
+      datasources: {}
 
 workflows:
   base_path: "stacks/workflows"
+
+logs:
+  verbose: true
+  colors: true
+  level: "trace"
