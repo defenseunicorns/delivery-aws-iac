@@ -11,7 +11,7 @@ terraform {
 # This module shall be vendored in via atmos vendor workflow.
 # Guiding principles:
 # * Defense Unicorns wrapper for existing official modules from Amazon
-# * Common interface via variable classes. Make it obvious to the consumer what is required and what is senstive.
+# * Common interface via variable classes. Make it obvious to the consumer what is required and what is senstive. Senstive info if combined with non-senstive will mask non-senstive info in deployment output, complicating troubleshooting.
 #   * top level vars for non-senstive required inputs (no default values, validation desired)
 #   * top level vars for senstive required inputs (no default values, validation desired)
 #   * single top level config object for non-senstive optional inputs (default values required, validation desired)

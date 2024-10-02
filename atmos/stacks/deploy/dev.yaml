@@ -33,7 +33,8 @@ terraform:
         stack: "{{.atmos_stack}}"
         component: "{{.atmos_component}}"
         stack_file: "{{.atmos_stack_file}}"
-        impact_level: il0
+        impact_level: il4
+        PermissionsBoundry: "arn:aws:iam::aws:policy/FooAccess"
 
 components:
   terraform:

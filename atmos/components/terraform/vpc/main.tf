@@ -55,6 +55,16 @@ output "context_tags" {
   value = data.context_tags.this
 }
 
+output "vpc_attrs" {
+  value = {
+    vpc_id          = "test-vpc-id"
+    subnet_ids      = ["subnet-01", "subnet-02"]
+    azs             = ["us-east-1a", "us-east-1b"]
+    private_subnets = ["private-subnet-01", "private-subnet-02"]
+    intra_subnets   = ["intra-subnet-01", "intra-subnet-02"]
+  }
+}
+
 output "example_resource_name" {
   value = data.context_label.this.rendered
 }
