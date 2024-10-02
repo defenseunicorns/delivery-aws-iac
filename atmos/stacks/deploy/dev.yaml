@@ -20,7 +20,7 @@ terraform:
         component: {}
         stack_file: {}
         deploy_id: {}
-        PermissionsBoundry: {}
+        PermissionsBoundary: {}
       tags_key_case: title
       property_order:
         - environment
@@ -34,7 +34,7 @@ terraform:
         component: "{{.atmos_component}}"
         stack_file: "{{.atmos_stack_file}}"
         impact_level: il4
-        PermissionsBoundry: "arn:aws:iam::aws:policy/FooAccess"
+        PermissionsBoundary: "arn:aws:iam::aws:policy/FooAccess"
 
 components:
   terraform:

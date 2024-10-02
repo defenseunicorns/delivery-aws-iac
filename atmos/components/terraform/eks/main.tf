@@ -43,21 +43,20 @@ variable "eks_sensitive_config_opts" {
 }
 
 locals {
+  // Context for base shall be IL5
+  base_eks_vpc_config = {
+    vpc_id                   = var.vpc_config.vpc_id
+    subnet_ids               = var.vpc_config.subnet_ids
+    control_plane_subnet_ids = var.vpc_config.private_subnets
+    private_subnet_ids       = var.vpc_config.private_subnets
+  }
+  //Fixed settings for base (IL5)
   base_eks_config = {
-    vpc_id                               = var.vpc_config.vpc_id
-    subnet_ids                           = var.vpc_config.subnet_ids
-    tags                                 = data.context_tags.this.tags
-    cluster_name                         = data.context_label.this.rendered
-    cluster_version                      = var.eks_config_opts.cluster_version
-    control_plane_subnet_ids             = var.vpc_config.private_subnets
-    private_subnet_ids                   = var.vpc_config.private_subnets
-    iam_role_permissions_boundary        = data.context_config.this.values["PermissionsBoundry"]
-    cluster_endpoint_public_access       = true
-    cluster_endpoint_public_access_cidrs = []
-    cluster_endpoint_private_access      = false
-    self_managed_node_group_defaults     = {}
-    self_managed_node_groups             = []
-    cluster_addons                       = []
+    tags                          = data.context_tags.this.tags
+    cluster_name                  = data.context_label.this.rendered
+    iam_role_permissions_boundary = lookup(data.context_config.this.values, "PermissionsBoundary", null)
+    cluster_version               = var.eks_config_opts.cluster_version
+    cluster_addons                = []
   }
   il4_eks_overrides = {
     cluster_endpoint_public_access  = false //No public access for >= IL4

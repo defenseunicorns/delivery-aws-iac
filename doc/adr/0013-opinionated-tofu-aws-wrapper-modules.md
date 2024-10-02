@@ -31,13 +31,21 @@ Initial modules:
 
 We will...
 
-- [Prefer single objects over multiple simple inputs for related configuration](https://docs.cloudposse.com/best-practices/terraform/#prefer-a-single-object-over-multiple-simple-inputs-for-related-configuration)
-
+- Make it clear to the consumer what's required and what's intended for them to decide for the mission.
+- Add one layer with Defense Unicorns opinions around official AWS modules. (Don't wrap our wrappers)
 - Organize wrapper module vars by what's required versus optional with secrets broken out.
 - Set defaults based on Impact Level using overrides from a base.
-- Allow for config defaults to be selected from critira such as impact level from the global context.
+- Allow for config defaults to be selected from criteria such as impact level from the global context.
+- [Prefer single objects over multiple simple inputs for related configuration](https://docs.cloudposse.com/best-practices/terraform/#prefer-a-single-object-over-multiple-simple-inputs-for-related-configuration)
+- Don't mix secrets with non-secrets to aid in troubleshoot. Mixing will mask non-secret data in
+  deployment output.
+- Use [Cloud Posse context provider](https://github.com/cloudposse/terraform-provider-context/)
+  - for shared context between modules and applies
+  - common attributes such as name prefix/suffix (labels), tags and other global configuration.
+- Avoid directly passing attributes to wrapped modules in favor of defaults organized by context.
+- NOTE: Do we want to take on the scope to keep secrets in a store and out of module output? (require a store as input)
 
-  - Example
+- Example
 
   ```
   // Context data sources that spans modules and deploys.
@@ -85,7 +93,7 @@ We will...
       cluster_version                      = var.eks_config_opts.cluster_version
       control_plane_subnet_ids             = var.vpc_attrs.private_subnets
       private_subnet_ids                   = var.vpc_attrs.private_subnets
-      iam_role_permissions_boundary        = data.context_config.this.values["PermissionsBoundry"]
+      iam_role_permissions_boundary        = data.context_config.this.values["PermissionsBoundary"]
       cluster_endpoint_public_access       = true
       cluster_endpoint_public_access_cidrs = []
       cluster_endpoint_private_access      = false
@@ -115,16 +123,6 @@ We will...
   }
 
   ```
-
-  - Make it clear to the consumer what's required and intended for them to decide for the mission.
-  - Don't mix secrets with non-secrets to aid in troubleshoot. Mixing will mask non-secret data in
-    deployment output.
-  - NOTE: Do we want to take on the scope to keep secrets in a store and out of module output? (require a store as input)
-
-- Use [Cloud Posse context provider](https://github.com/cloudposse/terraform-provider-context/)
-  - for shared context between modules and applies
-  - common attributes such as name prefix/suffix (labels), tags and other global configuration.
-- Avoid directly passing attributes to wrapped modules in favor of defaults organized by context.
 
 An example of the data flow through modules connected via a stack is provided [here](../../atmos). You can see how in
 lieu of vars for name prefixes, tags and other global config the context is used.
