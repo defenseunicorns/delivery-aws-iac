@@ -32,6 +32,14 @@ Initial modules:
 We will...
 
 - Make it clear to the consumer what's required and what's intended for them to decide for the mission.
+  - We want to avoid modules that take on the responsibility of being flexible to what may or may not be needed downstream of their deployment.
+    This doesn't mean we don't what this flexibility, it means it should live outside of architectural modules. For example, selection of Availability Zones may be a mission decision
+    based on capabilities needed at the EKS layer, but decision needs to be deployed at VPC layer.
+    We can provide a `mission-init` module that can help dynamically select Availability Zones, instance types, etc... This approach may also be used to help organize what should be decided up
+    front based on mission requirements.
+  - This is one of the motivations for adding context and more opinions. Another example, VPCs may
+    need to know the name of the EKS cluster before the cluster is created in order to set tags
+    for internal load balancing. The context makes the names deterministic.
 - Add one layer with Defense Unicorns opinions around official AWS modules. (Don't wrap our wrappers)
 - Organize wrapper module vars by what's required versus optional with secrets broken out.
 - Set defaults based on Impact Level using overrides from a base.
@@ -43,7 +51,6 @@ We will...
   - for shared context between modules and applies
   - common attributes such as name prefix/suffix (labels), tags and other global configuration.
 - Avoid directly passing attributes to wrapped modules in favor of defaults organized by context.
-- NOTE: Do we want to take on the scope to keep secrets in a store and out of module output? (require a store as input)
 
 - Example
 
@@ -155,6 +162,12 @@ module "aws_eks" {
 
 ```
 
+We will not...
+
+- Take on the scope to keep secrets in a store and out of module output.
+  - It's best practices to keep secrets out of tofu state (in favor of pointers to their location in a secret store).
+  - This can be addressed in a future ADR.
+
 Note that the Cloud Posse tool [Atmos](https://atmos.tools/) provides a workflow for organizing terraform as components
 that are assembled in stacks. Atmos a high level is a combination of a templating engine driven by config files that renders
 tofu [variable files](https://opentofu.org/docs/v1.7/language/values/variables/#variable-definitions-tfvars-files) and
@@ -163,6 +176,13 @@ This allows for DRY assembly of stacks which enable chaining
 of multiple tofu IaC deployments with a "Kustomize-like" overlay workflow for overriding a catalog of
 opinionated deployments. While the wrapper module refactor does not require atmos, it's worth understanding
 its workflow. Atmos provides significant guidance for organizing a catalog of reference deployments.
+
+To use `atmos` to see the data flow for the module refactor. Note: you'll need AWS creds to run the plan.
+
+```
+cd atmos
+atmos  workflow plan-eks --file eks.yaml --from-step="init"
+```
 
 ## Consequences
 
