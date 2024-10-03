@@ -12,8 +12,8 @@ components:
           values:
             deploy_id: '{{ (atmos.Component "init" .stack).outputs.deploy_id }}'
       vars:
+        azs: '{{ ((atmos.Component "init" .stack).outputs.azs) | toJson }}'
         vpc_required_var1: "vpc-one"
-        vpc_required_var2: "vpc-two"
         vpc_sensitive_required_var1: "vpc-secret-one"
         vpc_config_opts:
           vpc_opt1: vpc-bar

@@ -10,7 +10,10 @@ data "context_config" "this" {}
 data "context_label" "this" {}
 data "context_tags" "this" {}
 variable "vpc_required_var1" {}
-variable "vpc_required_var2" {}
+variable "azs" {
+  type        = list(string)
+  description = "VPC availablity zones - Must select based on downstream resource capabilities."
+}
 variable "vpc_sensitive_required_var1" {
   sensitive = true
 }
@@ -34,9 +37,6 @@ output "vpc_required_out1" {
   value = var.vpc_required_var1
 }
 
-output "vpc_required_out2" {
-  value = var.vpc_required_var2
-}
 
 output "vpc_sensitive_required_out1" {
   sensitive = true
@@ -57,11 +57,11 @@ output "context_tags" {
 
 output "vpc_attrs" {
   value = {
-    vpc_id          = "test-vpc-id"
-    subnet_ids      = ["subnet-01", "subnet-02"]
-    azs             = ["us-east-1a", "us-east-1b"]
-    private_subnets = ["private-subnet-01", "private-subnet-02"]
-    intra_subnets   = ["intra-subnet-01", "intra-subnet-02"]
+    vpc_id             = "test-vpc-id"
+    subnet_ids         = ["subnet-01", "subnet-02"]
+    azs                = ["us-east-1a", "us-east-1b"]
+    private_subnet_ids = ["private-subnet-01", "private-subnet-02"]
+    intra_subnet_ids   = ["intra-subnet-01", "intra-subnet-02"]
   }
 }
 

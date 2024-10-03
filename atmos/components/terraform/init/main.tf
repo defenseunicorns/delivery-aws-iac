@@ -12,6 +12,11 @@ terraform {
 }
 
 
+variable "availabity_zones_excludes" {
+  type        = list(string)
+  description = "list of az to exclude from context driven selection"
+  default     = []
+}
 resource "random_id" "deploy_id" {
   byte_length = 2
 }
@@ -23,6 +28,22 @@ data "context_config" "this" {}
 data "context_label" "this" {}
 # Create Tags
 data "context_tags" "this" {}
+
+//At init provide context for selection of azs
+/*
+data "aws_availability_zones" "available" {
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+  //TODO: can we filter based on EKS and Bastion capabitlity needs (i.e.: ses_vpce)
+  exclude_names = var.availabity_zones_excludes
+}
+*/
+
+locals {
+  tmp_az = ["az-1", "az-2"]
+}
 
 output "context_config" {
   value = data.context_config.this
@@ -37,4 +58,8 @@ output "context_tags" {
 
 output "deploy_id" {
   value = random_id.deploy_id.hex
+}
+output "azs" {
+  //value = data.aws_availability_zones.available.names
+  value = local.tmp_az
 }

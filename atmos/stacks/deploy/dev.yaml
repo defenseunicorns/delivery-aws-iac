@@ -16,7 +16,7 @@ terraform:
         stage:
           required: true
         impact_level:
-          validation_regex: "^(il[0-5]|dx)$" # Impact Level or "dx" for an optimized developer experience
+          validation_regex: "^(il[0-5]|devx)$" # Impact Level or "dx" for an optimized developer experience
         component: {}
         stack_file: {}
         deploy_id: {}
@@ -33,7 +33,7 @@ terraform:
         stack: "{{.atmos_stack}}"
         component: "{{.atmos_component}}"
         stack_file: "{{.atmos_stack_file}}"
-        impact_level: il4
+        impact_level: il5 # Set to "devx" for an optimized developer experience
         PermissionsBoundary: "arn:aws:iam::aws:policy/FooAccess"
 
 components:

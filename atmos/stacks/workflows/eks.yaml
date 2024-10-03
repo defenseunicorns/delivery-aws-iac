@@ -11,3 +11,15 @@ workflows:
         command: terraform apply bastion -auto-approve
       - name: "eks"
         command: terraform apply eks -auto-approve
+
+  plan-eks:
+    stack: dev
+    steps:
+      - name: "init"
+        command: terraform apply init -auto-approve
+      - name: "vpc"
+        command: terraform apply vpc -auto-approve
+      - name: "bastion"
+        command: terraform apply bastion -auto-approve
+      - name: "eks"
+        command: terraform plan eks
