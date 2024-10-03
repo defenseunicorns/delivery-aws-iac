@@ -46,14 +46,26 @@ variable "vpc_config" {
 variable "eks_config_opts" {
   description = "EKS Configuration options to be determined by mission needs."
   type = object({
-    cluster_version         = optional(string, "1.30")
-    kms_key_admin_usernames = optional(list(string), [])
-    kms_key_admin_arns      = optional(list(string), [])
+    cluster_version                     = optional(string, "1.30")
+    kms_key_admin_usernames             = optional(list(string), [])
+    kms_key_admin_arns                  = optional(list(string), [])
+    additional_self_managed_node_groups = optional(list(any), [])
   })
   default = {
     cluster_version = "1.30"
   }
 }
+
+variable "uds_config_opts" {
+  description = "UDS Configuration options to be determined by mission needs."
+  type = object({
+    keycloak_enabled = optional(bool, true)
+  })
+  default = {
+    cluster_version = "1.30"
+  }
+}
+
 
 variable "eks_sensitive_config_opts" {
   sensitive = true
@@ -68,6 +80,8 @@ locals {
     [for admin_user in var.eks_config_opts.kms_key_admin_usernames : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:user/${admin_user}"],
     [data.aws_iam_session_context.current.issuer_arn], var.eks_config_opts.kms_key_admin_arns
   ))
+
+  iam_role_permissions_boundary = lookup(data.context_config.this.values, "PermissionsBoundary", null) //TODO: add context for tag based IAM permissions boundaries
   // Context for base shall be IL5
   //Fixed settings for base (IL5)
   base_eks_config = {
@@ -76,7 +90,7 @@ locals {
     control_plane_subnet_ids        = var.vpc_config.private_subnet_ids
     tags                            = data.context_tags.this.tags
     cluster_name                    = data.context_label.this.rendered
-    iam_role_permissions_boundary   = lookup(data.context_config.this.values, "PermissionsBoundary", null) //TODO: add context for tag based IAM permissions boundaries
+    iam_role_permissions_boundary   = local.iam_role_permissions_boundary
     cluster_version                 = var.eks_config_opts.cluster_version
     cluster_addons                  = []
     cluster_endpoint_public_access  = false //No public access
@@ -86,8 +100,8 @@ locals {
     //cluster_service_ipv4_cidr                = ""
     attach_cluster_encryption_policy         = true
     cluster_endpoint_public_access_cidrs     = ["0.0.0.0/0"]
-    self_managed_node_group_defaults         = {}
-    self_managed_node_groups                 = {}
+    self_managed_node_group_defaults         = local.base_self_managed_node_group_defaults
+    self_managed_node_groups                 = local.base_self_managed_node_groups
     eks_managed_node_group_defaults          = {}
     eks_managed_node_groups                  = {}
     dataplane_wait_duration                  = "4m"
@@ -147,6 +161,7 @@ locals {
   }
   eks_config = local.eks_config_contexts[data.context_config.this.values["impact_level"]]
 
+
 }
 
 module "aws_eks" {
@@ -159,12 +174,13 @@ module "aws_eks" {
   control_plane_subnet_ids = local.eks_config.control_plane_subnet_ids
   cluster_ip_family        = local.eks_config.cluster_ip_family
   //cluster_service_ipv4_cidr                = local.eks_config.cluster_service_ipv4_cidr //removed - use default
-  iam_role_permissions_boundary            = local.eks_config.iam_role_permissions_boundary
-  attach_cluster_encryption_policy         = local.eks_config.attach_cluster_encryption_policy
-  cluster_endpoint_public_access           = local.eks_config.cluster_endpoint_public_access
-  cluster_endpoint_public_access_cidrs     = local.eks_config.cluster_endpoint_public_access_cidrs
-  cluster_endpoint_private_access          = local.eks_config.cluster_endpoint_private_access
-  self_managed_node_group_defaults         = local.eks_config.self_managed_node_group_defaults
+  iam_role_permissions_boundary        = local.eks_config.iam_role_permissions_boundary
+  attach_cluster_encryption_policy     = local.eks_config.attach_cluster_encryption_policy
+  cluster_endpoint_public_access       = local.eks_config.cluster_endpoint_public_access
+  cluster_endpoint_public_access_cidrs = local.eks_config.cluster_endpoint_public_access_cidrs
+  cluster_endpoint_private_access      = local.eks_config.cluster_endpoint_private_access
+  //Add selected configs subnet_ids to the node group defaults
+  self_managed_node_group_defaults         = merge(local.eks_config.self_managed_node_group_defaults, { subnet_ids = local.eks_config.subnet_ids })
   self_managed_node_groups                 = local.eks_config.self_managed_node_groups
   eks_managed_node_groups                  = local.eks_config.eks_managed_node_groups
   eks_managed_node_group_defaults          = local.eks_config.eks_managed_node_group_defaults
