@@ -12,13 +12,33 @@ components:
           values:
             deploy_id: '{{ (atmos.Component "init" .stack).outputs.deploy_id }}'
       vars:
-        azs: '{{ ((atmos.Component "init" .stack).outputs.azs) | toJson }}'
-        vpc_required_var1: "vpc-one"
-        vpc_sensitive_required_var1: "vpc-secret-one"
-        vpc_config_opts:
-          vpc_opt1: vpc-bar
-        vpc_sensitive_config_opts:
-          vpc_sensitive_opt1: vpc-baz
+        # azs: '{{ ((atmos.Component "init" .stack).outputs.azs) | toJson }}' # TODO: make this work
+        required_vpc_vars:
+          vpc_cidr: "10.200.0.0/16"
+          secondary_cidr_blocks: 
+            - "100.64.0.0/16"
+          vpc_subnets:
+            - name: "public-a"
+              new_bits: 6
+            - name: "public-b"
+              new_bits: 6
+            - name: "public-c"
+              new_bits: 6
+            - name: "private-a"
+              new_bits: 6
+            - name: "private-b"
+              new_bits: 6
+            - name: "private-c"
+              new_bits: 6
+            - name: "database-a"
+              new_bits: 11
+            - name: "database-b"
+              new_bits: 11
+            - name: "database-c"
+              new_bits: 11
+        optional_vpc_vars:
+          create_default_vpc_endpoints: false
+          instance_tenancy: default
 
     bastion:
       metadata:

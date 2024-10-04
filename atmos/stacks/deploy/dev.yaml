@@ -21,6 +21,7 @@ terraform:
         stack_file: {}
         deploy_id: {}
         PermissionsBoundary: {}
+        PermissionsBoundaryName: {}
       tags_key_case: title
       property_order:
         - environment
@@ -34,7 +35,8 @@ terraform:
         component: "{{.atmos_component}}"
         stack_file: "{{.atmos_stack_file}}"
         impact_level: il5 # Set to "devx" for an optimized developer experience
-        PermissionsBoundary: "arn:aws:iam::aws:policy/FooAccess"
+        PermissionsBoundary: "arn:aws:iam::${data.aws_partition.current.partition}:policy/foopolicy" # Update this when running!!!
+        PermissionsBoundaryName: "foopolicy" # Update this when running!!!
 
 components:
   terraform:
