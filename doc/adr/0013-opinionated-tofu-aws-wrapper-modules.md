@@ -42,6 +42,14 @@ We will...
     for internal load balancing. The context makes the names deterministic.
 - Add one layer with Defense Unicorns opinions around official AWS modules. (Don't wrap our wrappers)
 - Organize wrapper module vars by what's required versus optional with secrets broken out.
+  - Use high level cloud ownership context to guide breakdown of top level config object parameters.
+    Make it obvious where to start with settings related to the following.
+    - IAM
+    - Compute
+    - Networking
+    - Observability
+    - Storage
+    - Security
 - Set defaults based on Impact Level using overrides from a base.
 - Allow for config defaults to be selected from criteria such as impact level from the global context.
 - [Prefer single objects over multiple simple inputs for related configuration](https://docs.cloudposse.com/best-practices/terraform/#prefer-a-single-object-over-multiple-simple-inputs-for-related-configuration)
