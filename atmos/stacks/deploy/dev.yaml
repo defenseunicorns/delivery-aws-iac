@@ -17,11 +17,15 @@ terraform:
           required: true
         impact_level:
           validation_regex: "^(il[0-5]|devx)$" # Impact Level or "dx" for an optimized developer experience
+          include_in_tags: false
         component: {}
         stack_file: {}
         deploy_id: {}
-        PermissionsBoundary: {}
-        PermissionsBoundaryName: {}
+        permissions_boundary_policy_arn:
+          include_in_tags: false
+        permissions_boundary_policy_name:
+          include_in_tags: false
+        PermissionsBoundary: {} # Tag name required by IAM policy
       tags_key_case: title
       property_order:
         - environment
@@ -35,8 +39,8 @@ terraform:
         component: "{{.atmos_component}}"
         stack_file: "{{.atmos_stack_file}}"
         impact_level: il5 # Set to "devx" for an optimized developer experience
-        PermissionsBoundary: "arn:aws:iam::${data.aws_partition.current.partition}:policy/foopolicy" # Update this when running!!!
-        PermissionsBoundaryName: "foopolicy" # Update this when running!!!
+        permissions_boundary_policy_name: "missionsuccess_dev_base_policy" # Update this when running!!!
+        PermissionsBoundary: "missionsuccess_dev_base_policy"
 
 components:
   terraform:

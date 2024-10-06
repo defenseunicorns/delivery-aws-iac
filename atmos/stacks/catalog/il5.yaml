@@ -11,11 +11,13 @@ components:
         context:
           values:
             deploy_id: '{{ (atmos.Component "init" .stack).outputs.deploy_id }}'
+            permissions_boundary_policy_arn: '{{ (atmos.Component "init" .stack).outputs.permissions_boundary_policy_arn }}'
+            permissions_boundary_policy_name: '{{ (atmos.Component "init" .stack).outputs.permissions_boundary_policy_name }}'
       vars:
-        # azs: '{{ ((atmos.Component "init" .stack).outputs.azs) | toJson }}' # TODO: make this work
         required_vpc_vars:
+          azs: '{{ ((atmos.Component "init" .stack).outputs.azs) | toJson }}'
           vpc_cidr: "10.200.0.0/16"
-          secondary_cidr_blocks: 
+          secondary_cidr_blocks:
             - "100.64.0.0/16"
           vpc_subnets:
             - name: "public-a"
@@ -62,6 +64,8 @@ components:
         context:
           values:
             deploy_id: '{{ (atmos.Component "init" .stack).outputs.deploy_id }}'
+            permissions_boundary_policy_arn: '{{ (atmos.Component "init" .stack).outputs.permissions_boundary_policy_arn }}'
+            permissions_boundary_policy_name: '{{ (atmos.Component "init" .stack).outputs.permissions_boundary_policy_name }}'
       vars:
         vpc_config: '{{ toRawJson ((atmos.Component "vpc" .stack).outputs.vpc_attrs) }}'
         eks_config_opts:

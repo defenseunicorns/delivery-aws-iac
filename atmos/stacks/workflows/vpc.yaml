@@ -17,7 +17,7 @@ workflows:
   destroy-vpc:
     stack: dev
     steps:
+      - name: "init"
+        command: terraform apply init -auto-approve
       - name: "vpc"
         command: terraform destroy vpc -auto-approve
-      - name: "init"
-        command: terraform destroy init -auto-approve

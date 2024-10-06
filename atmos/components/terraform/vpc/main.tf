@@ -4,7 +4,12 @@ terraform {
       source  = "registry.terraform.io/cloudposse/context"
       version = "~> 0.4.0"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.34"
+    }
   }
+
 }
 data "context_config" "this" {}
 data "context_label" "this" {}
@@ -12,15 +17,10 @@ data "context_tags" "this" {}
 
 data "aws_region" "current" {}
 
-data "aws_availability_zones" "available" {
-  filter {
-    name   = "opt-in-status"
-    values = ["opt-in-not-required"]
-  }
-  exclude_names = var.optional_vpc_vars.vpc_exclude_availability_zones
-}
 locals {
-  num_azs = 3 # TODO: programatically discover
+  iam_role_permissions_boundary_arn  = lookup(data.context_config.this.values, "permissions_boundary_policy_arn", null)  //TODO: add context for tag based IAM permissions boundaries
+  iam_role_permissions_boundary_name = lookup(data.context_config.this.values, "permissions_boundary_policy_name", null) //TODO: add context for tag based IAM permissions boundaries
+
   default_vpc_config = {
     amazon_side_asn                                                   = "64512"
     azs                                                               = []
@@ -255,11 +255,11 @@ locals {
 
   }
   base_vpc_config = {
-    azs                               = [for az_name in slice(data.aws_availability_zones.available.names, 0, min(length(data.aws_availability_zones.available.names), local.num_azs)) : az_name]
+    azs                               = var.required_vpc_vars.azs
     name                              = data.context_label.this.rendered
     create_database_subnet_group      = true
-    instance_tenancy                  = var.optional_vpc_vars.instance_tenancy                               # TODO: group with flag
-    vpc_flow_log_permissions_boundary = lookup(data.context_config.this.values, "PermissionsBoundary", null) //TODO: add context for tag based IAM permissions boundaries  
+    instance_tenancy                  = var.optional_vpc_vars.instance_tenancy # TODO: group with flag
+    vpc_flow_log_permissions_boundary = local.iam_role_permissions_boundary_arn
     private_subnet_tags = {
       "context"                                  = "${data.context_label.this.rendered}"
       "type"                                     = "private"
@@ -271,10 +271,10 @@ locals {
       "type"    = "public"
     }
     secondary_cidr_blocks = var.required_vpc_vars.secondary_cidr_blocks
-    tags = {
+    tags = merge(data.context_tags.this.tags, {
       "context"             = "${data.context_label.this.rendered}"
-      "PermissionsBoundary" = lookup(data.context_config.this.values, "PermissionsBoundaryName", null)
-    }
+      "PermissionsBoundary" = local.iam_role_permissions_boundary_name
+    })
     cidr = var.required_vpc_vars.vpc_cidr
     # TODO: context
     # Manage so we can name
@@ -299,7 +299,7 @@ locals {
     # VPC Flow Logs (Cloudwatch log group and IAM role will be created)
     enable_flow_log                                 = true
     flow_log_cloudwatch_log_group_retention_in_days = 365
-    vpc_flow_log_permissions_boundary               = lookup(data.context_config.this.values, "PermissionsBoundary", null)
+    vpc_flow_log_permissions_boundary               = local.iam_role_permissions_boundary_arn
     create_flow_log_cloudwatch_log_group            = true
     create_flow_log_cloudwatch_iam_role             = true
     flow_log_max_aggregation_interval               = 60
@@ -317,8 +317,9 @@ variable "required_vpc_vars" {
   For vpc_subnets, see https://github.com/hashicorp/terraform-cidr-subnets
   EOD
   type = object({
-    vpc_cidr                     = string
-    secondary_cidr_blocks        = list(string)
+    azs                   = list(string)
+    vpc_cidr              = string
+    secondary_cidr_blocks = list(string)
     vpc_subnets = list(object({
       name     = string
       new_bits = number
@@ -344,6 +345,7 @@ variable "optional_vpc_vars" {
 }
 
 # Modules
+//TODO: Should subnet definition and managment happen at mission-init time?
 module "subnet_addrs" {
   source = "git::https://github.com/hashicorp/terraform-cidr-subnets?ref=v1.0.0"
 
@@ -732,4 +734,7 @@ resource "aws_security_group" "vpc_tls" {
 
 output "context_tags" {
   value = data.context_tags.this
+}
+output "vpc_config" {
+  value = local.base_vpc_config
 }

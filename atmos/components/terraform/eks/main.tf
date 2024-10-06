@@ -81,7 +81,7 @@ locals {
     [data.aws_iam_session_context.current.issuer_arn], var.eks_config_opts.kms_key_admin_arns
   ))
 
-  iam_role_permissions_boundary = lookup(data.context_config.this.values, "PermissionsBoundary", null) //TODO: add context for tag based IAM permissions boundaries
+  iam_role_permissions_boundary = lookup(data.context_config.this.values, "permissions_boundary_policy_arn", null) //TODO: add context for tag based IAM permissions boundaries
   // Context for base shall be IL5
   //Fixed settings for base (IL5)
   base_eks_config = {
