@@ -67,7 +67,8 @@ components:
             permissions_boundary_policy_arn: '{{ (atmos.Component "init" .stack).outputs.permissions_boundary_policy_arn }}'
             permissions_boundary_policy_name: '{{ (atmos.Component "init" .stack).outputs.permissions_boundary_policy_name }}'
       vars:
-        vpc_config: '{{ toRawJson ((atmos.Component "vpc" .stack).outputs.vpc_attrs) }}'
+        vpc_config: '{{ toRawJson ((atmos.Component "vpc" .stack).outputs.vpc_config) }}'
         eks_config_opts:
+          default_ami_id: '{{ (index ((atmos.Component "init" .stack).outputs.amis) "eks-cpu").id }}'
           cluster_version: "1.29"
         eks_sensitive_config_opts: {}

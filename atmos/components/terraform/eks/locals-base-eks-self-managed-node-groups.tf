@@ -65,10 +65,8 @@ locals {
   //TODO: node groups should not contain info common to all node group options
   base_uds_core_self_mg_node_group = {
     uds_ng = {
-      //ami_type = local.bottlerocket_ami.type
-      ami_type = "BOTTLEROCKET_x86_64"
-      //ami_id        = data.aws_ami.eks_default_bottlerocket.id
-      ami_id        = "TODO: ami_id"
+      //ami_type = "BOTTLEROCKET_x86_64" //TODO: is ami_type needed when specfic id provided?
+      ami_id        = var.eks_config_opts.default_ami_id
       instance_type = null # conflicts with instance_requirements settings
       instance_requirements = {
         allowed_instance_types = ["m6i.4xlarge", "m5a.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
@@ -126,8 +124,7 @@ locals {
   base_keycloak_self_mg_node_group = {
     keycloak_ng_sso = {
       //platform = "bottlerocket"
-      //ami_id        = data.aws_ami.eks_default_bottlerocket.id
-      ami_id        = "TODO: ami_id"
+      ami_id        = lookup(var.uds_config_opts, "keycloak_node_group_ami_id", var.eks_config_opts.default_ami_id)
       instance_type = null # conflicts with instance_requirements settings
       min_size      = 2
       max_size      = 2

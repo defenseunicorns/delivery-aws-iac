@@ -736,5 +736,13 @@ output "context_tags" {
   value = data.context_tags.this
 }
 output "vpc_config" {
-  value = local.base_vpc_config
+  value = {
+    azs                        = local.vpc_config.azs
+    vpc_id                     = module.vpc.vpc_id
+    public_subnets             = module.vpc.public_subnets
+    private_subnets            = module.vpc.private_subnets
+    intra_subnets              = module.vpc.intra_subnets
+    database_subnets           = module.vpc.database_subnets
+    database_subnet_group_name = module.vpc.database_subnet_group_name
+  }
 }

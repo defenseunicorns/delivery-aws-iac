@@ -31,11 +31,11 @@ data "aws_iam_session_context" "current" {
 variable "vpc_config" {
   description = "Existing VPC configuration for EKS"
   type = object({
-    vpc_id                     = string
-    subnet_ids                 = list(string)
     azs                        = list(string)
-    private_subnet_ids         = list(string)
-    intra_subnet_ids           = list(string)
+    vpc_id                     = string
+    public_subnets             = list(string)
+    private_subnets            = list(string)
+    intra_subnets              = list(string)
     database_subnets           = optional(list(string))
     database_subnet_group_name = optional(string)
   })
@@ -46,26 +46,22 @@ variable "vpc_config" {
 variable "eks_config_opts" {
   description = "EKS Configuration options to be determined by mission needs."
   type = object({
+    default_ami_id                      = string // Default AMI for all node groups
     cluster_version                     = optional(string, "1.30")
     kms_key_admin_usernames             = optional(list(string), [])
     kms_key_admin_arns                  = optional(list(string), [])
     additional_self_managed_node_groups = optional(list(any), [])
   })
-  default = {
-    cluster_version = "1.30"
-  }
 }
 
 variable "uds_config_opts" {
   description = "UDS Configuration options to be determined by mission needs."
   type = object({
     keycloak_enabled = optional(bool, true)
+    keycloak_ami_id  = optional(string) //optional override of default ami id for eks SMNG
   })
-  default = {
-    cluster_version = "1.30"
-  }
+  default = {}
 }
-
 
 variable "eks_sensitive_config_opts" {
   sensitive = true
@@ -86,8 +82,8 @@ locals {
   //Fixed settings for base (IL5)
   base_eks_config = {
     vpc_id                          = var.vpc_config.vpc_id
-    subnet_ids                      = var.vpc_config.private_subnet_ids //Private subnets by default for base
-    control_plane_subnet_ids        = var.vpc_config.private_subnet_ids
+    subnet_ids                      = var.vpc_config.private_subnets //Private subnets by default for base
+    control_plane_subnet_ids        = var.vpc_config.private_subnets
     tags                            = data.context_tags.this.tags
     cluster_name                    = data.context_label.this.rendered
     iam_role_permissions_boundary   = local.iam_role_permissions_boundary
@@ -143,8 +139,8 @@ locals {
   // Overrides for Developer Experiance (devx). These facilate faster setup/teardown 
   // and more open access for bundle development.
   devx_eks_overrides = {
-    subnet_ids                      = var.vpc_config.subnet_ids //Public subnets for devX
-    control_plane_subnet_ids        = var.vpc_config.private_subnet_ids
+    subnet_ids                      = var.vpc_config.public_subnets //Public subnets for devX
+    control_plane_subnet_ids        = var.vpc_config.private_subnets
     cluster_endpoint_public_access  = true //Public access enabled
     cluster_endpoint_private_access = true //Private access requred
   }

@@ -31,6 +31,39 @@ variable "availabity_zones_excludes" {
   description = "list of az to exclude from context driven selection"
   default     = []
 }
+
+variable "ami_filters" {
+  type = map(object({
+    owners      = list(string)
+    most_recent = bool
+    filters     = map(list(string))
+  }))
+  default = {
+    eks-cpu = {
+      owners      = ["amazon"]
+      most_recent = true
+      filters = {
+        //name = ["bottlerocket-aws-k8s-${var.cluster_version}-x86_64-*"] //TODO: should cluster version be included?
+        name = ["bottlerocket-aws-k8s-*-x86_64-*"]
+      }
+    }
+    eks-lfai-gpu = {
+      owners      = ["amazon"]
+      most_recent = true
+      filters = {
+        //name = ["bottlerocket-aws-k8s-${var.eks_version}-nvidia-x86_64-*"]
+        name = ["bottlerocket-aws-k8s-*-nvidia-x86_64-*"]
+      }
+    },
+    bastion = {
+      owners      = ["amazon"]
+      most_recent = true
+      filters = {
+        "name" = ["al2023-ami-20*-kernel-*-x86_64"]
+      }
+    }
+  }
+}
 resource "random_id" "deploy_id" {
   byte_length = 2
 }
@@ -51,6 +84,19 @@ data "aws_availability_zones" "available" {
   }
   //TODO: can we filter based on EKS and Bastion capabitlity needs (i.e.: ses_vpce)
   exclude_names = var.availabity_zones_excludes
+}
+
+data "aws_ami" "init" {
+  for_each    = var.ami_filters
+  owners      = each.value.owners
+  most_recent = each.value.most_recent
+  dynamic "filter" {
+    for_each = each.value.filters
+    content {
+      name   = filter.key
+      values = filter.value
+    }
+  }
 }
 
 locals {
@@ -89,4 +135,10 @@ output "aws_caller_identity" {
 }
 output "aws_iam_session_context" {
   value = data.aws_iam_session_context.current
+}
+
+output "amis" {
+  value = {
+    for key, ami in data.aws_ami.init : key => { id = ami.id }
+  }
 }
