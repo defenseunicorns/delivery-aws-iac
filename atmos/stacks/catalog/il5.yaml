@@ -53,10 +53,10 @@ components:
         bastion_required_var1: '{{ (atmos.Component "vpc" .stack).outputs.vpc_required_out1 }}'
         bastion_required_var2: '{{ (atmos.Component "vpc" .stack).outputs.vpc_required_out2 }}'
         bastion_sensitive_required_var1: "bastion-secret-one"
-        bastion_config_opts:
-          bastion_opt1: bar
         bastion_sensitive_config_opts:
           bastion_sensitive_opt1: baz
+        bastion_config_opts:
+          default_ami_id: '{{ (index ((atmos.Component "init" .stack).outputs.amis) "bastion").id }}'
     eks:
       metadata:
         component: eks
