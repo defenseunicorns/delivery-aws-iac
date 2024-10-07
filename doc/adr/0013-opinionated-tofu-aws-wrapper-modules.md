@@ -50,8 +50,11 @@ We will...
     - Observability
     - Storage
     - Security
+    - UDS
 - Set defaults based on Impact Level using overrides from a base.
 - Allow for config defaults to be selected from criteria such as impact level from the global context.
+- Organize locals for context based configs into separate file such that
+  CODEOWNERS can be use to keep SME's in the loop.
 - [Prefer single objects over multiple simple inputs for related configuration](https://docs.cloudposse.com/best-practices/terraform/#prefer-a-single-object-over-multiple-simple-inputs-for-related-configuration)
 - Don't mix secrets with non-secrets to aid in troubleshoot. Mixing will mask non-secret data in
   deployment output.
