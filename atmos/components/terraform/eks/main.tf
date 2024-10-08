@@ -106,13 +106,10 @@ locals {
     devx = local.devx_eks_config
   }
   eks_config = local.eks_config_contexts[data.context_config.this.values["impact_level"]]
-
-
 }
 
-module "aws_eks" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v20.24.0"
-
+module "eks" {
+  source                   = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v20.24.0"
   cluster_name             = local.eks_config.cluster_name
   cluster_version          = local.eks_config.cluster_version
   vpc_id                   = local.eks_config.vpc_id
@@ -130,7 +127,7 @@ module "aws_eks" {
     local.eks_config.self_managed_node_group_defaults,
     {
       subnet_ids = local.eks_config.subnet_ids,
-      key_name   = module.self_managed_node_group_keypair.key_pair_name
+      key_name   = module.default_self_managed_node_group_keypair.key_pair_name
     }
   )
   self_managed_node_groups                 = local.eks_config.self_managed_node_groups
@@ -182,22 +179,104 @@ module "aws_eks" {
 ######################################################
 # EKS Self Managed Node Group Dependencies
 ######################################################
-module "self_managed_node_group_keypair" {
+module "default_self_managed_node_group_keypair" {
   source             = "git::https://github.com/terraform-aws-modules/terraform-aws-key-pair?ref=v2.0.3"
-  key_name_prefix    = "${local.eks_config.cluster_name}-self-managed_ng-"
+  key_name_prefix    = "${local.eks_config.cluster_name}-default-ng-"
   create_private_key = true
   tags               = local.eks_config.tags
 }
 
-module "self_managed_node_group_secret_key_secrets_manager_secret" {
+module "default_self_managed_node_group_secret_key_secrets_manager_secret" {
   source                  = "git::https://github.com/terraform-aws-modules/terraform-aws-secrets-manager.git?ref=v1.1.2"
-  name                    = module.self_managed_node_group_keypair.key_pair_name
+  name                    = module.default_self_managed_node_group_keypair.key_pair_name
   description             = "Secret key for self managed node group keypair"
   recovery_window_in_days = 0 # 0 - no recovery window, delete immediately when deleted
   block_public_policy     = true
   ignore_secret_changes   = true
-  secret_string           = module.self_managed_node_group_keypair.private_key_openssh
+  secret_string           = module.default_self_managed_node_group_keypair.private_key_openssh
   tags                    = local.eks_config.tags
+}
+
+######################################################
+#Keycloak Self Managed Node Group Dependencies
+######################################################
+
+module "keycloak_self_managed_node_group_keypair" {
+  source             = "git::https://github.com/terraform-aws-modules/terraform-aws-key-pair?ref=v2.0.3"
+  key_name_prefix    = "${local.eks_config.cluster_name}-keycloak-ng-"
+  create_private_key = true
+  tags               = local.eks_config.tags
+}
+
+module "keycloak_ebs_kms_key" {
+  source      = "git::https://github.com/terraform-aws-modules/terraform-aws-kms.git?ref=v3.1.0"
+  description = "Customer managed key to encrypt EKS managed node group volumes"
+
+  # Policy
+  key_administrators = [data.aws_iam_session_context.current.issuer_arn]
+  key_service_roles_for_autoscaling = [
+    # required for the ASG to manage encrypted volumes for nodes
+    "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
+    # required for the cluster / persistentvolume-controller to create encrypted PVCs
+    module.eks.cluster_iam_role_arn,
+  ]
+  # Aliases
+  aliases                 = ["eks/keycloak_ng_sso/ebs"]
+  aliases_use_name_prefix = true
+  tags                    = local.eks_config.tags
+}
+
+
+######################################################
+# vpc-cni irsa role
+######################################################
+module "vpc_cni_ipv4_irsa_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "5.46.0"
+
+  role_name_prefix      = "${local.eks_config.cluster_name}-vpc-cni-"
+  attach_vpc_cni_policy = true
+  vpc_cni_enable_ipv4   = true
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:aws-node"]
+    }
+  }
+
+  # extra policy to attach to the role
+  role_policy_arns = {
+    vpc_cni_logging = aws_iam_policy.vpc_cni_logging.arn
+  }
+
+  role_permissions_boundary_arn = local.eks_config.iam_role_permissions_boundary
+  tags                          = local.eks_config.tags
+}
+
+
+resource "aws_iam_policy" "vpc_cni_logging" {
+  name        = "${local.eks_config.cluster_name}-vpc-cni-logging"
+  description = "Additional test policy"
+  tags        = local.eks_config.tags
+  policy = jsonencode(
+    {
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Sid    = "CloudWatchLogging"
+          Effect = "Allow"
+          Action = [
+            "logs:DescribeLogGroups",
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ]
+          Resource = "*"
+        }
+      ]
+    }
+  )
 }
 
 

@@ -61,7 +61,7 @@ locals {
   }
   //TODO: node groups should not contain info common to all node group options
   base_uds_core_self_mg_node_group = {
-    uds_ng = {
+    uds-eks-ng = {
       min_size     = 3
       max_size     = 5
       desired_size = 3
@@ -106,7 +106,7 @@ locals {
   }
 
   base_keycloak_self_mg_node_group = {
-    keycloak_ng_sso = {
+    keycloak-sso-eks-ng = {
       min_size             = 2
       max_size             = 2
       desired_size         = 2
