@@ -192,7 +192,7 @@ To use `atmos` to see the data flow for the module refactor. Note: you'll need A
 
 ```
 cd atmos
-atmos  workflow plan-eks --file eks.yaml --from-step="init"
+atmos  workflow plan-eks --file dev.yaml
 ```
 
 ## Consequences

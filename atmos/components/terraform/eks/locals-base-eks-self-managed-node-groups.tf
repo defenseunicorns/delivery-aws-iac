@@ -1,14 +1,13 @@
 locals {
 
   base_self_managed_node_group_defaults = {
-    //instance_type                          = null # conflicts with instance_requirements settings
-    //key_name                               = module.self_managed_node_group_keypair.key_pair_name
-    key_name                               = "TODO: key_name"
+    ami_type                               = "BOTTLEROCKET_x86_64"
+    ami_id                                 = var.eks_config_opts.default_ami_id
+    instance_type                          = null # conflicts with instance_requirements settings
     iam_role_permissions_boundary          = local.iam_role_permissions_boundary
     update_launch_template_default_version = true
     use_mixed_instances_policy             = true
 
-    /*
     instance_requirements = {
       allowed_instance_types = ["m6i.4xlarge", "m5a.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
       memory_mib = {
@@ -18,7 +17,6 @@ locals {
         min = 16
       }
     }
-    */
 
     placement = {
       tenancy = "dedicated"
@@ -43,10 +41,9 @@ locals {
     }
 
     # enable discovery of autoscaling groups by cluster-autoscaler
-    autoscaling_group_tags = merge(
-      {
-        "k8s.io/cluster-autoscaler/enabled" : true,
-        "k8s.io/cluster-autoscaler/${data.context_label.this.rendered}" : "owned"
+    autoscaling_group_tags = merge({
+      "k8s.io/cluster-autoscaler/enabled" : true,
+      "k8s.io/cluster-autoscaler/${data.context_label.this.rendered}" : "owned"
     })
 
     metadata_options = {
@@ -56,31 +53,18 @@ locals {
       http_tokens                 = "optional" # set to "enabled" to enforce IMDSv2, default for upstream terraform-aws-eks module
     }
 
-    tags = {
+    tags = merge(data.context_tags.this.tags, {
       subnet_type                            = "private",
       cluster                                = data.context_label.this.rendered
       "aws-node-termination-handler/managed" = true # only need this if NTH is enabled. This is due to aws blueprints using this resource and causing the tags to flap on every apply https://github.com/aws-ia/terraform-aws-eks-blueprints-addons/blob/257677adeed1be54326637cf919cf24df6ad7c06/main.tf#L1554-L1564
-    }
+    })
   }
   //TODO: node groups should not contain info common to all node group options
   base_uds_core_self_mg_node_group = {
     uds_ng = {
-      //ami_type = "BOTTLEROCKET_x86_64" //TODO: is ami_type needed when specfic id provided?
-      ami_id        = var.eks_config_opts.default_ami_id
-      instance_type = null # conflicts with instance_requirements settings
-      instance_requirements = {
-        allowed_instance_types = ["m6i.4xlarge", "m5a.4xlarge"] #this should be adjusted to the appropriate instance family if reserved instances are being utilized
-        memory_mib = {
-          min = 64000
-        }
-        vcpu_count = {
-          min = 16
-        }
-      }
       min_size     = 3
       max_size     = 5
       desired_size = 3
-
       block_device_mappings = {
         xvda = {
           device_name = "/dev/xvda"
@@ -123,16 +107,9 @@ locals {
 
   base_keycloak_self_mg_node_group = {
     keycloak_ng_sso = {
-      //platform = "bottlerocket"
-      ami_id        = lookup(var.uds_config_opts, "keycloak_node_group_ami_id", var.eks_config_opts.default_ami_id)
-      instance_type = null # conflicts with instance_requirements settings
-      min_size      = 2
-      max_size      = 2
-      desired_size  = 2
-      //TODO: this should always be true
-      //key_name = var.uds_config_opts.keycloak_enabled ? module.key_pair[0].key_pair_name : null
-      key_name = var.uds_config_opts.keycloak_enabled ? "foo" : null
-
+      min_size             = 2
+      max_size             = 2
+      desired_size         = 2
       bootstrap_extra_args = <<-EOT
         # The admin host container provides SSH access and runs with "superpowers".
         # It is disabled by default, but can be disabled explicitly.

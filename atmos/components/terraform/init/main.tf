@@ -1,3 +1,4 @@
+//providers.tf
 terraform {
   required_providers {
     context = {
@@ -15,17 +16,9 @@ terraform {
   }
 }
 
-data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
-data "aws_iam_session_context" "current" {
-  # This data source provides information on the IAM source role of an STS assumed role
-  # For non-role ARNs, this data source simply passes the ARN through issuer ARN
-  # Ref https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2327#issuecomment-1355581682
-  # Ref https://github.com/hashicorp/terraform-provider-aws/issues/28381
-  arn = data.aws_caller_identity.current.arn
-}
+provider "context" {}
 
-
+//variables.tf
 variable "availabity_zones_excludes" {
   type        = list(string)
   description = "list of az to exclude from context driven selection"
@@ -64,12 +57,25 @@ variable "ami_filters" {
     }
   }
 }
-resource "random_id" "deploy_id" {
-  byte_length = 2
+
+
+//main.tf
+locals {
+  iam_role_permissions_boundary_policy_name = lookup(data.context_config.this.values, "permissions_boundary_policy_name", null)
 }
 
+data "aws_partition" "current" {}
+data "aws_caller_identity" "current" {}
+data "aws_iam_session_context" "current" {
+  # This data source provides information on the IAM source role of an STS assumed role
+  # For non-role ARNs, this data source simply passes the ARN through issuer ARN
+  # Ref https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2327#issuecomment-1355581682
+  # Ref https://github.com/hashicorp/terraform-provider-aws/issues/28381
+  arn = data.aws_caller_identity.current.arn
+}
+
+
 # Configure the Context Provider
-provider "context" {}
 data "context_config" "this" {}
 # Create a Label
 data "context_label" "this" {}
@@ -86,6 +92,7 @@ data "aws_availability_zones" "available" {
   exclude_names = var.availabity_zones_excludes
 }
 
+//TODO: amis shall be set in eks and bastion modules w/o support for overrides.
 data "aws_ami" "init" {
   for_each    = var.ami_filters
   owners      = each.value.owners
@@ -99,10 +106,13 @@ data "aws_ami" "init" {
   }
 }
 
-locals {
-  iam_role_permissions_boundary_policy_name = lookup(data.context_config.this.values, "permissions_boundary_policy_name", null)
+resource "random_id" "deploy_id" {
+  byte_length = 2
 }
 
+//outputs.tf
+//Outputs at mission-init reflect what needs to be decided at start-of-mission
+// - this can be in a tofu root module that connects our opinionated wrappers for vpc, eks, bastion or at the componet level using atmos.
 output "context_config" {
   value = data.context_config.this
 }
