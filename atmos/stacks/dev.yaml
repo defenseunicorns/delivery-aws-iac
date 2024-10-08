@@ -31,39 +31,29 @@ components:
           Owner: "team"
           ManagedBy: "Terraform"
           Repo: "https://github.com/defenseunicorns/terraform-aws-vpc"
-    bastion:
-      dependencies:
-        terraform:
-          - vpc  # Ensure vpc runs before bastion
-      vars:
-        name: "dev-bastion"
-        vpc_id: '{{ (atmos.Component "vpc" "dev").outputs.vpc_id }}'
-        instance_type: "t3.micro"
-        subnet_id: '{{ index (atmos.Component "vpc" .stack).outputs.private_subnets 0 }}'
-        tags:
-          Environment: "dev"
-          Owner: "team"
+    # bastion:
+    #   dependencies:
+    #     terraform:
+    #       - vpc  # Ensure vpc runs before bastion
+    #   vars:
+    #     name: "dev-bastion"
+    #     vpc_id: '{{ (atmos.Component "vpc" "dev").outputs.vpc_id }}'
+    #     instance_type: "t3.micro"
+    #     subnet_id: '{{ index (atmos.Component "vpc" .stack).outputs.private_subnets 0 }}'
+    #     tags:
+    #       Environment: "dev"
+    #       Owner: "team"
     eks:
       vars:
         cluster_name: "dev-eks"
+        # aws_admin_usernames: [""]
+        create_ssm_parameters: false
+        vpc_id: '{{ (atmos.Component "vpc" "dev").outputs.vpc_id }}'
+        azs: '{{ (atmos.Component "vpc" .stack).outputs.azs | toJson }}'
         private_subnet_ids: '{{ (atmos.Component "vpc" .stack).outputs.private_subnets | toJson  }}'
         control_plane_subnet_ids: '{{ (atmos.Component "vpc" .stack).outputs.private_subnets | toJson  }}'
-        cluster_endpoint_public_access: true #dev mode
-        cluster_endpoint_private_access: true
         vpc_cni_custom_subnet: '{{ (atmos.Component "vpc" .stack).outputs.intra_subnets | toJson  }}'
-        azs: '{{ (atmos.Component "vpc" .stack).outputs.azs | toJson }}'
-        cluster_version: "1.30"
-        # Enable EKS Add-ons
-        enable_amazon_eks_aws_efs_csi_driver: true
-        enable_amazon_eks_aws_ebs_csi_driver: true
-        efs_vpc_cidr_blocks: '{{ (atmos.Component "vpc" .stack).outputs.private_subnets_cidr_blocks | toJson  }}'
-        # Kubernetes Resources
-        create_kubernetes_resources: false
-        create_ssm_parameters: false
-        # Blueprints Addons
-        enable_aws_load_balancer_controller: true
-        enable_karpenter: true
-        enable_bottlerocket_update_operator: true
+        efs_vpc_cidr_blocks: ['{{ (atmos.Component "vpc" .stack).outputs.vpc_cidr_block | toJson  }}']
         tags:
           Environment: "dev"
           Owner: "team"
