@@ -18,15 +18,13 @@ stacks:
 templates:
   settings:
     enabled: true
+    delimiters: ["'{{", "}}'"]
     evaluations: 1
-    # https://masterminds.github.io/sprig
     sprig:
       enabled: true
-    # https://docs.gomplate.ca
     gomplate:
       enabled: true
       timeout: 5
-      # https://docs.gomplate.ca/datasources
       datasources: {}
 
 logs:

@@ -24,7 +24,7 @@ spec:
         - "**/templates/**"
     - component: "eks"
       source: "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref={{.Version}}"
-      version: "v0.0.24"
+      version: "module-overhaul"
       targets:
         - "/components/terraform/eks"
       included_paths:
