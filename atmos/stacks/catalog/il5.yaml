@@ -72,3 +72,15 @@ components:
           default_ami_id: '{{ (index ((atmos.Component "init" .stack).outputs.amis) "eks-cpu").id }}'
           cluster_version: "1.29"
         eks_sensitive_config_opts: {}
+    uds-keycloak:
+      metadata:
+        component: uds-keycloak
+      providers:
+        context:
+          values:
+            deploy_id: '{{ (atmos.Component "init" .stack).outputs.deploy_id }}'
+            permissions_boundary_policy_arn: '{{ (atmos.Component "init" .stack).outputs.permissions_boundary_policy_arn }}'
+            permissions_boundary_policy_name: '{{ (atmos.Component "init" .stack).outputs.permissions_boundary_policy_name }}'
+      vars:
+        vpc_config: '{{ toRawJson ((atmos.Component "vpc" .stack).outputs.vpc_config) }}'
+        keycloak_config_opts: {}

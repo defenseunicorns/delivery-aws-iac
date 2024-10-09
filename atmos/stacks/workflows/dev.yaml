@@ -65,3 +65,34 @@ workflows:
         command: terraform destroy eks -auto-approve
       #- name: "vpc"
       #command: terraform destroy vpc -auto-approve
+
+  # UDS Keycloak
+  plan-keycloak:
+    stack: dev
+    steps:
+      - name: "init"
+        command: terraform apply init -auto-approve
+      - name: "vpc"
+        command: terraform apply vpc -auto-approve
+      #- name: "bastion"
+      #command: terraform apply bastion -auto-approve
+      - name: "keycloak"
+        command: terraform plan uds-keycloak
+  apply-keycloak:
+    stack: dev
+    steps:
+      - name: "init"
+        command: terraform apply init -auto-approve
+      - name: "vpc"
+        command: terraform apply vpc -auto-approve
+      - name: "keycloak"
+        command: terraform apply uds-keycloak -auto-approve
+  destroy-keycloak:
+    stack: dev
+    steps:
+      - name: "init"
+        command: terraform apply init -auto-approve
+      - name: "keycloak"
+        command: terraform destroy uds-keycloak -auto-approve
+      #- name: "vpc"
+      #command: terraform destroy vpc -auto-approve

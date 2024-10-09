@@ -50,7 +50,7 @@ We will...
     - Node group options will be fixed for core (specific instances labeled for Keycloak sso)
     - Providing public access for bundle development or impact level 2 shall be via a transit gateway into
       an IL5 private deployment.
-    - GPU node group for EKS based on LeadfrogAI requirements is still a conditional option.
+    - GPU node group for EKS based on LeapfrogAI requirements is still a conditional option.
 - Organize wrapper module vars by what's required versus optional with secrets broken out.
   - Use high level cloud ownership context to guide breakdown of top level config object parameters.
     Make it obvious where to start with settings related to the following.
