@@ -109,71 +109,109 @@ locals {
 }
 
 module "eks" {
-  source                   = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v20.24.0"
-  cluster_name             = local.eks_config.cluster_name
-  cluster_version          = local.eks_config.cluster_version
-  vpc_id                   = local.eks_config.vpc_id
-  subnet_ids               = local.eks_config.subnet_ids
-  control_plane_subnet_ids = local.eks_config.control_plane_subnet_ids
-  cluster_ip_family        = local.eks_config.cluster_ip_family
-  //cluster_service_ipv4_cidr                = local.eks_config.cluster_service_ipv4_cidr //removed - use default
+  #----------------------------------------------------------------------------------------------------------#
+  #   Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
+  #   Upstream module implemented Security groups based on the best practices doc https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html.
+  #   By default the security groups are restrictive. Users needs to enable rules for specific ports required for App requirement or Add-ons
+  #----------------------------------------------------------------------------------------------------------#
+
+  source                               = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v20.24.0"
+  cluster_name                         = local.eks_config.cluster_name
+  cluster_version                      = local.eks_config.cluster_version
+  vpc_id                               = local.eks_config.vpc_id
+  subnet_ids                           = local.eks_config.subnet_ids
+  control_plane_subnet_ids             = local.eks_config.control_plane_subnet_ids
+  cluster_ip_family                    = local.eks_config.cluster_ip_family
   iam_role_permissions_boundary        = local.eks_config.iam_role_permissions_boundary
   attach_cluster_encryption_policy     = local.eks_config.attach_cluster_encryption_policy
   cluster_endpoint_public_access       = local.eks_config.cluster_endpoint_public_access
   cluster_endpoint_public_access_cidrs = local.eks_config.cluster_endpoint_public_access_cidrs
   cluster_endpoint_private_access      = local.eks_config.cluster_endpoint_private_access
   //Add dependencies to the node group defaults
-  self_managed_node_group_defaults = merge(
-    local.eks_config.self_managed_node_group_defaults,
+  self_managed_node_group_defaults = merge(local.eks_config.self_managed_node_group_defaults,
     {
       subnet_ids = local.eks_config.subnet_ids,
       key_name   = module.default_self_managed_node_group_keypair.key_pair_name
     }
   )
-  self_managed_node_groups                 = local.eks_config.self_managed_node_groups
-  eks_managed_node_groups                  = local.eks_config.eks_managed_node_groups
-  eks_managed_node_group_defaults          = local.eks_config.eks_managed_node_group_defaults
-  dataplane_wait_duration                  = local.eks_config.dataplane_wait_duration
-  cluster_timeouts                         = local.eks_config.cluster_timeouts
-  cluster_addons                           = local.eks_config.cluster_addons
-  access_entries                           = local.eks_config.access_entries
-  authentication_mode                      = local.eks_config.authentication_mode
-  enable_cluster_creator_admin_permissions = local.eks_config.enable_cluster_creator_admin_permissions
-
-  #----------------------------------------------------------------------------------------------------------#
-  #   Security groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
-  #   Upstream module implemented Security groups based on the best practices doc https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html.
-  #   By default the security groups are restrictive. Users needs to enable rules for specific ports required for App requirement or Add-ons
-  #----------------------------------------------------------------------------------------------------------#
-  cluster_security_group_additional_rules = local.eks_config.cluster_security_group_additional_rules
-  cluster_additional_security_group_ids   = local.eks_config.cluster_additional_security_group_ids
-  create_cluster_security_group           = local.eks_config.create_cluster_security_group
-  cluster_security_group_id               = local.eks_config.cluster_security_group_id
-  cluster_security_group_name             = local.eks_config.cluster_security_group_name
-  cluster_security_group_use_name_prefix  = local.eks_config.cluster_security_group_use_name_prefix
-  cluster_security_group_description      = local.eks_config.cluster_security_group_description
-  cluster_security_group_tags             = local.eks_config.cluster_security_group_tags
-  create_kms_key                          = local.eks_config.create_kms_key
-  kms_key_description                     = local.eks_config.kms_key_description
-  kms_key_deletion_window_in_days         = local.eks_config.kms_key_deletion_window_in_days
-  enable_kms_key_rotation                 = local.eks_config.enable_kms_key_rotation
-  kms_key_enable_default_policy           = local.eks_config.kms_key_enable_default_policy
-  kms_key_owners                          = local.eks_config.kms_key_owners
-  kms_key_administrators                  = local.eks_config.kms_key_administrators
-  kms_key_users                           = local.eks_config.kms_key_users
-  kms_key_service_users                   = local.eks_config.kms_key_service_users
-  kms_key_source_policy_documents         = local.eks_config.kms_key_source_policy_documents
-  kms_key_override_policy_documents       = local.eks_config.kms_key_override_policy_documents
-  kms_key_aliases                         = local.eks_config.kms_key_aliases
-  cluster_enabled_log_types               = local.eks_config.cluster_enabled_log_types
-  create_cloudwatch_log_group             = local.eks_config.create_cloudwatch_log_group
-  cloudwatch_log_group_retention_in_days  = local.eks_config.cloudwatch_log_group_retention_in_days
-  cloudwatch_log_group_kms_key_id         = local.eks_config.cloudwatch_log_group_kms_key_id
-  //cloudwatch_log_group_class                 = local.eks_config.cloudwatch_log_group_class //removed - use default
-  cluster_tags                               = local.eks_config.cluster_tags
-  create_cluster_primary_security_group_tags = local.eks_config.create_cluster_primary_security_group_tags
-  cloudwatch_log_group_tags                  = local.eks_config.cloudwatch_log_group_tags
-  tags                                       = local.eks_config.tags
+  self_managed_node_groups                     = local.eks_config.self_managed_node_groups
+  eks_managed_node_groups                      = local.eks_config.eks_managed_node_groups
+  eks_managed_node_group_defaults              = local.eks_config.eks_managed_node_group_defaults
+  dataplane_wait_duration                      = local.eks_config.dataplane_wait_duration
+  cluster_timeouts                             = local.eks_config.cluster_timeouts
+  cluster_addons                               = local.eks_config.cluster_addons
+  access_entries                               = local.eks_config.access_entries
+  authentication_mode                          = local.eks_config.authentication_mode
+  enable_cluster_creator_admin_permissions     = local.eks_config.enable_cluster_creator_admin_permissions
+  cluster_security_group_additional_rules      = local.eks_config.cluster_security_group_additional_rules
+  cluster_additional_security_group_ids        = local.eks_config.cluster_additional_security_group_ids
+  create_cluster_security_group                = local.eks_config.create_cluster_security_group
+  cluster_security_group_id                    = local.eks_config.cluster_security_group_id
+  cluster_security_group_name                  = local.eks_config.cluster_security_group_name
+  cluster_security_group_use_name_prefix       = local.eks_config.cluster_security_group_use_name_prefix
+  cluster_security_group_description           = local.eks_config.cluster_security_group_description
+  cluster_security_group_tags                  = local.eks_config.cluster_security_group_tags
+  create_kms_key                               = local.eks_config.create_kms_key
+  kms_key_description                          = local.eks_config.kms_key_description
+  kms_key_deletion_window_in_days              = local.eks_config.kms_key_deletion_window_in_days
+  enable_kms_key_rotation                      = local.eks_config.enable_kms_key_rotation
+  kms_key_enable_default_policy                = local.eks_config.kms_key_enable_default_policy
+  kms_key_owners                               = local.eks_config.kms_key_owners
+  kms_key_administrators                       = local.eks_config.kms_key_administrators
+  kms_key_users                                = local.eks_config.kms_key_users
+  kms_key_service_users                        = local.eks_config.kms_key_service_users
+  kms_key_source_policy_documents              = local.eks_config.kms_key_source_policy_documents
+  kms_key_override_policy_documents            = local.eks_config.kms_key_override_policy_documents
+  kms_key_aliases                              = local.eks_config.kms_key_aliases
+  cluster_enabled_log_types                    = local.eks_config.cluster_enabled_log_types
+  create_cloudwatch_log_group                  = local.eks_config.create_cloudwatch_log_group
+  cloudwatch_log_group_retention_in_days       = local.eks_config.cloudwatch_log_group_retention_in_days
+  cloudwatch_log_group_kms_key_id              = local.eks_config.cloudwatch_log_group_kms_key_id
+  cloudwatch_log_group_class                   = local.eks_config.cloudwatch_log_group_class
+  cluster_tags                                 = local.eks_config.cluster_tags
+  create_cluster_primary_security_group_tags   = local.eks_config.create_cluster_primary_security_group_tags
+  cloudwatch_log_group_tags                    = local.eks_config.cloudwatch_log_group_tags
+  tags                                         = local.eks_config.tags
+  bootstrap_self_managed_addons                = local.eks_config.bootstrap_self_managed_addons
+  cluster_addons_timeouts                      = local.eks_config.cluster_addons_timeouts
+  cluster_encryption_config                    = local.eks_config.cluster_encryption_config
+  cluster_encryption_policy_description        = local.eks_config.cluster_encryption_policy_description
+  cluster_encryption_policy_name               = local.eks_config.cluster_encryption_policy_name
+  cluster_encryption_policy_path               = local.eks_config.cluster_encryption_policy_path
+  cluster_encryption_policy_tags               = local.eks_config.cluster_encryption_policy_tags
+  cluster_encryption_policy_use_name_prefix    = local.eks_config.cluster_encryption_policy_use_name_prefix
+  cluster_identity_providers                   = local.eks_config.cluster_identity_providers
+  cluster_service_ipv4_cidr                    = local.eks_config.cluster_service_ipv4_cidr
+  cluster_service_ipv6_cidr                    = local.eks_config.cluster_service_ipv6_cidr
+  cluster_upgrade_policy                       = local.eks_config.cluster_upgrade_policy
+  create                                       = local.eks_config.create
+  create_cni_ipv6_iam_policy                   = local.eks_config.create_cni_ipv6_iam_policy
+  create_iam_role                              = local.eks_config.create_iam_role
+  create_node_security_group                   = local.eks_config.create_node_security_group
+  custom_oidc_thumbprints                      = local.eks_config.custom_oidc_thumbprints
+  enable_efa_support                           = local.eks_config.enable_efa_support
+  enable_irsa                                  = local.eks_config.enable_irsa
+  fargate_profile_defaults                     = local.eks_config.fargate_profile_defaults
+  fargate_profiles                             = local.eks_config.fargate_profiles
+  iam_role_additional_policies                 = local.eks_config.iam_role_additional_policies
+  iam_role_arn                                 = local.eks_config.iam_role_arn
+  iam_role_description                         = local.eks_config.iam_role_description
+  iam_role_name                                = local.eks_config.iam_role_name
+  iam_role_path                                = local.eks_config.iam_role_path
+  iam_role_tags                                = local.eks_config.iam_role_tags
+  iam_role_use_name_prefix                     = local.eks_config.iam_role_use_name_prefix
+  include_oidc_root_ca_thumbprint              = local.eks_config.include_oidc_root_ca_thumbprint
+  node_security_group_additional_rules         = local.eks_config.node_security_group_additional_rules
+  node_security_group_description              = local.eks_config.node_security_group_description
+  node_security_group_enable_recommended_rules = local.eks_config.node_security_group_enable_recommended_rules
+  node_security_group_id                       = local.eks_config.node_security_group_id
+  node_security_group_name                     = local.eks_config.node_security_group_name
+  node_security_group_tags                     = local.eks_config.node_security_group_tags
+  node_security_group_use_name_prefix          = local.eks_config.node_security_group_use_name_prefix
+  openid_connect_audiences                     = local.eks_config.openid_connect_audiences
+  outpost_config                               = local.eks_config.outpost_config
+  prefix_separator                             = local.eks_config.prefix_separator
+  putin_khuylo                                 = local.eks_config.putin_khuylo
 }
 
 ######################################################
