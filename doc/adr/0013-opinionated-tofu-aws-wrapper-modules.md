@@ -41,6 +41,16 @@ We will...
     need to know the name of the EKS cluster before the cluster is created in order to set tags
     for internal load balancing. The context makes the names deterministic.
 - Add one layer with Defense Unicorns opinions around official AWS modules. (Don't wrap our wrappers)
+  - This layer shall be highly opinionated. We'll be removing most choices in favor of "classes" of settings
+    based on context.
+  - All defaults for the official aws module shall be captured in a single file. (i.e.: `local-aws-eks-official-defaults.tf`).
+    This enables programmatic updates from the source module and ensures that defaults do not get changed out from under us.
+  - We'll be removing most options in favor of decisions. This doesn't mean we can't add flexibility later, but we will start with stronger opinions with options based on UDS bundle needs. Examples...
+    - Kubernetes version shall be fixed in the module.
+    - Node group options will be fixed for core (specific instances labeled for Keycloak sso)
+    - Providing public access for bundle development or impact level 2 shall be via a transit gateway into
+      an IL5 private deployment.
+    - GPU node group for EKS based on LeadfrogAI requirements is still a conditional option.
 - Organize wrapper module vars by what's required versus optional with secrets broken out.
   - Use high level cloud ownership context to guide breakdown of top level config object parameters.
     Make it obvious where to start with settings related to the following.
@@ -188,7 +198,7 @@ of multiple tofu IaC deployments with a "Kustomize-like" overlay workflow for ov
 opinionated deployments. While the wrapper module refactor does not require atmos, it's worth understanding
 its workflow. Atmos provides significant guidance for organizing a catalog of reference deployments.
 
-To use `atmos` to see the data flow for the module refactor. Note: you'll need AWS creds to run the plan.
+[`atmos`](https://atmos.tools) provides some guard rails as we work on the refactor. However, there are no requirements for it to be used to consume these modules. Note: you'll need AWS creds to run the plan.
 
 ```
 cd atmos
