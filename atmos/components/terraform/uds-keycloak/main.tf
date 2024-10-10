@@ -34,7 +34,11 @@ variable "keycloak_config_opts" {
   })
   default = {}
 }
-
+variable "advanced_overrides" {
+  description = "Advanced configuration overrides"
+  type        = map(any)
+  default     = {}
+}
 
 data "context_config" "this" {}
 data "context_label" "this" {}
@@ -45,55 +49,21 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 locals {
-
-  base_keycloak_kms_key_config = {
-    description               = "Keycloak Key"
-    deletion_window_in_days   = 7
-    enable_key_rotation       = true
-    multi_region              = true
-    key_owners                = var.keycloak_config_opts.key_owners
-    tags                      = data.context_tags.this.tags
-    create_external           = false
-    key_usage                 = "ENCRYPT_DECRYPT" //"What the key is intended to be used for (ENCRYPT_DECRYPT or SIGN_VERIFY)"
-    customer_master_key_spec  = "SYMMETRIC_DEFAULT"
-    policy_default_identities = []
-    policy_default_services   = []
-    key_alias_prefix          = "alias/${data.context_label.this.rendered}"
+  context_key = "impact_level"
+  keycloak_config_contexts = {
+    base = [local.base_uds_keycloak_config, ]
+    il4  = [local.base_uds_keycloak_config, ]
+    il5  = [local.base_uds_keycloak_config, ]
+    devx = [local.base_uds_keycloak_config, local.devx_overrides]
   }
-  base_keycloak_db_config = {
-    secret_name                    = "keycloak-db-secret-${data.context_label.this.rendered}"
-    secret_recovery_window         = 7
-    identifier                     = "keycloak-db"
-    instance_class                 = "db.t4g.large"
-    db_name                        = "keycloakdb"
-    instance_use_identifier_prefix = true
-    allocated_storage              = 20
-    max_allocated_storage          = 500
-    backup_retention_period        = 30
-    backup_window                  = "03:00-06:00"
-    maintenance_window             = "Mon:00:00-Mon:03:00"
-    engine                         = "postgres"
-    engine_version                 = "15.6"
-    major_engine_version           = "15"
-    family                         = "postgres15"
-    username                       = "keycloak"
-    port                           = "5432"
-    manage_master_user_password    = false
-    multi_az                       = false
-    copy_tags_to_snapshot          = true
-    allow_major_version_upgrade    = false
-    auto_minor_version_upgrade     = false
-    deletion_protection            = false //TODO: Default is true. This needs to be false for development
-    snapshot_identifier            = ""    //var.keycloak_db_snapshot
-  }
+  uds_keycloak_config = module.config_deepmerge.merged
+}
 
-
-  base_uds_keycloak_config = {
-    kms_config = local.base_keycloak_kms_key_config
-    db_config  = local.base_keycloak_db_config
-    tags       = data.context_tags.this.tags
-  }
-  uds_keycloak_config = merge(local.base_uds_keycloak_config, {})
+// Override module configuration defaults with impact level and advanced user settings
+module "config_deepmerge" {
+  source  = "cloudposse/config/yaml//modules/deepmerge"
+  version = "0.2.0"
+  maps    = concat(local.keycloak_config_contexts[data.context_config.this.values[local.context_key]], [var.advanced_overrides])
 }
 
 module "kms" {
@@ -235,9 +205,8 @@ resource "aws_security_group" "keycloak_rds_sg" {
 
 resource "aws_vpc_security_group_ingress_rule" "keycloak_rds_ingress" {
   security_group_id = aws_security_group.keycloak_rds_sg.id
-
-  cidr_ipv4   = "0.0.0.0/0"
-  ip_protocol = "tcp"
-  from_port   = 0
-  to_port     = 5432
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "tcp"
+  from_port         = 0
+  to_port           = local.uds_keycloak_config.db_config.port
 }

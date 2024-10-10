@@ -56,6 +56,11 @@ variable "eks_sensitive_config_opts" {
     eks_sensitive_opt2 = optional(string)
   })
 }
+variable "advanced_overrides" {
+  description = "Advanced configuration overrides"
+  type        = map(any)
+  default     = {}
+}
 
 // data.tf?
 // Context data sources that spans modules and deploys.
@@ -80,32 +85,24 @@ locals {
     [for admin_user in var.eks_config_opts.kms_key_admin_usernames : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:user/${admin_user}"],
     [data.aws_iam_session_context.current.issuer_arn], var.eks_config_opts.kms_key_admin_arns
   ))
-
   iam_role_permissions_boundary = lookup(data.context_config.this.values, "permissions_boundary_policy_arn", null) //TODO: add context for tag based IAM permissions boundaries
 
-  il4_eks_overrides = {}
-  il5_eks_overrides = merge(local.il4_eks_overrides, {}) // Base is default for IL5
 
-  // Overrides for Developer Experiance (devx). These facilate faster setup/teardown 
-  // and more open access for bundle development.
-  devx_eks_overrides = {
-    subnet_ids                      = var.vpc_config.public_subnets //Public subnets for devX
-    control_plane_subnet_ids        = var.vpc_config.private_subnets
-    cluster_endpoint_public_access  = true //Public access enabled
-    cluster_endpoint_private_access = true //Private access requred
-  }
-
-  il4_eks_config  = merge(local.base_eks_config, local.il4_eks_overrides)
-  il5_eks_config  = merge(local.base_eks_config, local.il5_eks_overrides)
-  devx_eks_config = merge(local.base_eks_config, local.devx_eks_overrides)
-
+  context_key = "impact_level"
   eks_config_contexts = {
-    base = local.base_eks_config,
-    il4  = local.il4_eks_config,
-    il5  = local.il5_eks_config
-    devx = local.devx_eks_config
+    base = [local.base_eks_overrides, ]
+    il4  = [local.base_eks_overrides, local.il4_eks_overrides, ]
+    il5  = [local.base_eks_overrides, local.il4_eks_overrides, local.il5_eks_overrides, ]
+    devx = [local.base_eks_overrides, local.devx_eks_overrides]
   }
-  eks_config = local.eks_config_contexts[data.context_config.this.values["impact_level"]]
+  eks_config = module.config_deepmerge.merged
+}
+
+// Override module configuration defaults with impact level and advanced user settings
+module "config_deepmerge" {
+  source  = "cloudposse/config/yaml//modules/deepmerge"
+  version = "0.2.0"
+  maps    = concat([local.aws_eks_source_defaults], local.eks_config_contexts[data.context_config.this.values[local.context_key]], [var.advanced_overrides])
 }
 
 module "eks" {

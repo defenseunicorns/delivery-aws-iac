@@ -84,3 +84,8 @@ components:
       vars:
         vpc_config: '{{ toRawJson ((atmos.Component "vpc" .stack).outputs.vpc_config) }}'
         keycloak_config_opts: {}
+        advanced_overrides:
+          db_config:
+            deletion_protection: false
+          #kms_config:
+          #description: "Override Keycloak Key Name"
