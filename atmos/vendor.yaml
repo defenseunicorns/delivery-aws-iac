@@ -7,7 +7,7 @@ spec:
   sources:
     - component: "vpc"
       source: "git::https://github.com/defenseunicorns/terraform-aws-vpc.git?ref={{.Version}}"
-      version: "v0.1.11"
+      version: "module-overhaul"
       targets:
         - "/components/terraform/vpc"
       included_paths:

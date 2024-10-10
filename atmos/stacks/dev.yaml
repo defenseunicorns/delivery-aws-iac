@@ -10,27 +10,7 @@ components:
       vars:
         name: "dev-vpc"
         vpc_cidr: "10.200.0.0/16"
-        secondary_cidr_blocks: ["100.64.0.0/16"]
-        private_subnets:
-          - "10.200.12.0/22"
-          - "10.200.16.0/22"
-          - "10.200.20.0/22"
-        database_subnets:
-          - "10.200.24.0/27"
-          - "10.200.24.32/27"
-          - "10.200.24.64/27"
-        azs:
-          - "us-gov-west-1a"
-          - "us-gov-west-1b"
-          - "us-gov-west-1c"
-        single_nat_gateway: false
-        enable_nat_gateway: false
-        tags:
-          Environment: "dev"
-          Project: "example"
-          Owner: "team"
-          ManagedBy: "Terraform"
-          Repo: "https://github.com/defenseunicorns/terraform-aws-vpc"
+        ip_reservation_list: ["10.200.1.1"]
     # bastion:
     #   dependencies:
     #     terraform:
