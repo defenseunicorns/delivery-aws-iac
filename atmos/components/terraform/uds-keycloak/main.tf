@@ -50,12 +50,18 @@ data "aws_region" "current" {}
 
 locals {
   context_key = "impact_level"
-  keycloak_config_contexts = {
-    base = [local.base_uds_keycloak_config, ]
-    il4  = [local.base_uds_keycloak_config, ]
-    il5  = [local.base_uds_keycloak_config, ]
-    devx = [local.base_uds_keycloak_config, local.devx_overrides]
+  //defautls from source aws modules
+  keycloak_config_defaults = {
+    kms_config = local.aws_kms_defaults
+    db_config  = local.aws_rds_defaults
   }
+  keycloak_config_contexts = {
+    base = [local.base_uds_keycloak_overrides, ]
+    il4  = [local.base_uds_keycloak_overrides, ]
+    il5  = [local.base_uds_keycloak_overrides, ]
+    devx = [local.base_uds_keycloak_overrides, local.devx_overrides]
+  }
+  context_overrides   = local.keycloak_config_contexts[data.context_config.this.values[local.context_key]]
   uds_keycloak_config = module.config_deepmerge.merged
 }
 
@@ -63,23 +69,11 @@ locals {
 module "config_deepmerge" {
   source  = "cloudposse/config/yaml//modules/deepmerge"
   version = "0.2.0"
-  maps    = concat(local.keycloak_config_contexts[data.context_config.this.values[local.context_key]], [var.advanced_overrides])
-}
-
-module "kms" {
-  source  = "terraform-aws-modules/kms/aws"
-  version = "3.1.0"
-
-  description              = local.uds_keycloak_config.kms_config.description
-  deletion_window_in_days  = local.uds_keycloak_config.kms_config.deletion_window_in_days
-  enable_key_rotation      = local.uds_keycloak_config.kms_config.enable_key_rotation
-  policy                   = data.aws_iam_policy_document.kms_access.json
-  multi_region             = local.uds_keycloak_config.kms_config.multi_region
-  key_owners               = local.uds_keycloak_config.kms_config.key_owners
-  tags                     = local.uds_keycloak_config.kms_config.tags
-  create_external          = local.uds_keycloak_config.kms_config.create_external
-  key_usage                = local.uds_keycloak_config.kms_config.key_usage
-  customer_master_key_spec = local.uds_keycloak_config.kms_config.customer_master_key_spec
+  maps = concat(
+    [local.keycloak_config_defaults],
+    local.context_overrides,
+    [var.advanced_overrides],
+  )
 }
 
 # Create custom policy for KMS

@@ -40,7 +40,7 @@ locals {
     snapshot_identifier            = "" //var.keycloak_db_snapshot
   }
 
-  base_uds_keycloak_config = {
+  base_uds_keycloak_overrides = {
     kms_config = local.base_keycloak_kms_key_config
     db_config  = local.base_keycloak_db_config
     tags       = data.context_tags.this.tags

@@ -95,14 +95,19 @@ locals {
     il5  = [local.base_eks_overrides, local.il4_eks_overrides, local.il5_eks_overrides, ]
     devx = [local.base_eks_overrides, local.devx_eks_overrides]
   }
-  eks_config = module.config_deepmerge.merged
+  context_overrides = local.eks_config_contexts[data.context_config.this.values[local.context_key]]
+  eks_config        = module.config_deepmerge.merged
 }
 
 // Override module configuration defaults with impact level and advanced user settings
 module "config_deepmerge" {
   source  = "cloudposse/config/yaml//modules/deepmerge"
   version = "0.2.0"
-  maps    = concat([local.aws_eks_source_defaults], local.eks_config_contexts[data.context_config.this.values[local.context_key]], [var.advanced_overrides])
+  maps = concat(
+    [local.aws_eks_source_defaults],
+    local.context_overrides,
+    [var.advanced_overrides],
+  )
 }
 
 module "eks" {

@@ -73,121 +73,173 @@ We will...
   - common attributes such as name prefix/suffix (labels), tags and other global configuration.
 - Avoid directly passing attributes to wrapped modules in favor of defaults organized by context.
 
-- Example
-
-  ```
-  // Context data sources that spans modules and deploys.
-  data "context_config" "this" {}
-  data "context_label" "this" {}
-  data "context_tags" "this" {}
-
-  // Standardize on config objects. Use `optional()` to set defaults as needed.
-  variable "vpc_config" {
-    description = "Existing VPC configuration for EKS"
-    type = object({
-      vpc_id                     = string
-      subnet_ids                 = list(string)
-      azs                        = list(string)
-      private_subnets            = list(string)
-      intra_subnets              = list(string)
-      database_subnets           = optional(list(string))
-      database_subnet_group_name = optional(string)
-    })
-  }
-
-  // EKS configuration options. We can put in defaults, however defaults
-  // should not be provided for items that need to be a mission decision.
-  variable "eks_config_opts" {
-    description = "EKS Configuration options to be determined by mission needs."
-    type = object({
-      cluster_version = optional(string, "1.30")
-    })
-  }
-
-  variable "eks_sensitive_config_opts" {
-    sensitive = true
-    type = object({
-      eks_sensitive_opt1 = optional(string)
-      eks_sensitive_opt2 = optional(string)
-    })
-  }
-
-  locals {
-    base_eks_config = {
-      vpc_id                               = var.vpc_attrs.vpc_id
-      subnet_ids                           = var.vpc_attrs.subnet_ids
-      tags                                 = data.context_tags.this.tags
-      cluster_name                         = data.context_label.this.rendered
-      cluster_version                      = var.eks_config_opts.cluster_version
-      control_plane_subnet_ids             = var.vpc_attrs.private_subnets
-      private_subnet_ids                   = var.vpc_attrs.private_subnets
-      iam_role_permissions_boundary        = data.context_config.this.values["PermissionsBoundary"]
-      cluster_endpoint_public_access       = true
-      cluster_endpoint_public_access_cidrs = []
-      cluster_endpoint_private_access      = false
-      self_managed_node_group_defaults     = {}
-      self_managed_node_groups             = []
-      cluster_addons                       = []
-    }
-    il4_eks_overrides = {
-      cluster_endpoint_public_access  = false //No public access for >= IL4
-      cluster_endpoint_private_access = true  //Private access required for >= IL4
-    }
-    il5_eks_overrides = merge(local.il4_eks_overrides, {}) // IL5 extends IL4
-    il4_eks_config    = merge(local.base_eks_config, local.il4_eks_overrides)
-    il5_eks_config    = merge(local.base_eks_config, local.il5_eks_overrides)
-    eks_config = {
-      base  = local.base_eks_config,
-      il4   = local.il4_eks_config,
-      il5   = local.il5_eks_config
-    }
-  }
-
-  //Use Impact Level from context to set the default config for EKS
-  // This object will be used to configure the official AWS EKS module.
-  // Outputting for illustration purposes.
-  output "eks_config" {
-    value = local.eks_config[data.context_config.this.values["impact_level"]]
-  }
-
-  ```
-
-An example of the data flow through modules connected via a stack is provided [here](../../atmos). You can see how in
-lieu of vars for name prefixes, tags and other global config the context is used.
-
-By requiring the context provider in the wrapper module.
-
-```
-terraform {
-  required_providers {
-    context = {
-      source  = "registry.terraform.io/cloudposse/context"
-      version = "~> 0.4.0"
-    }
-  }
-}
-data "context_config" "this" {}
-data "context_label" "this" {}
-data "context_tags" "this" {}
-```
-
-context labels and tags are used for resources.
-
-```
-module "aws_eks" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v20.24.0"
-
-  cluster_name    = data.context_label.this.rendered
-  tags            = data.context_tags.this.tags
-
-
-```
-
 We will not...
 
 - Take on the scope to keep secrets in a store and out of module output.
   - It's best practices to keep secrets out of tofu state (in favor of pointers to their location in a secret store).
   - This can be addressed in a future ADR.
+
+## Design Patterns
+
+- Context is set by the context provider and used for resource names and tags.
+- Defaults for wrapped modules are explicitly set such that they cannot change out from under us.
+  - Each module shall have it's own file to set a local object with default settings.
+  - The names of the attributes much match the names from the wrapped module.
+  - File name: `locals-defaults-<MODULE_NAME>.tf`
+    ```
+    locals {
+      <MODULE_NAME>_defaults = {
+        # Defaults generated from wrapped module
+        # terraform-docs --sort-by required json ${path} | jq -r '.inputs[]|.name + " = " + if (.type == "string" and .default != null) then "\"" + .default + "\"" else (.default| tostring) end'
+      }
+      keycloak_config_defaults = {
+        kms_config = local.aws_kms_defaults
+        db_config  = local.aws_rds_defaults
+      }
+    }
+    ```
+- Defense Unicorn opinions are organized by context. Impact Level shall be used for initial context with a default of IL5.
+
+  - Context based overrides shall have their own files and broken down into subcategories and context as needed.
+    When breaking into subcategories or contexts they should organize such that codeowners is used for maintainability.
+  - File name: `locals-overrides-<MODULE_NAME>-<SUBCATEGORY>-<CONTEXT>.tf`
+
+    ```
+    locals {
+      <CONTEXT>_<MODULE_NAME>_<SUBCATEGORY>_overrides = {
+         # Overrides should strive to match the attribute names of the modules they wrap as much as possible.
+      }
+
+      base_uds_keycloak_overrides = {
+        db_config  = {
+          # Attribute names match those needed for the wrapped RDS module
+        }
+        kms_config = {
+          # Attribute names match those needed for the wrapped KMS module
+          description = "UDS Keycloak Key"
+        }
+        tags = data.context_tags.this.tags
+        # other wrapper module attributes.
+       }
+    }
+    ```
+
+- Advance overrides variable shall be provided to allow runtime override of context based settings.
+  - Consumers with advanced understanding of wrapped modules and override data structures can change
+    settings directly without the wrapper module having to expose everything inside.
+  - TF var file
+    ```
+    advanced_overrides = {
+      kms_config = {
+        description = "Override Keycloak Key Description"
+      }
+    }
+    ```
+- Overrides Deep merge
+  - A deep merge of Defaults <- Context based overrides <- advanced overrides variable is performed
+    before passing attributes to wrapped modules and resources.
+    ```
+    locals {
+      context_key = "impact_level"
+      keycloak_config_contexts = {
+        base = [local.base_uds_keycloak_overrides, ]
+        il4 = [local.base_uds_keycloak_overrides, ]
+        il5 = [local.base_uds_keycloak_overrides, ]
+        devx = [local.base_uds_keycloak_overrides, local.devx_overrides]
+      }
+      context_overrides = local.keycloak_config_contexts[data.context_config.this.values[local.context_key]]
+      uds_keycloak_config = module.config_deepmerge.merged
+    }
+    module "config_deepmerge" {
+      source  = "cloudposse/config/yaml//modules/deepmerge"
+      version = "0.2.0"
+      maps = concat(
+        [local.keycloak_config_defaults],
+        local.context_overrides,
+        [var.advanced_overrides],
+      )
+    }
+    ```
+- Wrapped Module configuration
+
+  - Wrapped modules are configured with the merged defaults, context overrides and advanced overrides.
+    ```
+    module "kms" {
+      source                   = "terraform-aws-modules/kms/aws"
+      version                  = "3.1.0"
+      description              = local.uds_keycloak_config.kms_config.description
+      deletion_window_in_days  = local.uds_keycloak_config.kms_config.deletion_window_in_days
+      enable_key_rotation      = local.uds_keycloak_config.kms_config.enable_key_rotation
+      policy                   = data.aws_iam_policy_document.kms_access.json
+      multi_region             = local.uds_keycloak_config.kms_config.multi_region
+      key_owners               = local.uds_keycloak_config.kms_config.key_owners
+      tags                     = local.uds_keycloak_config.kms_config.tags
+      create_external          = local.uds_keycloak_config.kms_config.create_external
+      key_usage                = local.uds_keycloak_config.kms_config.key_usage
+      customer_master_key_spec = local.uds_keycloak_config.kms_config.customer_master_key_spec
+    }
+    ```
+
+- Wrapper modules inputs
+
+  - Use objects to organize classes of settings.
+    - Sensitive data shall not be mixed with non-sensitive data in objects.
+    - All sensitive data must be flagged as such.
+  - Use context for tagging and resource labels.
+
+    ```
+    terraform {
+      required_providers {
+        context = {
+          source  = "registry.terraform.io/cloudposse/context"
+          version = "~> 0.4.0"
+        }
+      }
+    }
+    // Context data sources that spans modules and deploys.
+    data "context_config" "this" {}
+    data "context_label" "this" {}
+    data "context_tags" "this" {}
+
+    // Standardize on config objects. Use `optional()` to set defaults as needed.
+    variable "vpc_config" {
+      description = "Existing VPC configuration for EKS"
+      type = object({
+        vpc_id                     = string
+        subnet_ids                 = list(string)
+        azs                        = list(string)
+        private_subnets            = list(string)
+        intra_subnets              = list(string)
+        database_subnets           = optional(list(string))
+        database_subnet_group_name = optional(string)
+      })
+    }
+
+    // EKS configuration options. We can put in defaults, however defaults
+    // should not be provided for items that need to be a mission decision.
+    variable "eks_config_opts" {
+      description = "EKS Configuration options to be determined by mission needs."
+      type = object({
+        cluster_version = optional(string, "1.30")
+      })
+    }
+
+    variable "eks_sensitive_config_opts" {
+      sensitive = true
+      type = object({
+        eks_sensitive_opt1 = optional(string)
+        eks_sensitive_opt2 = optional(string)
+      })
+    }
+    module "aws_eks" {
+    source = "git::https://github.com/terraform-aws-modules/terraform-aws-eks.git?ref=v20.24.0"
+      cluster_name    = data.context_label.this.rendered
+      tags            = data.context_tags.this.tags
+    }
+    ```
+
+An example of the data flow through modules connected via a stack is provided [here](../../atmos). You can see how in
+lieu of vars for name prefixes, tags and other global config the context is used.
 
 Note that the Cloud Posse tool [Atmos](https://atmos.tools/) provides a workflow for organizing terraform as components
 that are assembled in stacks. Atmos a high level is a combination of a templating engine driven by config files that renders
@@ -209,4 +261,4 @@ atmos  workflow plan-eks --file dev.yaml
 
 Bootstrapping new missions becomes context driven by standards put in place by impact level. It's clear why one is choosing configuration options.
 
-We do run the risk of not exposing the appropriate config options for new missions. The use of parameter objects patterns is there to mitigate that risk.
+We do run the risk of not exposing the appropriate config options for new missions. The `advanced_overrides` pattern mitigates that risk.
