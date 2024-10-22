@@ -23,9 +23,9 @@ We'll focus on the modules used by the reference deployments and collaborate wit
 
 Initial modules:
 
-- https://github.com/defenseunicorns/terraform-aws-vpc
-- https://github.com/defenseunicorns/terraform-aws-bastion
-- https://github.com/defenseunicorns/terraform-aws-eks
+- https://github.com/defenseunicorns/terraform-aws-uds-vpc
+- https://github.com/defenseunicorns/terraform-aws-uds-bastion
+- https://github.com/defenseunicorns/terraform-aws-uds-eks
 
 ## Decision
 
@@ -43,7 +43,7 @@ We will...
 - Add one layer with Defense Unicorns opinions around official AWS modules. (Don't wrap our wrappers)
   - This layer shall be highly opinionated. We'll be removing most choices in favor of "classes" of settings
     based on context.
-  - All defaults for the official aws module shall be captured in a single file. (i.e.: `local-aws-eks-official-defaults.tf`).
+  - All defaults for the official aws module shall be captured in a single file. (i.e.: `locals-defaults-terraform-aws-vpc.tf`).
     This enables programmatic updates from the source module and ensures that defaults do not get changed out from under us.
   - We'll be removing most options in favor of decisions. This doesn't mean we can't add flexibility later, but we will start with stronger opinions with options based on UDS bundle needs. Examples...
     - Kubernetes version shall be fixed in the module.
@@ -238,11 +238,44 @@ We will not...
     }
     ```
 
+- Wrapper modules outputs
+
+  - Use single object to output all non-sensitive data
+    - Sensitive outputs should be grouped together and flagged as being sensitive
+  - Only output information deemed necessary for other modules to consume
+  ```
+  output "vpc_properties" {
+    description = "Configuration of the VPC including subnet groups, subnets, and VPC ID"
+    value = {
+      azs                         = module.vpc.azs
+      database_subnet_group_name  = module.vpc.database_subnet_group_name
+      database_subnets            = module.vpc.database_subnets
+      intra_subnets               = module.vpc.intra_subnets
+      private_subnets             = module.vpc.private_subnets
+      private_subnets_cidr_blocks = module.vpc.private_subnets_cidr_blocks
+      public_subnets              = module.vpc.public_subnets
+      vpc_id                      = module.vpc.vpc_id
+    }
+  }
+  ```
+
+- Input and Output naming
+
+  - Variables should be named:
+    - `<module>-options`
+      - For optional inputs
+    - `<module>-requirements`
+      - For required inputs
+    - `<module>-advanced-overrides`
+      - For advanced variable overrides
+    - `<module>-properties`
+      - For module outputs
+
 An example of the data flow through modules connected via a stack is provided [here](../../atmos). You can see how in
 lieu of vars for name prefixes, tags and other global config the context is used.
 
 Note that the Cloud Posse tool [Atmos](https://atmos.tools/) provides a workflow for organizing terraform as components
-that are assembled in stacks. Atmos a high level is a combination of a templating engine driven by config files that renders
+that are assembled in stacks. Atmos at a high level is a templating engine driven by config files that renders
 tofu [variable files](https://opentofu.org/docs/v1.7/language/values/variables/#variable-definitions-tfvars-files) and
 [override files](https://opentofu.org/docs/v1.7/language/files/override/).
 This allows for DRY assembly of stacks which enable chaining
