@@ -63,4 +63,3 @@ examples/zarf-complete-example/build
 **/ignore
 
 **/builds
-atmos/components/terraform/*/*.planfile
