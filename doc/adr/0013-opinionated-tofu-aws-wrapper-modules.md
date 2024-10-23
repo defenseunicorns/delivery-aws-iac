@@ -4,7 +4,7 @@ Date: 2024-10-01
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
@@ -26,6 +26,10 @@ Initial modules:
 - https://github.com/defenseunicorns/terraform-aws-uds-vpc
 - https://github.com/defenseunicorns/terraform-aws-uds-bastion
 - https://github.com/defenseunicorns/terraform-aws-uds-eks
+
+Module Demo:
+
+- https://github.com/defenseunicorns/uds-reference-deployments/tree/chore/opinionated-tofu-modules-update/atmos
 
 ## Decision
 
@@ -243,6 +247,7 @@ We will not...
   - Use single object to output all non-sensitive data
     - Sensitive outputs should be grouped together and flagged as being sensitive
   - Only output information deemed necessary for other modules to consume
+
   ```
   output "vpc_properties" {
     description = "Configuration of the VPC including subnet groups, subnets, and VPC ID"
@@ -271,24 +276,8 @@ We will not...
     - `<module>-properties`
       - For module outputs
 
-An example of the data flow through modules connected via a stack is provided [here](../../atmos). You can see how in
+An example of the data flow through modules connected via a stack is provided [here](https://github.com/defenseunicorns/uds-reference-deployments/blob/chore/opinionated-tofu-modules-update/atmos/stacks/catalog/aws/eks.yaml). You can see how in
 lieu of vars for name prefixes, tags and other global config the context is used.
-
-Note that the Cloud Posse tool [Atmos](https://atmos.tools/) provides a workflow for organizing terraform as components
-that are assembled in stacks. Atmos at a high level is a templating engine driven by config files that renders
-tofu [variable files](https://opentofu.org/docs/v1.7/language/values/variables/#variable-definitions-tfvars-files) and
-[override files](https://opentofu.org/docs/v1.7/language/files/override/).
-This allows for DRY assembly of stacks which enable chaining
-of multiple tofu IaC deployments with a "Kustomize-like" overlay workflow for overriding a catalog of
-opinionated deployments. While the wrapper module refactor does not require atmos, it's worth understanding
-its workflow. Atmos provides significant guidance for organizing a catalog of reference deployments.
-
-[`atmos`](https://atmos.tools) provides some guard rails as we work on the refactor. However, there are no requirements for it to be used to consume these modules. Note: you'll need AWS creds to run the plan.
-
-```
-cd atmos
-atmos  workflow plan-eks --file dev.yaml
-```
 
 ## Consequences
 
