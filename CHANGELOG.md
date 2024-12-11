@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.0.13](https://github.com/defenseunicorns/delivery-aws-iac/compare/v0.0.12...v0.0.13) (2024-12-11)
+
+
+### Bug Fixes
+
+* **deps:** update all dependencies ([#406](https://github.com/defenseunicorns/delivery-aws-iac/issues/406)) ([83f5af2](https://github.com/defenseunicorns/delivery-aws-iac/commit/83f5af2c089e0b02efe6c19f59c8a96b70c48a3a))
+
+
+### Miscellaneous Chores
+
+* ADR for opinionated tofu wrapper modules ([#411](https://github.com/defenseunicorns/delivery-aws-iac/issues/411)) ([701c0d0](https://github.com/defenseunicorns/delivery-aws-iac/commit/701c0d02e69f5038daf01a255a97a842f5afa429))
+* **deps:** update all dependencies ([#399](https://github.com/defenseunicorns/delivery-aws-iac/issues/399)) ([e99ed53](https://github.com/defenseunicorns/delivery-aws-iac/commit/e99ed53b66f870fd28b4f4da278f8d1f9c9e66c2))
+* **deps:** update all dependencies ([#402](https://github.com/defenseunicorns/delivery-aws-iac/issues/402)) ([cdfdfc7](https://github.com/defenseunicorns/delivery-aws-iac/commit/cdfdfc75683d3f1c5aa529ad284076fdfd0e9a58))
+* **deps:** update all dependencies ([#404](https://github.com/defenseunicorns/delivery-aws-iac/issues/404)) ([8c7d362](https://github.com/defenseunicorns/delivery-aws-iac/commit/8c7d362daae08c2b6b823354099ebe555203b8ac))
+* **deps:** update all dependencies ([#407](https://github.com/defenseunicorns/delivery-aws-iac/issues/407)) ([cda3a89](https://github.com/defenseunicorns/delivery-aws-iac/commit/cda3a89dfe171475dcadad1232e9500f1d527b5b))
+* **deps:** update pre-commit hook renovatebot/pre-commit-hooks to v37.226.1 ([#401](https://github.com/defenseunicorns/delivery-aws-iac/issues/401)) ([0d322d1](https://github.com/defenseunicorns/delivery-aws-iac/commit/0d322d1565d667a434107e1f96a33cd0b1e2235f))
+* **deps:** update pre-commit hook renovatebot/pre-commit-hooks to v37.235.4 ([#403](https://github.com/defenseunicorns/delivery-aws-iac/issues/403)) ([d3353b9](https://github.com/defenseunicorns/delivery-aws-iac/commit/d3353b9ce2609597bc3df8836f4e664b6adbb12e))
+* **deps:** update pre-commit hook renovatebot/pre-commit-hooks to v37.252.1 ([#405](https://github.com/defenseunicorns/delivery-aws-iac/issues/405)) ([c82d2a4](https://github.com/defenseunicorns/delivery-aws-iac/commit/c82d2a4a19abbd9f3069c965fb4d687120752de8))
+* migrating to remote renovate pattern ([#414](https://github.com/defenseunicorns/delivery-aws-iac/issues/414)) ([f18fa09](https://github.com/defenseunicorns/delivery-aws-iac/commit/f18fa093a33805ac15e803f54a3172b7aa961c1e))
+* remove repo config ([#413](https://github.com/defenseunicorns/delivery-aws-iac/issues/413)) ([a4d7316](https://github.com/defenseunicorns/delivery-aws-iac/commit/a4d731646dfd11e351fe956d126ae2941bf7c53b))
+* tofu migration ([#409](https://github.com/defenseunicorns/delivery-aws-iac/issues/409)) ([f9119b9](https://github.com/defenseunicorns/delivery-aws-iac/commit/f9119b9d0a7f4a24195fb2ff1106c43b88058541))
+
 ## [0.0.12](https://github.com/defenseunicorns/delivery-aws-iac/compare/v0.0.11...v0.0.12) (2024-02-26)
 
 
