@@ -1,0 +1,32 @@
+apiVersion: atmos/v1
+kind: AtmosVendorConfig
+metadata:
+  name: defense-unicorns-terraform-aws
+  description: Vendoring Terraform components from defenseunicorns GitHub organization
+spec:
+  sources:
+    - component: "vpc"
+      source: "git::https://github.com/defenseunicorns/terraform-aws-vpc.git?ref={{.Version}}"
+      version: "module-overhaul"
+      targets:
+        - "/components/terraform/vpc"
+      included_paths:
+        - "**/*.tf"
+        - "**/*.md"
+    - component: "bastion"
+      source: "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref={{.Version}}"
+      version: "v0.0.17"
+      targets:
+        - "/components/terraform/bastion"
+      included_paths:
+        - "**/*.tf"
+        - "**/*.md"
+        - "**/templates/**"
+    - component: "eks"
+      source: "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref={{.Version}}"
+      version: "module-overhaul"
+      targets:
+        - "/components/terraform/eks"
+      included_paths:
+        - "**/*.tf"
+        - "**/*.md"

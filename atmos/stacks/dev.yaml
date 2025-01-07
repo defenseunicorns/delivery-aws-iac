@@ -1,0 +1,39 @@
+vars:
+  stage: "dev"
+  region: "us-gov-west-1"
+  ami_id: "ami-08b9131e91f9f6c69"
+  test_var: "{{ \"Hello, Atmos!\" }}"
+
+components:
+  terraform:
+    vpc:
+      vars:
+        name: "dev-vpc"
+        vpc_cidr: "10.200.0.0/16"
+        ip_reservation_list: ["10.200.1.1"]
+    # bastion:
+    #   dependencies:
+    #     terraform:
+    #       - vpc  # Ensure vpc runs before bastion
+    #   vars:
+    #     name: "dev-bastion"
+    #     vpc_id: '{{ (atmos.Component "vpc" "dev").outputs.vpc_id }}'
+    #     instance_type: "t3.micro"
+    #     subnet_id: '{{ index (atmos.Component "vpc" .stack).outputs.private_subnets 0 }}'
+    #     tags:
+    #       Environment: "dev"
+    #       Owner: "team"
+    eks:
+      vars:
+        cluster_name: "dev-eks"
+        # aws_admin_usernames: [""]
+        create_ssm_parameters: false
+        vpc_id: '{{ (atmos.Component "vpc" "dev").outputs.vpc_id }}'
+        azs: '{{ (atmos.Component "vpc" .stack).outputs.azs | toJson }}'
+        private_subnet_ids: '{{ (atmos.Component "vpc" .stack).outputs.private_subnets | toJson  }}'
+        control_plane_subnet_ids: '{{ (atmos.Component "vpc" .stack).outputs.private_subnets | toJson  }}'
+        vpc_cni_custom_subnet: '{{ (atmos.Component "vpc" .stack).outputs.intra_subnets | toJson  }}'
+        efs_vpc_cidr_blocks: ['{{ (atmos.Component "vpc" .stack).outputs.vpc_cidr_block | toJson  }}']
+        tags:
+          Environment: "dev"
+          Owner: "team"
