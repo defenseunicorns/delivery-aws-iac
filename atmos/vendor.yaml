@@ -13,5 +13,5 @@ spec:
       included_paths:
         - "**/*.tf"
         - "**/*.md"
+        - "**/modules/**"
         - "**/templates/**"
-        - "**/modules/mission-init/**"

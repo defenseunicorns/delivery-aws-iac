@@ -6,7 +6,7 @@ vars:
 
 components:
   terraform:
-    uds-reference-deployments:
+    uds-aws-reference-deployments:
       vars:
         name: "dev-vpc"
         vpc_cidr: "10.200.0.0/16"
@@ -21,12 +21,12 @@ components:
         cluster_name: "dev-eks"
         # aws_admin_usernames: [""]
         create_ssm_parameters: false
-        vpc_id: '{{ (atmos.Component "vpc" "dev").outputs.vpc_id }}'
-        azs: '{{ (atmos.Component "vpc" .stack).outputs.azs | toJson }}'
-        private_subnet_ids: '{{ (atmos.Component "vpc" .stack).outputs.private_subnets | toJson  }}'
-        control_plane_subnet_ids: '{{ (atmos.Component "vpc" .stack).outputs.private_subnets | toJson  }}'
-        vpc_cni_custom_subnet: '{{ (atmos.Component "vpc" .stack).outputs.intra_subnets | toJson  }}'
-        efs_vpc_cidr_blocks: ['{{ (atmos.Component "vpc" .stack).outputs.vpc_cidr_block | toJson  }}']
+        vpc_id: '{{ (atmos.Component "uds-aws-reference-deployments" "dev").outputs.vpc_id }}'
+        azs: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.azs | toJson }}'
+        private_subnet_ids: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.private_subnets | toJson  }}'
+        control_plane_subnet_ids: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.private_subnets | toJson  }}'
+        vpc_cni_custom_subnet: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.intra_subnets | toJson  }}'
+        efs_vpc_cidr_blocks: ['{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.vpc_cidr_block | toJson  }}']
         tags:
           Environment: "dev"
           Owner: "team"
