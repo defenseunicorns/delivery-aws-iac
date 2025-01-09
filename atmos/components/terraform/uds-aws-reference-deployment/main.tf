@@ -22,6 +22,7 @@ module "private_vpc" {
     create_igw         = false
     enable_nat_gateway = false
     single_nat_gateway = false
+    vpc_cidr = var.vpc_cidr
   }
 }
 
@@ -59,7 +60,7 @@ module "uds_eks" {
 # Deploys all uds core infra dependencies (like keycloak db, )
 module "uds_core" {
   # checkov:skip=CKV_TF_2: "Ensure Terraform module sources use a tag with a version number"
-  source                  = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks-core.git?ref=v0.0.7"
+  source                  = "git::https://github.com/defenseunicorns/terraform-aws-uds-eks-core.git?ref=v0.0.8"
   vpc_properties          = module.private_vpc.vpc_properties
   deployment_requirements = module.mission_init.deployment_requirements
   eks_properties          = module.uds_eks.eks_properties

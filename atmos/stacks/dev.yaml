@@ -2,15 +2,15 @@ vars:
   stage: "dev"
   region: "us-gov-west-1"
   ami_id: "ami-08b9131e91f9f6c69"
-  test_var: "{{ \"Hello, Atmos!\" }}"
 
 components:
   terraform:
-    uds-aws-reference-deployments:
+    uds-aws-reference-deployment:
       vars:
-        name: "dev-vpc"
+        deploy_id: "dev"
+        permissions_boundary_policy_arn: "arn:aws-us-gov:iam::aws:policy/AdministratorAccess"
         vpc_cidr: "10.200.0.0/16"
-        ip_reservation_list: ["10.200.1.1"]
+        # ip_reservation_list: ["10.200.1.1"]
     #     name: "dev-bastion"
     #     vpc_id: '{{ (atmos.Component "vpc" "dev").outputs.vpc_id }}'
     #     instance_type: "t3.micro"
@@ -18,15 +18,15 @@ components:
     #     tags:
     #       Environment: "dev"
     #       Owner: "team"
-        cluster_name: "dev-eks"
-        # aws_admin_usernames: [""]
-        create_ssm_parameters: false
-        vpc_id: '{{ (atmos.Component "uds-aws-reference-deployments" "dev").outputs.vpc_id }}'
-        azs: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.azs | toJson }}'
-        private_subnet_ids: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.private_subnets | toJson  }}'
-        control_plane_subnet_ids: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.private_subnets | toJson  }}'
-        vpc_cni_custom_subnet: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.intra_subnets | toJson  }}'
-        efs_vpc_cidr_blocks: ['{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.vpc_cidr_block | toJson  }}']
-        tags:
-          Environment: "dev"
-          Owner: "team"
+        # cluster_name: "dev-eks"
+        # # aws_admin_usernames: [""]
+        # create_ssm_parameters: false
+        # vpc_id: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.vpc_id }}'
+        # azs: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.azs | toJson }}'
+        # private_subnet_ids: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.private_subnets | toJson  }}'
+        # control_plane_subnet_ids: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.private_subnets | toJson  }}'
+        # vpc_cni_custom_subnet: '{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.intra_subnets | toJson  }}'
+        # efs_vpc_cidr_blocks: ['{{ (atmos.Component "uds-aws-reference-deployments" .stack).outputs.vpc_cidr_block | toJson  }}']
+        # tags:
+        #   Environment: "dev"
+        #   Owner: "team"
