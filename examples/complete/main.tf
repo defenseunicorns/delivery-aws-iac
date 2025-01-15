@@ -55,7 +55,7 @@ locals {
 }
 
 module "vpc" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-vpc.git?ref=v0.1.7"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-vpc.git?ref=v0.1.11"
 
   name                  = local.vpc_name
   vpc_cidr              = var.vpc_cidr
@@ -111,7 +111,7 @@ data "aws_ami" "amazonlinux2" {
 }
 
 module "bastion" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.13"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-bastion.git?ref=v0.0.17"
 
   count = var.enable_bastion ? 1 : 0
 
@@ -306,7 +306,7 @@ locals {
 
 module "ssm_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   create = var.create_ssm_parameters
 
@@ -387,7 +387,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.17"
+  source = "git::https://github.com/defenseunicorns/terraform-aws-eks.git?ref=v0.0.23"
 
   name                                    = local.cluster_name
   aws_region                              = var.region
@@ -485,7 +485,7 @@ module "key_pair" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   count = var.keycloak_enabled ? 1 : 0
 
@@ -540,7 +540,7 @@ module "password_lambda" {
 
   count = var.enable_bastion ? 1 : 0
 
-  source      = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.3"
+  source      = "git::https://github.com/defenseunicorns/terraform-aws-lambda.git//modules/password-rotation?ref=v0.0.7"
   region      = var.region
   random_id   = lower(random_id.default.hex)
   name_prefix = var.name_prefix
